@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e93d8d6ee6f6346a0837fe3e9f8e43b2
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Assets/Scripts/TOD_ImageEffect.cs
+  uploadId: 262501

@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: dd571add4f2f2499ab74b7a70952a376
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Assets/Shaders/Clear Alpha.shader
+  uploadId: 262501

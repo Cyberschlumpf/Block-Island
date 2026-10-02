@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: fe19a8424717246ffa4b0ead073cc918
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Assets/Scripts/TOD_Sky+Settings.cs
+  uploadId: 262501

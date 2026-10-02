@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 363c8c3c3ba9c4a279e7aa9627cdde36
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Examples/TOD_LoadSkyFromFile.cs
+  uploadId: 262501

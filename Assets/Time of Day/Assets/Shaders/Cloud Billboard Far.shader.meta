@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 5aeaafc9a546d482098ba24c16d47e1e
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Assets/Shaders/Cloud Billboard Far.shader
+  uploadId: 262501

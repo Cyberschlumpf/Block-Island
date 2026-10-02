@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: 30c170fb533d34377a7dbd89b17179a7
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Assets/Shaders/TOD_Clouds.cginc
+  uploadId: 262501

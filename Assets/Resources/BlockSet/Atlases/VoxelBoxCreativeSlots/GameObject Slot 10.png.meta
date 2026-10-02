@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: 3107833ebaa526d357995333f6f2445c
+TextureImporter:
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+  isReadable: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapMode: 0
+  nPOTScale: 0
+  alphaIsTransparency: 0
+  textureType: 0
+  userData:
+  assetBundleName:
+  assetBundleVariant:

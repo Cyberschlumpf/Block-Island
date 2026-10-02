@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: fdd320689879e4151a6d37fa30a2a572
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Assets/Shaders/PP Scattering.shader
+  uploadId: 262501

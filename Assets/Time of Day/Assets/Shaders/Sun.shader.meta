@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: c52f72c0da5594214b2c6011566ed8b6
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Assets/Shaders/Sun.shader
+  uploadId: 262501

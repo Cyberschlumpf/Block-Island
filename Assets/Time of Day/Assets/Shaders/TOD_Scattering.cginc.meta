@@ -1,0 +1,9 @@
+fileFormatVersion: 2
+guid: ac57dd32b553f4a6b802a2175589e60e
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Assets/Shaders/TOD_Scattering.cginc
+  uploadId: 262501

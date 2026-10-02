@@ -1,0 +1,12 @@
+fileFormatVersion: 2
+guid: e87b634af4ca64edda59d64d4e43956a
+ShaderImporter:
+  defaultTextures: []
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Assets/Shaders/PP Sky Mask.shader
+  uploadId: 262501

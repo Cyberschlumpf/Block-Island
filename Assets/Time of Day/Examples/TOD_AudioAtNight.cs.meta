@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 29dbcfb975b66490c95300c06be74bfa
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Examples/TOD_AudioAtNight.cs
+  uploadId: 262501

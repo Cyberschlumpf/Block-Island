@@ -1,0 +1,16 @@
+using UnityEngine;
+// Visual-only animation: logical voxel coordinate never moves, so saves/collision/chunks remain stable.
+public sealed class CustomVoxelAnimator:MonoBehaviour{
+ public CustomVoxelBlock.Motion motion; public float speed=1f; Vector3 basePos,baseScale;Quaternion baseRot;float phase;
+ public void Setup(CustomVoxelBlock b,int seed){motion=b.animation;speed=b.animationSpeed;basePos=transform.localPosition;baseScale=transform.localScale;baseRot=transform.localRotation;phase=(seed*0.6180339f)%6.28318f;}
+ void Update(){float t=Time.time*speed+phase;transform.localPosition=basePos;transform.localScale=baseScale;transform.localRotation=baseRot;switch(motion){case CustomVoxelBlock.Motion.RotateCW:transform.localRotation=baseRot*Quaternion.Euler(0,t*90,0);break;case CustomVoxelBlock.Motion.RotateCCW:transform.localRotation=baseRot*Quaternion.Euler(0,-t*90,0);break;case CustomVoxelBlock.Motion.Twizzle:transform.localRotation=baseRot*Quaternion.Euler(0,Mathf.Sin(t)*35,0);break;case CustomVoxelBlock.Motion.Wind:transform.localRotation=baseRot*Quaternion.Euler(Mathf.Sin(t*.8f)*4,0,Mathf.Sin(t)*10);break;case CustomVoxelBlock.Motion.Dangle:transform.localRotation=baseRot*Quaternion.Euler(0,0,Mathf.Sin(t)*22);break;case CustomVoxelBlock.Motion.Jiggle:transform.localRotation=baseRot*Quaternion.Euler(Mathf.Sin(t*7)*3,Mathf.Sin(t*5)*3,Mathf.Sin(t*6)*3);break;case CustomVoxelBlock.Motion.Dervish:transform.localRotation=baseRot*Quaternion.Euler(Mathf.Sin(t*2)*15,t*180,Mathf.Cos(t*2.3f)*15);break;case CustomVoxelBlock.Motion.Piston:transform.localPosition=basePos+Vector3.up*((Mathf.Sin(t)+1)*.18f);break;case CustomVoxelBlock.Motion.Bounce:transform.localPosition=basePos+Vector3.up*Mathf.Abs(Mathf.Sin(t*1.7f))*.35f;break;case CustomVoxelBlock.Motion.Squish:{float q=(Mathf.Sin(t)+1)*.5f;transform.localScale=Vector3.Scale(baseScale,new Vector3(1+.12f*q,1-.22f*q,1+.12f*q));break;}case CustomVoxelBlock.Motion.GrowShrink:transform.localScale=baseScale*(1+Mathf.Sin(t)*.18f);break;case CustomVoxelBlock.Motion.Orbit:transform.localPosition=basePos+new Vector3(Mathf.Cos(t),0,Mathf.Sin(t))*.18f;break;case CustomVoxelBlock.Motion.Planetary:transform.localPosition=basePos+new Vector3(Mathf.Cos(t),0,Mathf.Sin(t))*.18f;transform.localRotation=baseRot*Quaternion.Euler(0,t*140,0);break;
+case CustomVoxelBlock.Motion.RandomiseFacing:{float a=(phase*57.29578f)%28f-14f;transform.localRotation=baseRot*Quaternion.Euler(0,a,0);break;}
+case CustomVoxelBlock.Motion.Big:transform.localScale=baseScale*1.75f;break;
+case CustomVoxelBlock.Motion.Small:transform.localScale=baseScale*.55f;break;
+case CustomVoxelBlock.Motion.Hover:transform.localPosition=basePos+Vector3.up*(.12f+Mathf.Sin(t)*.08f);break;
+case CustomVoxelBlock.Motion.SpinX:transform.localRotation=baseRot*Quaternion.Euler(t*90,0,0);break;
+case CustomVoxelBlock.Motion.SpinZ:transform.localRotation=baseRot*Quaternion.Euler(0,0,t*90);break;
+case CustomVoxelBlock.Motion.Figure8:transform.localPosition=basePos+new Vector3(Mathf.Sin(t)*.16f,Mathf.Sin(t*2f)*.07f,Mathf.Sin(t)*Mathf.Cos(t)*.16f);break;
+case CustomVoxelBlock.Motion.Rock:transform.localRotation=baseRot*Quaternion.Euler(Mathf.Sin(t*1.3f)*12,0,Mathf.Sin(t)*18);break;
+case CustomVoxelBlock.Motion.Pulse:{float q=1f+(.5f+.5f*Mathf.Sin(t*2f))*.16f;transform.localScale=baseScale*q;break;}}}
+}

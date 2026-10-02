@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: efbeb7711807c48808dda5ce72a36103
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 7316
+  packageName: Time of Day
+  packageVersion: 3.3.0
+  assetPath: Assets/Time of Day/Examples/TOD_ParticleAtTime.cs
+  uploadId: 262501

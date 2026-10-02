@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: e2a659ceeeb51f248aab816710c026ac
+timeCreated: 1489431046
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Hammersmith One
+  fontNames:
+  - Hammersmith One
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
