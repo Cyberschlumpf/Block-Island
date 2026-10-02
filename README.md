@@ -1,5 +1,5 @@
 # The Voxel Box
-![The Voxel Box](the-voxel-box-banner.png)
+
 **The Voxel Box** is an experimental voxel engine and sandbox demo built with **Unity 6000.6.3f1**.
 
 The project is **AI-assisted** and focuses on large voxel worlds, creative building and world exploration.
