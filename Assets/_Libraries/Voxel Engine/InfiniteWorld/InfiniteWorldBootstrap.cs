@@ -69,16 +69,17 @@ public sealed class InfiniteWorldBootstrap : MonoBehaviour {
   var stream=go.GetComponent<InfiniteChunkStreamer>();if(stream==null)stream=go.AddComponent<InfiniteChunkStreamer>();if(Camera.main!=null)stream.target=Camera.main.transform;
   // Stage 6.13.1: normalize extreme ultrawide perspective (e.g. 32:9) while leaving 16:9 unchanged.
   if(Camera.main!=null && Camera.main.GetComponent<UltrawideCameraNormalizer>()==null) Camera.main.gameObject.AddComponent<UltrawideCameraNormalizer>();
-  if(go.GetComponent<InfiniteWorldVisualSetup>()==null)go.AddComponent<InfiniteWorldVisualSetup>();if(go.GetComponent<InfiniteWorldDebugHUD>()==null)go.AddComponent<InfiniteWorldDebugHUD>();if(go.GetComponent<InfiniteOnlyRenderGuard>()==null)go.AddComponent<InfiniteOnlyRenderGuard>();
+  if(go.GetComponent<InfiniteWorldVisualSetup>()==null)go.AddComponent<InfiniteWorldVisualSetup>();if(go.GetComponent<InfiniteWorldShadowGuard>()==null)go.AddComponent<InfiniteWorldShadowGuard>();if(go.GetComponent<InfiniteWorldDebugHUD>()==null)go.AddComponent<InfiniteWorldDebugHUD>();if(go.GetComponent<InfiniteOnlyRenderGuard>()==null)go.AddComponent<InfiniteOnlyRenderGuard>();
   if(go.GetComponent<InfiniteDayNightCycle>()==null) go.AddComponent<InfiniteDayNightCycle>();
   if(go.GetComponent<InfiniteCreativeWeather>()==null) go.AddComponent<InfiniteCreativeWeather>();
   if(go.GetComponent<InfiniteMusicPlayer>()==null) go.AddComponent<InfiniteMusicPlayer>();
   if(go.GetComponent<InfiniteWorldAutosave>()==null) go.AddComponent<InfiniteWorldAutosave>();
   if(go.GetComponent<VoxelBoxScreenshot>()==null) go.AddComponent<VoxelBoxScreenshot>();
   var wildlife=go.GetComponent<InfiniteBirdFlock>(); if(wildlife==null) wildlife=go.AddComponent<InfiniteBirdFlock>(); if(Camera.main!=null) wildlife.target=Camera.main.transform;
-  var rabbits=go.GetComponents<InfiniteHoppingRabbit>();
-  while(rabbits.Length<2){ go.AddComponent<InfiniteHoppingRabbit>(); rabbits=go.GetComponents<InfiniteHoppingRabbit>(); }
-  foreach(var rabbit in rabbits){ rabbit.world=world; if(Camera.main!=null) rabbit.target=Camera.main.transform; }
+  // 1.0.6: wildlife now belongs to deterministic world cells. Do not create player-following rabbits.
+  foreach(var oldRabbit in go.GetComponents<InfiniteHoppingRabbit>()) Object.Destroy(oldRabbit);
+  var animals=go.GetComponent<InfiniteWorldWildlife>(); if(animals==null) animals=go.AddComponent<InfiniteWorldWildlife>();
+  animals.world=world; animals.worldSeed=gen.seed; if(Camera.main!=null) animals.target=Camera.main.transform;
   var fish=go.GetComponent<InfiniteVoxelFish>(); if(fish==null) fish=go.AddComponent<InfiniteVoxelFish>(); fish.world=world; if(Camera.main!=null) fish.target=Camera.main.transform;
   map.infiniteWorld=world;map.infiniteRenderer=mesh;
 

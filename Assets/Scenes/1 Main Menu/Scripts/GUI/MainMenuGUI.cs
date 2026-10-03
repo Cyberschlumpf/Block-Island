@@ -26,9 +26,9 @@ public class MainMenuGUI:GUIScreen{
   VoxelBoxUI.Backdrop(.12f);Rect r=new Rect(520,44,1042,812);GUILayout.BeginArea(r,VoxelBoxUI.Panel);
   VoxelBoxUI.PanelTitle("⌨","STEUERUNG","TASTATUR & MAUS  •  CREATIVE MODE");GUILayout.Space(8);GUILayout.BeginHorizontal();
   GUILayout.BeginVertical(VoxelBoxUI.Card,GUILayout.Width(485));VoxelBoxUI.SectionTitle("MAUS & BEWEGUNG");
-  GUILayout.Label("Linksklick     Block abbauen / Werkzeug benutzen\nRechtsklick    Block setzen\nMausrad        Blockauswahl wechseln\n\nW A S D        Bewegen\nSPACE          Aufwärts fliegen\nSHIFT          Abwärts fliegen\nF              Flugmodus ein/aus\nESC            Pause / Menü",VoxelBoxUI.Label);GUILayout.EndVertical();GUILayout.Space(12);
+  GUILayout.Label("Linksklick     Block setzen / Werkzeug benutzen\nRechtsklick    Block entfernen\nMausrad        Blockauswahl wechseln\n\nW A S D        Bewegen\nSPACE          Aufwärts fliegen\nSHIFT          Abwärts fliegen\nF              Flugmodus ein/aus\nESC            Pause / Menü",VoxelBoxUI.Label);GUILayout.EndVertical();GUILayout.Space(12);
   GUILayout.BeginVertical(VoxelBoxUI.Card,GUILayout.Width(485));VoxelBoxUI.SectionTitle("CREATIVE TOOLS");
-  GUILayout.Label("E              Block-Auswahl\nH              PNG-Screenshot\nM              Minecart ein-/aussteigen\n\nCOPY START     Erste Ecke markieren\nCOPY END       Zweite Ecke markieren\nPASTE          Auswahl einsetzen\nTNT            Creative-Sprengwerkzeug\nWORKSHOP       8×8×8 Custom Block",VoxelBoxUI.Label);GUILayout.EndVertical();GUILayout.EndHorizontal();
+  GUILayout.Label("E              Block-Auswahl\nH              PNG-Screenshot\nM              Minecart ein-/aussteigen\n\nCOPY START     Erste Ecke markieren\nCOPY END       Zweite Ecke markieren\nPASTE          Auswahl einsetzen\nR bei PASTE    Auswahl +90° drehen (0°/90°/180°/270°)\nTNT            Creative-Sprengwerkzeug\nWORKSHOP       8×8×8 Custom Block",VoxelBoxUI.Label);GUILayout.EndVertical();GUILayout.EndHorizontal();
   GUILayout.Space(12);GUILayout.BeginVertical(VoxelBoxUI.Card);VoxelBoxUI.SectionTitle("EINSTELLUNGEN");GUILayout.Label("Maus-Empfindlichkeit und weitere Eingabeoptionen findest du unter Einstellungen → Steuerung.",VoxelBoxUI.Label);GUILayout.EndVertical();
   GUILayout.FlexibleSpace();CloseRow();GUILayout.EndArea();
  }
@@ -62,7 +62,7 @@ public class MainMenuGUI:GUIScreen{
  void DrawGuideCopyPaste(){
   GuideHeading("COPY & PASTE");
   GuideText("Copy & Paste kopiert einen rechteckigen Bereich der Welt. Wähle zuerst „Copy Start“ und klicke direkt auf den Block an der ersten Ecke des gewünschten Bereichs. Wähle danach „Copy End“ und klicke auf den Block an der gegenüberliegenden Ecke. Die Auswahl wird markiert und in den Kopierpuffer übernommen.");
-  GuideText("Wähle anschließend „Paste Selection“. Die transparente Vorschau zeigt, wo die Kopie eingesetzt wird. Setze sie an der gewünschten Position. Kopiert werden die vollständigen Blockdaten innerhalb des markierten Bereichs, einschließlich leerer Stellen. Dadurch bleiben auch Hohlräume und Zwischenräume eines Bauwerks erhalten.");
+  GuideText("Wähle anschließend „Paste Selection“. Die transparente Vorschau zeigt, wo die Kopie eingesetzt wird. Mit R drehst du die Kopie vor dem Einsetzen jeweils um 90° (0° → 90° → 180° → 270° → 0°). Alternativ: Pfeil rechts/links = ±90°, Pfeil hoch = 180°, Pfeil runter = 0°. Setze sie danach an der gewünschten Position. Kopiert werden die vollständigen Blockdaten innerhalb des markierten Bereichs, einschließlich leerer Stellen. Dadurch bleiben auch Hohlräume und Zwischenräume eines Bauwerks erhalten.");
   GuideText("Eine Auswahl darf maximal 32×32×32 Blöcke groß sein. Enthält die Auswahl überhaupt keinen gesetzten Block, wird sie nicht übernommen. Der Kopierpuffer gilt für die aktuelle Spielsitzung.");
  }
  void DrawGuideTNT(){
@@ -100,7 +100,7 @@ public class MainMenuGUI:GUIScreen{
  }
  void DrawGuideTips(){
   GuideHeading("KURZE HILFEN & TIPPS");
-  GuideText("E öffnet die Block-Auswahl. Mit dem Mausrad wechselst du durch die Auswahl. Linksklick baut einen Block ab, Rechtsklick setzt einen Block. H speichert einen PNG-Screenshot. M steigt bei einem Minecart ein oder aus.");
+  GuideText("E öffnet die Block-Auswahl. Mit dem Mausrad wechselst du durch die Auswahl. Linksklick setzt einen Block bzw. benutzt das ausgewählte Werkzeug, Rechtsklick entfernt einen Block. H speichert einen PNG-Screenshot. M steigt bei einem Minecart ein oder aus.");
   GuideText("Im Custom Workshop schaltet TAB zwischen Baumodus und UI-Bedienung um. ESC öffnet weiterhin das Pause-Menü. Für größere Umbauten können Copy & Paste und Creative TNT kombiniert werden. Speichere wichtige Zwischenstände, bevor du große Bereiche veränderst.");
  }
 

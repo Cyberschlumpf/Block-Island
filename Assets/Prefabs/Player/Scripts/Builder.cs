@@ -90,17 +90,18 @@ public class Builder : MonoBehaviour {
             ResetMouseRepeat();
         }
         if(tntArmed && Time.unscaledTime >= tntDetonateAt) DetonateTNT();
-        // 1.08: while PASTE is selected the arrow keys rotate the clipboard before placement.
-        // Right/Left = +/-90 degrees, Up = 180 degrees, Down = original orientation.
+        // 1.0.7: while PASTE is selected the clipboard can be rotated before placement.
+        // R cycles 0 -> 90 -> 180 -> 270 -> 0. Arrow keys remain as direct/alternate controls.
         if(selectedBlock!=null && selectedBlock.name=="Paste Selection" && copyReady && !Cursor.visible) {
             int oldRotation=copyRotationQuarterTurns;
+            if(Input.GetKeyDown(KeyCode.R)) copyRotationQuarterTurns=(copyRotationQuarterTurns+1)&3;
             if(Input.GetKeyDown(KeyCode.RightArrow)) copyRotationQuarterTurns=(copyRotationQuarterTurns+1)&3;
             if(Input.GetKeyDown(KeyCode.LeftArrow)) copyRotationQuarterTurns=(copyRotationQuarterTurns+3)&3;
             if(Input.GetKeyDown(KeyCode.UpArrow)) copyRotationQuarterTurns=(copyRotationQuarterTurns+2)&3;
             if(Input.GetKeyDown(KeyCode.DownArrow)) copyRotationQuarterTurns=0;
             if(oldRotation!=copyRotationQuarterTurns) {
                 pastePreviewDirty=true; lastPastePreviewAnchor=null;
-                copyStatus="PASTE Drehung: "+(copyRotationQuarterTurns*90)+"°  •  ←/→ 90°  •  ↑ 180°  •  ↓ 0°";
+                copyStatus="PASTE Drehung: "+(copyRotationQuarterTurns*90)+"°  •  R = +90°  •  ←/→ ±90°  •  ↑ 180°  •  ↓ 0°";
             }
         }
         if(tntRadiusDialog) { cursor.SetActive(false); ResetMouseRepeat(); return; }
