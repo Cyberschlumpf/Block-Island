@@ -58,8 +58,18 @@ public static class InfiniteWorldSave {
     public static string[] GetWorldNames() { string[] f=Directory.GetFiles(SaveDir,"*.infinite"); string[] n=new string[f.Length]; for(int i=0;i<f.Length;i++) n[i]=Path.GetFileNameWithoutExtension(f[i]); Array.Sort(n,StringComparer.OrdinalIgnoreCase); return n; }
     public static void BeginNewWorld() { BeginNewWorld(WorldType.Islands); }
     public static void BeginNewWorld(WorldType type) {
-        CurrentWorldType=type; CurrentWorldName=""; LoadRequested=false; HasLoadedPlayerTransform=false; playerEdits.Clear();
+        CurrentWorldType=type; LoadRequested=false; HasLoadedPlayerTransform=false; playerEdits.Clear();
+        // Persistence rule: every playable world owns a valid save slot immediately.
+        // Fixed worlds reuse their dedicated slot and automatically restore it when present.
+        // Procedural worlds receive a unique slot before the Game scene starts, so autosave
+        // can persist block edits and the player transform without requiring a manual save first.
+        if(type==WorldType.Tanviir) CurrentWorldName=TanviirSaveName;
+        else if(type==WorldType.BlockIsland) CurrentWorldName=BlockIslandSaveName;
+        else if(type==WorldType.LightGarden) CurrentWorldName=LightGardenSaveName;
+        else CurrentWorldName=SanitizeName("World "+DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss"));
         ApplyWorldType(type);
+        if(type!=WorldType.Islands && File.Exists(PathFor(CurrentWorldName))) LoadRequested=true;
+        Debug.Log("World slot ready: "+CurrentWorldName+" type="+type+" loadExisting="+LoadRequested);
     }
     static void ApplyWorldType(WorldType type) {
         if(type==WorldType.Tanviir){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.Begin(); }

@@ -13,10 +13,6 @@ public static class VoxelBoxSettings {
  public static bool WaterEffects{get=>PlayerPrefs.GetInt("VB.WaterEffects",1)==1;set{PlayerPrefs.SetInt("VB.WaterEffects",value?1:0);Apply();}}
  public static bool WeatherEffects{get=>PlayerPrefs.GetInt("VB.WeatherEffects",1)==1;set{PlayerPrefs.SetInt("VB.WeatherEffects",value?1:0);Apply();}}
  public static float Brightness{get=>PlayerPrefs.GetFloat("VB.Brightness",1f);set{PlayerPrefs.SetFloat("VB.Brightness",Mathf.Clamp(value,.65f,1.35f));Apply();}}
- public static float Warmth{get=>PlayerPrefs.GetFloat("VB.Warmth",18f);set{PlayerPrefs.SetFloat("VB.Warmth",Mathf.Clamp(value,-30f,50f));Apply();}}
- public static float Saturation{get=>PlayerPrefs.GetFloat("VB.Saturation",8f);set{PlayerPrefs.SetFloat("VB.Saturation",Mathf.Clamp(value,-40f,40f));Apply();}}
- public static float Contrast{get=>PlayerPrefs.GetFloat("VB.Contrast",6f);set{PlayerPrefs.SetFloat("VB.Contrast",Mathf.Clamp(value,-30f,30f));Apply();}}
- public static float AOIntensity{get=>PlayerPrefs.GetFloat("VB.AOIntensity",0.72f);set{PlayerPrefs.SetFloat("VB.AOIntensity",Mathf.Clamp(value,0f,2f));Apply();}}
  public static int ViewDistance{get=>PlayerPrefs.GetInt("VB.ViewDistance",16);set{PlayerPrefs.SetInt("VB.ViewDistance",Mathf.Clamp(value,4,32));PlayerPrefs.Save();}}
  public static void Apply(){
   QualitySettings.shadows=Shadows?ShadowQuality.All:ShadowQuality.Disable;
