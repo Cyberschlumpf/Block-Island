@@ -24,6 +24,13 @@ public static class BlockTextureDesigner {
  static void SetFaces(Block b,Face[] f){
   if(b==null||f==null)return; var flags=BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic; FieldInfo[] all=b.GetType().GetFields(flags); List<FieldInfo> fields=new List<FieldInfo>(); foreach(FieldInfo fi in all)if(fi.FieldType==typeof(Face))fields.Add(fi); int n=Mathf.Min(fields.Count,f.Length); for(int i=0;i<n;i++)fields[i].SetValue(b,CopyFace(f[i]));
  }
+ static void SetFacesLikeEngine(BlockSet set,int blockID,Block b,Face[] f){
+  // Runtime equivalent of the engine's internal FaceEditor path: assign the real
+  // Material + UV Rect first, then let Block.Init rebuild materialID through
+  // BlockSet.AddMaterial. Never trust/copy a stale materialID from another block.
+  SetFaces(b,f);
+  if(set!=null&&b!=null)b.Init(set,blockID);
+ }
  public static string Structure(Block b){if(b==null)return "–";if(b is StairBlock)return "Treppe";if(b is FenceBlock)return "Zaun";if(b is SphereBlock)return "Kugel";if(b is CactusBlock)return "Kaktus";if(b is GroundBlock)return "Bodenblock";if(b is CubeBlock)return "Würfel";if(b is CrossBlock)return "Pflanze / Kreuzfläche";if(b is FluidBlock)return "Flüssigkeit";if(b is MeshBlock)return "3D-Mesh";if(b is GameObjectBlock)return "GameObject / Prefab";return b.GetType().Name;}
  public static bool Compatible(Block a,Block b){if(a==null||b==null)return false;Face[] af=Face.GetFaceList(a),bf=Face.GetFaceList(b);return a.GetType()==b.GetType()&&af!=null&&bf!=null&&af.Length==bf.Length&&af.Length>0;}
  public static void EnsureFolders(){try{System.IO.Directory.CreateDirectory(CustomTexturePath);}catch(Exception e){Debug.LogWarning("Block Designer folder: "+e.Message);}}
@@ -41,22 +48,7 @@ public static class BlockTextureDesigner {
   foreach(Entry e in store.entries){if(!string.IsNullOrEmpty(e.atlasResource))ApplyAtlasInternal(set,e.targetId,e.atlasResource,e.atlasRect,false);else if(!string.IsNullOrEmpty(e.customFile))ApplyCustomInternal(set,e.targetId,Path.Combine(CustomTexturePath,e.customFile),false);else ApplyInternal(set,e.targetId,e.sourceId,false);}
  }
  static bool ApplyInternal(BlockSet set,int target,int source,bool save){
-  if(set==null||target<0||source<0||target>=set.Count||source>=set.Count)return false;
-  Block t=set[target],s=set[source];if(!Compatible(t,s))return false;
-  Face[] targetFaces=GetFaces(t);if(targetFaces==null||targetFaces.Length==0)return false;
-
-  // 1.0.51: use the engine's internal texture-selection semantics.  The Block
-  // Designer selects ONE texture face and assigns that exact Face material,
-  // materialID and UV rect to the complete target block.  Do not copy a
-  // source block's six-face layout and do not build a parallel atlas path.
-  // This is the same representation used by the internal Face editor.
-  Face selected=s.GetPreviewFace();
-  if(selected==null){Face[] sourceFaces=Face.GetFaceList(s);if(sourceFaces!=null&&sourceFaces.Length>0)selected=sourceFaces[0];}
-  if(selected==null)return false;
-  Face[] nf=new Face[targetFaces.Length];
-  for(int i=0;i<nf.Length;i++)nf[i]=CopyFace(selected);
-  SetFaces(t,nf);
-
+  if(set==null||target<0||source<0||target>=set.Count||source>=set.Count)return false;Block t=set[target],s=set[source];if(!Compatible(t,s))return false;Face[] sf=GetFaces(s);if(sf==null)return false;SetFacesLikeEngine(set,target,t,sf);
   if(save){Entry e=store.entries.Find(x=>x.targetId==target);if(e==null){e=new Entry{targetId=target};store.entries.Add(e);}e.sourceId=source;e.customFile="";e.atlasResource="";Save();}return true;
  }
  static Material InternalMaterialForTexture(BlockSet set,Texture2D tex,Material template,string label){
@@ -78,7 +70,7 @@ public static class BlockTextureDesigner {
   if(set==null||target<0||target>=set.Count)return false;Texture2D tex=LoadCustomTexture(path);if(tex==null)return false;Block b=set[target];Face[] current=GetFaces(b);if(current==null||current.Length==0)return false;
   // Same internal representation as every normal engine texture: one material slot + UV rect.
   Face first=InternalTextureFace(set,current[0],tex,new Rect(0,0,1,1),"PNG");if(first==null)return false;Face[] nf=new Face[current.Length];
-  for(int i=0;i<current.Length;i++){nf[i]=CopyFace(first);nf[i].rect=new Rect(0,0,1,1);}SetFaces(b,nf);
+  for(int i=0;i<current.Length;i++){nf[i]=CopyFace(first);nf[i].rect=new Rect(0,0,1,1);}SetFacesLikeEngine(set,target,b,nf);
   if(save){Entry e=store.entries.Find(x=>x.targetId==target);if(e==null){e=new Entry{targetId=target};store.entries.Add(e);}e.sourceId=-1;e.customFile=Path.GetFileName(path);e.atlasResource="";Save();}return true;
  }
  static Face AtlasFace(BlockSet set,Face original,Texture2D atlas,Rect uv){return InternalTextureFace(set,original,atlas,uv,"Atlas");}
@@ -90,7 +82,7 @@ public static class BlockTextureDesigner {
   else if(current==null||current.Length==0)return false;
   uv.x=Mathf.Clamp01(uv.x);uv.y=Mathf.Clamp01(uv.y);uv.width=Mathf.Clamp(uv.width,0.0001f,1f-uv.x);uv.height=Mathf.Clamp(uv.height,0.0001f,1f-uv.y);
   if(targetBlock is CustomVoxelBlock){customVoxelAtlasFaces[target]=AtlasFace(set,customBase,atlas,uv);}
-  else{Face[] nf=new Face[current.Length];for(int i=0;i<current.Length;i++)nf[i]=AtlasFace(set,current[i],atlas,uv);SetFaces(targetBlock,nf);}
+  else{Face[] nf=new Face[current.Length];for(int i=0;i<current.Length;i++)nf[i]=AtlasFace(set,current[i],atlas,uv);SetFacesLikeEngine(set,target,targetBlock,nf);}
   if(save){Entry e=store.entries.Find(x=>x.targetId==target);if(e==null){e=new Entry{targetId=target};store.entries.Add(e);}e.sourceId=-1;e.customFile="";e.atlasResource=resource;e.atlasRect=uv;Save();}
   return true;
  }
@@ -110,7 +102,7 @@ public static class BlockTextureDesigner {
  public static Rect OverrideAtlasRect(int target){Entry e=store.entries.Find(x=>x.targetId==target);return e==null?new Rect(0,0,1,1):e.atlasRect;}
  public static bool Apply(BlockSet set,int target,int source){bool ok=ApplyInternal(set,target,source,true);if(ok)RefreshLiveVisuals();return ok;}
  public static bool ApplyCustom(BlockSet set,int target,string path){bool ok=ApplyCustomInternal(set,target,path,true);if(ok)RefreshLiveVisuals();return ok;}
- public static bool Restore(BlockSet set,int target){Original o;if(!originals.TryGetValue(target,out o)||set==null||target<0||target>=set.Count)return false;SetFaces(set[target],o.faces);customVoxelAtlasFaces.Remove(target);store.entries.RemoveAll(x=>x.targetId==target);Save();RefreshLiveVisuals();return true;}
+ public static bool Restore(BlockSet set,int target){Original o;if(!originals.TryGetValue(target,out o)||set==null||target<0||target>=set.Count)return false;SetFacesLikeEngine(set,target,set[target],o.faces);customVoxelAtlasFaces.Remove(target);store.entries.RemoveAll(x=>x.targetId==target);Save();RefreshLiveVisuals();return true;}
  public static int OverrideSource(int target){Entry e=store.entries.Find(x=>x.targetId==target);return e==null?-1:e.sourceId;}
  public static string OverrideCustom(int target){Entry e=store.entries.Find(x=>x.targetId==target);return e==null?"":e.customFile;}
  static void Save(){try{EnsureFolders();File.WriteAllText(FilePath,JsonUtility.ToJson(store,true));}catch(Exception e){Debug.LogWarning("Block Designer save: "+e.Message);} }
