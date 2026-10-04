@@ -41,7 +41,22 @@ public static class BlockTextureDesigner {
   foreach(Entry e in store.entries){if(!string.IsNullOrEmpty(e.atlasResource))ApplyAtlasInternal(set,e.targetId,e.atlasResource,e.atlasRect,false);else if(!string.IsNullOrEmpty(e.customFile))ApplyCustomInternal(set,e.targetId,Path.Combine(CustomTexturePath,e.customFile),false);else ApplyInternal(set,e.targetId,e.sourceId,false);}
  }
  static bool ApplyInternal(BlockSet set,int target,int source,bool save){
-  if(set==null||target<0||source<0||target>=set.Count||source>=set.Count)return false;Block t=set[target],s=set[source];if(!Compatible(t,s))return false;Face[] sf=GetFaces(s);if(sf==null)return false;SetFaces(t,sf);
+  if(set==null||target<0||source<0||target>=set.Count||source>=set.Count)return false;
+  Block t=set[target],s=set[source];if(!Compatible(t,s))return false;
+  Face[] targetFaces=GetFaces(t);if(targetFaces==null||targetFaces.Length==0)return false;
+
+  // 1.0.51: use the engine's internal texture-selection semantics.  The Block
+  // Designer selects ONE texture face and assigns that exact Face material,
+  // materialID and UV rect to the complete target block.  Do not copy a
+  // source block's six-face layout and do not build a parallel atlas path.
+  // This is the same representation used by the internal Face editor.
+  Face selected=s.GetPreviewFace();
+  if(selected==null){Face[] sourceFaces=Face.GetFaceList(s);if(sourceFaces!=null&&sourceFaces.Length>0)selected=sourceFaces[0];}
+  if(selected==null)return false;
+  Face[] nf=new Face[targetFaces.Length];
+  for(int i=0;i<nf.Length;i++)nf[i]=CopyFace(selected);
+  SetFaces(t,nf);
+
   if(save){Entry e=store.entries.Find(x=>x.targetId==target);if(e==null){e=new Entry{targetId=target};store.entries.Add(e);}e.sourceId=source;e.customFile="";e.atlasResource="";Save();}return true;
  }
  static Material InternalMaterialForTexture(BlockSet set,Texture2D tex,Material template,string label){
