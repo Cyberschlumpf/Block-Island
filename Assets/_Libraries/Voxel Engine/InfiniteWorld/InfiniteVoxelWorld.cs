@@ -33,6 +33,7 @@ public class InfiniteVoxelWorld : MonoBehaviour {
             BlockIslandNativeWorld.FillChunk(dst,ox,oy,oz);
             Dictionary<int,DataBlock> bc;
             if(edits.TryGetValue(key,out bc)) foreach(var e in bc) if((uint)e.Key < (uint)dst.Length) dst[e.Key]=e.Value;
+            SuppressGeneratedFloraTouchingPlayerBuilds(key,dst);
             return;
         }
         if(TanviirImportWorld.active && TanviirNativeWorld.Available) {
@@ -40,11 +41,38 @@ public class InfiniteVoxelWorld : MonoBehaviour {
             Dictionary<int,DataBlock> c;
             if(edits.TryGetValue(key,out c)) foreach(var e in c)
                 if((uint)e.Key < (uint)dst.Length) dst[e.Key]=e.Value;
+            SuppressGeneratedFloraTouchingPlayerBuilds(key,dst);
             return;
         }
         int i=0;
         for(int z=0;z<Chunk.Z_SIZE;z++) for(int y=0;y<Chunk.Y_SIZE;y++) for(int x=0;x<Chunk.X_SIZE;x++,i++)
             dst[i]=GetBlock(ox+x,oy+y,oz+z);
+        SuppressGeneratedFloraTouchingPlayerBuilds(key,dst);
+    }
+
+    // 1.0.56: procedural/native flora must not poke into player-built structures.
+    // Only base-world CrossBlocks are suppressed. Player-placed plants remain untouched.
+    void SuppressGeneratedFloraTouchingPlayerBuilds(InfiniteChunkKey key, DataBlock[] dst) {
+        Dictionary<int,DataBlock> ownEdits; edits.TryGetValue(key,out ownEdits);
+        int ox=key.x*Chunk.X_SIZE, oy=key.y*Chunk.Y_SIZE, oz=key.z*Chunk.Z_SIZE;
+        int i=0;
+        for(int z=0;z<Chunk.Z_SIZE;z++) for(int y=0;y<Chunk.Y_SIZE;y++) for(int x=0;x<Chunk.X_SIZE;x++,i++) {
+            if(dst[i].IsEmpty() || !(dst[i].block is CrossBlock)) continue;
+            // Never remove a plant that the player explicitly placed/saved at this voxel.
+            if(ownEdits!=null && ownEdits.ContainsKey(i)) continue;
+            int wx=ox+x, wy=oy+y, wz=oz+z;
+            if(HasNonEmptyEdit(wx+1,wy,wz) || HasNonEmptyEdit(wx-1,wy,wz) ||
+               HasNonEmptyEdit(wx,wy+1,wz) || HasNonEmptyEdit(wx,wy-1,wz) ||
+               HasNonEmptyEdit(wx,wy,wz+1) || HasNonEmptyEdit(wx,wy,wz-1))
+                dst[i]=default(DataBlock);
+        }
+    }
+
+    bool HasNonEmptyEdit(int x,int y,int z) {
+        var ck=InfiniteWorldMath.WorldToChunk(x,y,z);
+        var lp=InfiniteWorldMath.WorldToLocal(x,y,z);
+        Dictionary<int,DataBlock> c; DataBlock b;
+        return edits.TryGetValue(ck,out c) && c.TryGetValue(LocalIndex(lp),out b) && !b.IsEmpty();
     }
 
     public void SetBlock(int x,int y,int z,DataBlock b) {

@@ -41,6 +41,9 @@ public class InventoryGUI : MonoBehaviour {
         }
 		if( Input.GetKeyDown(KeyCode.E) && GameState.IsPlaying ) {
 			show = !show;
+            // 1.0.62: when opening the BlockSet, jump to the block currently selected by
+            // middle-click/hotbar and make sure its category and grid row are visible.
+            if(show) FocusSelectedBlock();
 			Cursor.visible = show;
 			Cursor.lockState = show ? CursorLockMode.None : CursorLockMode.Locked;
 		}
@@ -57,6 +60,36 @@ public class InventoryGUI : MonoBehaviour {
         for(int i=0;i<set.Count;i++){ Block b=set[i]; if(b==null||b is GameObjectBlock)continue; visible.Add(b); }
         return visible;
     }
+    private void FocusSelectedBlock() {
+        if(builder==null || BlockSet.instance==null) return;
+        Block selected=builder.GetSelectedBlock();
+        if(selected==null) return;
+
+        // Open the block's actual category (not Favorites, because every normal block has
+        // exactly one stable category there and can therefore always be located).
+        category=EffectiveCategoryOf(selected);
+        if(category<0 || category>3) category=0;
+
+        int visibleIndex=0;
+        int selectedIndex=-1;
+        BlockSet set=BlockSet.instance;
+        for(int i=0;i<set.Count;i++) {
+            Block b=set[i];
+            if(b==null || b is GameObjectBlock || EffectiveCategoryOf(b)!=category) continue;
+            if(b==selected) { selectedIndex=visibleIndex; break; }
+            visibleIndex++;
+        }
+
+        // The inventory grid has eight columns. Position the selected row near the middle
+        // of the scroll view; Unity clamps the value automatically at the list boundaries.
+        if(selectedIndex>=0) {
+            int row=selectedIndex/8;
+            scrollPosition=new Vector2(0f,Mathf.Max(0f,row*102f-150f));
+        } else {
+            scrollPosition=Vector2.zero;
+        }
+    }
+
     private void CycleSelection(int delta) {
         List<Block> v=GetVisibleBlocks(); if(v.Count==0)return; Block cur=builder.GetSelectedBlock(); int i=v.IndexOf(cur); if(i<0)i=0; else i=(i+delta+v.Count)%v.Count; builder.SetSelectedBlock(v[i]);
     }

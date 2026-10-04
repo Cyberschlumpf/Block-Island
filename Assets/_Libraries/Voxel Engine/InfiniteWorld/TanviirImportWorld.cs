@@ -142,7 +142,7 @@ public static class TanviirImportWorld {
         case 173:return B("Tanviir Coal Ore"); case 174:return B("Glass");
         // 6.13.15 COMPLETE VISIBILITY PASS: legacy IDs that were not explicitly mapped before.
         // They are deliberately visible even when Block Island has no exact gameplay equivalent.
-        case 10:case 11:return B("Tanviir Lava");
+        case 10:return B("Tanviir Lava"); case 11:return B("Tanviir Dark Stone Stair");
         case 52:return B("Tanviir Spawner");
         case 59:case 141:case 142:return B("Tanviir Crop");
         case 97:return B("Tanviir Weathered Stone");

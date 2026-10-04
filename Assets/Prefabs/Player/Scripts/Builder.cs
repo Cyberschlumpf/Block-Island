@@ -141,6 +141,12 @@ public class Builder : MonoBehaviour {
 			}
 		}
 
+        // 1.0.62 Pick Block: middle mouse copies the block under the crosshair into the normal build selection.
+        // It does not modify the world. The inventory can then focus this exact block when opened with E.
+        if(Input.GetMouseButtonDown(2)) {
+            PickBlockUnderCrosshair();
+        }
+
 		// Left mouse button: build once. After 3 seconds held: 4 blocks/second.
 		if(Input.GetMouseButtonDown(0)) {
 			BuildBlock();
@@ -212,6 +218,16 @@ public class Builder : MonoBehaviour {
 		if(minecart != null && minecart.kind == MinecartRailBlock.RailKind.Minecart)
 			MinecartRuntimeController.TrySpawnFromPlacedBlock(Map.instance, pos.Value, placed);
 	}
+
+    private void PickBlockUnderCrosshair() {
+        if(Cursor.visible) return;
+        Vector3i? pos = GetCursor(true);
+        if(!pos.HasValue) return;
+        DataBlock data = Map.instance.GetBlock(pos.Value);
+        Block block = data.block;
+        if(block == null || block is GameObjectBlock) return;
+        SetSelectedBlock(block);
+    }
 
 	private void RemoveBlock() {
 		if(Cursor.visible) return;
