@@ -18,12 +18,15 @@ public class CharacterInputController : MonoBehaviour {
 		swimmingMotor = GetComponent<CharacterMotorSwimming>();
 		characterCollider = GetComponent<CharacterCollider>();
 		// Apply the default immediately so gravity does not pull the player down on the first frame.
+		if(RelativityGravityController.Active) flying=true;
 		if(flying) { movementMotor.enabled = false; swimmingMotor.enabled = false; }
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if(Input.GetKeyDown(KeyCode.F) && GameState.IsPlaying && !Cursor.visible) {
+		// Relativity is a walking/gravity level: never inherit Creative flight from scene initialization.
+		if(RelativityGravityController.Active && !flying) { flying=true; movementMotor.enabled=false; swimmingMotor.enabled=false; }
+		if(Input.GetKeyDown(KeyCode.F) && GameState.IsPlaying && !Cursor.visible && !RelativityGravityController.Active) {
 			flying = !flying;
 			movementMotor.enabled = !flying;
 			swimmingMotor.enabled = false;
@@ -42,11 +45,32 @@ public class CharacterInputController : MonoBehaviour {
 			float horizontal = Input.GetAxis("Horizontal");
 			float forward = Input.GetAxis("Vertical");
 			Vector3 flyDirection = view.right * horizontal + view.forward * forward;
+
+			// 1.0.34: Restore the accepted free-flight controls from the pre-sphere build.
+			// There is deliberately NO fixed world-up in the Sphere-64 level:
+			// - WASD flies in the complete camera/view direction (including straight up/down).
+			// - Space / Shift additionally move along the camera's own up/down axis.
+			// Together with MouseLook's unlimited 6DOF pitch this allows the player to
+			// fly and orient on the ceiling, floor or any side of the sphere.
+			if(RelativityGravityController.Active) {
+				if(Input.GetButton("Jump")) flyDirection += view.up;
+				if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) flyDirection -= view.up;
+			}
+
 			flyDirection = Vector3.ClampMagnitude(flyDirection, 1f);
 			characterCollider.Move(flyDirection * flySpeed * Time.deltaTime);
 			return;
 		}
 
+		// At the exact hall centre gravity vanishes: WASD follows the view and Space/Shift move vertically.
+		if(RelativityGravityController.ZeroGravity) {
+			Transform view=Camera.main!=null?Camera.main.transform:transform;
+			Vector3 free=view.right*Input.GetAxis("Horizontal")+view.forward*Input.GetAxis("Vertical");
+			if(Input.GetButton("Jump")) free+=view.up;
+			if(Input.GetKey(KeyCode.LeftShift)||Input.GetKey(KeyCode.RightShift)) free-=view.up;
+			movementMotor.inputMoveDirection=Vector3.ClampMagnitude(free,1f);
+			movementMotor.inputJump=false; movementMotor.holdingInputJump=false; return;
+		}
 		Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 		direction = Vector3.ClampMagnitude(direction, 1);
 		
@@ -60,7 +84,7 @@ public class CharacterInputController : MonoBehaviour {
 			swimmingMotor.enabled = false;
 			movementMotor.enabled = true;
 			
-			movementMotor.inputMoveDirection = transform.TransformDirection(direction);
+			movementMotor.inputMoveDirection = RelativityGravityController.Active ? RelativityGravityController.Planar(transform.TransformDirection(direction)).normalized : transform.TransformDirection(direction);
 			
 			if(Input.GetButtonDown("Jump")) {
 				jumpPressedTime = Time.time;

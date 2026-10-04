@@ -46,6 +46,9 @@ public class InfiniteChunkStreamer : MonoBehaviour {
         if(target==null && Camera.main!=null) target=Camera.main.transform;
         if(target==null) return;
         var p=target.position;
+        // In Singularitaet X/Y can roll the rendered world around the player while the camera
+        // remains upright. Streaming must therefore use logical voxel coordinates.
+        if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) p=SingularityViewAxisRoll.ToLogicalPoint(p);
         var center=InfiniteWorldMath.WorldToChunk(Mathf.FloorToInt(p.x),Mathf.FloorToInt(p.y),Mathf.FloorToInt(p.z));
         // 6.13.13: discovering a Tanviir column can decode an Anvil chunk. Never discover an
         // entire view radius in one frame; that was the source of the 2-10 FPS / frozen loading bursts.
@@ -83,6 +86,18 @@ public class InfiniteChunkStreamer : MonoBehaviour {
             if(Mathf.Abs(k.x-center.x)>(BlockIslandWorldSource.FixedWorldActive?EffectiveTanviirViewDistance():horizontalViewDistance)+1 ||
                Mathf.Abs(k.z-center.z)>(BlockIslandWorldSource.FixedWorldActive?EffectiveTanviirViewDistance():horizontalViewDistance)+1) remove.Add(k);
             else if(!BlockIslandWorldSource.FixedWorldActive) {
+                if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) {
+                    // 1.0.50: no legacy fixed Y/chunk-height limiter in Singularitaet.
+                    // Keep every chunk whose AABB intersects the usable radius-67 sphere.
+                    float minx=k.x*Chunk.X_SIZE, maxx=minx+Chunk.X_SIZE;
+                    float miny=k.y*Chunk.Y_SIZE, maxy=miny+Chunk.Y_SIZE;
+                    float minz=k.z*Chunk.Z_SIZE, maxz=minz+Chunk.Z_SIZE;
+                    float qx=(0f<minx)?minx:((0f>maxx)?maxx:0f);
+                    float qy=(0f<miny)?miny:((0f>maxy)?maxy:0f);
+                    float qz=(0f<minz)?minz:((0f>maxz)?maxz:0f);
+                    if(qx*qx+qy*qy+qz*qz > 67f*67f) remove.Add(k);
+                    continue;
+                }
                 int wx=k.x*Chunk.X_SIZE+Chunk.X_SIZE/2, wz=k.z*Chunk.Z_SIZE+Chunk.Z_SIZE/2;
                 int sy=terrain!=null ? InfiniteWorldMath.FloorDiv(terrain.SurfaceY(wx,wz),Chunk.Y_SIZE) : center.y;
                 int minY=Mathf.Min(sy-belowSurfaceChunks-1,center.y-verticalViewDistance-1);
@@ -118,7 +133,7 @@ public class InfiniteChunkStreamer : MonoBehaviour {
 
     static long ColumnKey(int x,int z) { return ((long)x<<32) ^ (uint)z; }
     void QueueWanted(InfiniteChunkKey c) {
-        int wantedDistance=BlockIslandWorldSource.FixedWorldActive ? EffectiveTanviirViewDistance() : horizontalViewDistance;
+        int wantedDistance=InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity ? 4 : (BlockIslandWorldSource.FixedWorldActive ? EffectiveTanviirViewDistance() : horizontalViewDistance);
         // Near-to-far order. Tanviir columns are only DISCOVERED here; expensive Anvil access is
         // spread over subsequent frames by tanviirColumnsPerFrame.
         for(int r=0;r<=wantedDistance;r++)
@@ -134,6 +149,34 @@ public class InfiniteChunkStreamer : MonoBehaviour {
         if(queuedColumns.Add(k)) columnQueue.Enqueue(new Vector3i(cx,py,cz));
     }
     void QueueColumn(int cx,int cz,int playerChunkY) {
+        // 1.0.33 Sphere-64: this world has no height-field. Stream the complete spherical shell
+        // instead of asking the procedural terrain SurfaceY(), which made the actual sphere vanish.
+        if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) {
+            // 1.0.50: derive the vertical chunk span from the actual sphere radius instead
+            // of retaining the old hard-coded height range.
+            const float streamRadius=67f; // radius 64 + 3 voxel shell
+            int minChunk=InfiniteWorldMath.FloorDiv(Mathf.FloorToInt(-streamRadius),Chunk.Y_SIZE);
+            int maxChunk=InfiniteWorldMath.FloorDiv(Mathf.FloorToInt( streamRadius),Chunk.Y_SIZE);
+            for(int cy=minChunk;cy<=maxChunk;cy++) {
+                // Cheap AABB/radius rejection: enqueue only chunks whose box can touch r=64..67.
+                float minx=cx*Chunk.X_SIZE, maxx=minx+Chunk.X_SIZE;
+                float miny=cy*Chunk.Y_SIZE, maxy=miny+Chunk.Y_SIZE;
+                float minz=cz*Chunk.Z_SIZE, maxz=minz+Chunk.Z_SIZE;
+                float qx=(0f<minx)?minx:((0f>maxx)?maxx:0f);
+                float qy=(0f<miny)?miny:((0f>maxy)?maxy:0f);
+                float qz=(0f<minz)?minz:((0f>maxz)?maxz:0f);
+                float nearest2=qx*qx+qy*qy+qz*qz;
+                float fx=Mathf.Max(Mathf.Abs(minx),Mathf.Abs(maxx));
+                float fy=Mathf.Max(Mathf.Abs(miny),Mathf.Abs(maxy));
+                float fz=Mathf.Max(Mathf.Abs(minz),Mathf.Abs(maxz));
+                float farthest2=fx*fx+fy*fy+fz*fz;
+                // 1.0.49: Keep the COMPLETE interior of the Singularitaet sphere streamed,
+                // including empty chunks. Empty interior chunks must exist so the player can
+                // freely place blocks anywhere inside the sphere; only the visible shell is solid.
+                if(nearest2<=67f*67f) Enqueue(new InfiniteChunkKey(cx,cy,cz));
+            }
+            return;
+        }
         // 6.13.14: never decode .mca/NBT synchronously from Update. Ask the background prefetcher
         // for this Minecraft column and revisit it on a later frame once decoding is complete.
         if(BlockIslandWorldSource.FixedWorldActive && BlockIslandWorldSource.FixedWorldAvailable && !BlockIslandWorldSource.IsColumnReady(cx,cz)) {

@@ -27,7 +27,7 @@ public class SphereBlock : Block {
             int a=r*(slices+1)+s,b=a+1,c=a+(slices+1),d=c+1;
             tris[ti++]=a;tris[ti++]=c;tris[ti++]=b; tris[ti++]=b;tris[ti++]=c;tris[ti++]=d;
         }
-        mb.AddIndices(tris,face.materialID); mb.AddVertices(v,pos,dir); mb.AddNormals(n,dir); mb.AddTexCoords(uv,new Rect(0,0,1,1));
+        mb.AddIndices(tris,face.materialID); mb.AddVertices(v,pos,dir); mb.AddNormals(n,dir); mb.AddTexCoords(uv,face.rect);
         mb.topology.Add(new BlockTopology(pos,BlockTopologyType.Vertex,v.Length));
     }
 }

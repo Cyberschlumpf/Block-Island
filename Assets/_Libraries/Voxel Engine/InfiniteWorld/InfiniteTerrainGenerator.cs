@@ -417,7 +417,7 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         result=new DataBlock(flora[idx]);return true;
     }
 
-    public DataBlock Sample(int x,int y,int z){ return BlockIslandWorldSource.Sample(this,x,y,z); }
+    public DataBlock Sample(int x,int y,int z){ if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) return RelativityWorld.Sample(x,y,z); return BlockIslandWorldSource.Sample(this,x,y,z); }
 
     // Procedural source implementation. Fixed worlds enter through BlockIslandWorldSource.
     public DataBlock SampleProcedural(int x,int y,int z){

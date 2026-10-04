@@ -69,18 +69,27 @@ public sealed class InfiniteWorldBootstrap : MonoBehaviour {
   var stream=go.GetComponent<InfiniteChunkStreamer>();if(stream==null)stream=go.AddComponent<InfiniteChunkStreamer>();if(Camera.main!=null)stream.target=Camera.main.transform;
   // Stage 6.13.1: normalize extreme ultrawide perspective (e.g. 32:9) while leaving 16:9 unchanged.
   if(Camera.main!=null && Camera.main.GetComponent<UltrawideCameraNormalizer>()==null) Camera.main.gameObject.AddComponent<UltrawideCameraNormalizer>();
+  if(Camera.main!=null && Camera.main.GetComponent<SingularityViewAxisRoll>()==null) Camera.main.gameObject.AddComponent<SingularityViewAxisRoll>();
+  if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity){ CharacterInputController input=Object.FindFirstObjectByType<CharacterInputController>(FindObjectsInactive.Include); GameObject pl=input!=null?input.gameObject:null; if(pl==null){try{pl=GameObject.FindWithTag("Player");}catch{}} if(pl!=null&&pl.GetComponent<RelativityGravityController>()==null)pl.AddComponent<RelativityGravityController>(); }
   if(go.GetComponent<InfiniteWorldVisualSetup>()==null)go.AddComponent<InfiniteWorldVisualSetup>();if(go.GetComponent<InfiniteWorldShadowGuard>()==null)go.AddComponent<InfiniteWorldShadowGuard>();if(go.GetComponent<InfiniteWorldDebugHUD>()==null)go.AddComponent<InfiniteWorldDebugHUD>();if(go.GetComponent<InfiniteOnlyRenderGuard>()==null)go.AddComponent<InfiniteOnlyRenderGuard>();
   if(go.GetComponent<InfiniteDayNightCycle>()==null) go.AddComponent<InfiniteDayNightCycle>();
   if(go.GetComponent<InfiniteCreativeWeather>()==null) go.AddComponent<InfiniteCreativeWeather>();
   if(go.GetComponent<InfiniteMusicPlayer>()==null) go.AddComponent<InfiniteMusicPlayer>();
   if(go.GetComponent<InfiniteWorldAutosave>()==null) go.AddComponent<InfiniteWorldAutosave>();
   if(go.GetComponent<VoxelBoxScreenshot>()==null) go.AddComponent<VoxelBoxScreenshot>();
-  var wildlife=go.GetComponent<InfiniteBirdFlock>(); if(wildlife==null) wildlife=go.AddComponent<InfiniteBirdFlock>(); if(Camera.main!=null) wildlife.target=Camera.main.transform;
-  // 1.0.6: wildlife now belongs to deterministic world cells. Do not create player-following rabbits.
+  // 1.0.33: the Sphere-64 level is intentionally EMPTY.  Wildlife used to be installed
+  // unconditionally here, which is why 1.0.32 still showed animals floating in the sphere.
   foreach(var oldRabbit in go.GetComponents<InfiniteHoppingRabbit>()) Object.Destroy(oldRabbit);
-  var animals=go.GetComponent<InfiniteWorldWildlife>(); if(animals==null) animals=go.AddComponent<InfiniteWorldWildlife>();
-  animals.world=world; animals.worldSeed=gen.seed; if(Camera.main!=null) animals.target=Camera.main.transform;
-  var fish=go.GetComponent<InfiniteVoxelFish>(); if(fish==null) fish=go.AddComponent<InfiniteVoxelFish>(); fish.world=world; if(Camera.main!=null) fish.target=Camera.main.transform;
+  if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) {
+   foreach(var b in go.GetComponents<InfiniteBirdFlock>()) Object.Destroy(b);
+   foreach(var a in go.GetComponents<InfiniteWorldWildlife>()) Object.Destroy(a);
+   foreach(var f in go.GetComponents<InfiniteVoxelFish>()) Object.Destroy(f);
+  } else {
+   var wildlife=go.GetComponent<InfiniteBirdFlock>(); if(wildlife==null) wildlife=go.AddComponent<InfiniteBirdFlock>(); if(Camera.main!=null) wildlife.target=Camera.main.transform;
+   var animals=go.GetComponent<InfiniteWorldWildlife>(); if(animals==null) animals=go.AddComponent<InfiniteWorldWildlife>();
+   animals.world=world; animals.worldSeed=gen.seed; if(Camera.main!=null) animals.target=Camera.main.transform;
+   var fish=go.GetComponent<InfiniteVoxelFish>(); if(fish==null) fish=go.AddComponent<InfiniteVoxelFish>(); fish.world=world; if(Camera.main!=null) fish.target=Camera.main.transform;
+  }
   map.infiniteWorld=world;map.infiniteRenderer=mesh;
 
   // Stage 6.11.0: load the selected named world after the infinite pipeline exists.

@@ -1,8 +1,8 @@
 using UnityEngine;
 public static class VoxelBoxSettingsGUI {
- public static int DrawTabs(int tab){string[] n={"GRAFIK","WELT","STEUERUNG","AUDIO","GAMEPLAY","SPIELERPROFIL"};GUILayout.BeginHorizontal();for(int i=0;i<n.Length;i++)if(GUILayout.Button(n[i],i==tab?VoxelBoxUI.TabActive:VoxelBoxUI.Tab,GUILayout.Height(42)))tab=i;GUILayout.EndHorizontal();GUILayout.Space(12);return tab;}
+ public static int DrawTabs(int tab){string[] n={"GRAFIK","WELT","STEUERUNG","AUDIO","GAMEPLAY","SPIELERPROFIL","ANLEITUNGEN"};GUILayout.BeginHorizontal();for(int i=0;i<n.Length;i++)if(GUILayout.Button(n[i],i==tab?VoxelBoxUI.TabActive:VoxelBoxUI.Tab,GUILayout.Height(42)))tab=i;GUILayout.EndHorizontal();GUILayout.Space(12);return tab;}
  public static void Draw(int tab,bool inGame){
-  if(tab==0)DrawGraphics(); else if(tab==1)DrawWorld(inGame); else if(tab==2)DrawControls(); else if(tab==3)DrawAudio(); else if(tab==4)DrawGameplay(); else DrawProfile();
+  if(tab==0)DrawGraphics(); else if(tab==1)DrawWorld(inGame); else if(tab==2)DrawControls(); else if(tab==3)DrawAudio(); else if(tab==4)DrawGameplay(); else if(tab==5)DrawProfile();
  }
  static void DrawGraphics(){GUILayout.Label("GRAFIK",VoxelBoxUI.Header);GUILayout.Label("Darstellung, Post Processing und Qualität",VoxelBoxUI.Small);GUILayout.Space(8);
   GUILayout.Label("Auflösung:  "+Screen.width+" × "+Screen.height+(Screen.fullScreen?"  •  Vollbild":"  •  Fenster"),VoxelBoxUI.Label);

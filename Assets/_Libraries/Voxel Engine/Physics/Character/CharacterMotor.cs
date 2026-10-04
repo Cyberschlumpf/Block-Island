@@ -51,16 +51,14 @@ class CharacterMotorMoving {
 	
 	public void ApplyMoving(CharacterMotor motor, ref Vector3 velocity) {
 		Vector3 targetVelocity = motor.inputMoveDirection * moveSpeed;
-		targetVelocity.y = velocity.y;
+		if(RelativityGravityController.Active) targetVelocity += RelativityGravityController.VerticalPart(velocity); else targetVelocity.y = velocity.y;
 
 		float maxAcceleration = GetMaxAcceleration(motor.IsGrounded()) * Time.deltaTime;
 		velocity = Vector3.MoveTowards(velocity, targetVelocity, maxAcceleration);
 	}
 	
 	public void ApplyGravity(CharacterMotor motor, ref Vector3 velocity) {
-		velocity.y -= gravity * Time.deltaTime;
-		velocity.y = Mathf.Max(velocity.y, -maxFallSpeed);
-		if(!motor.IsJumping()) velocity.y = Mathf.Min(velocity.y, 0);
+		if(RelativityGravityController.Active){ float v=RelativityGravityController.Vertical(velocity)-gravity*RelativityGravityController.GravityFactor*Time.deltaTime; v=Mathf.Max(v,-maxFallSpeed); if(!motor.IsJumping() && !RelativityGravityController.SectorChangeGrace)v=Mathf.Min(v,0); velocity=RelativityGravityController.Planar(velocity)+RelativityGravityController.Up*v; } else { velocity.y -= gravity * Time.deltaTime; velocity.y = Mathf.Max(velocity.y, -maxFallSpeed); if(!motor.IsJumping()) velocity.y = Mathf.Min(velocity.y, 0); }
 	}
 	
 	private static float GetMaxAcceleration(bool grounded) {
@@ -85,7 +83,7 @@ class CharacterMotorJumping {
 
 		if (jumping && motor.holdingInputJump) {
 			if (Time.time - jumpStartTime < extraHeight / CalculateJumpForce(baseHeight)) {
-				velocity += Vector3.up * CharacterMotorMoving.gravity * Time.deltaTime;
+				velocity += (RelativityGravityController.Active?RelativityGravityController.Up:Vector3.up) * CharacterMotorMoving.gravity * Time.deltaTime;
 			}
 		}
 
@@ -93,8 +91,8 @@ class CharacterMotorJumping {
 			jumping = true;
 			jumpStartTime = Time.time;
 			
-			velocity.y = 0;
-			velocity += Vector3.up * CalculateJumpForce(baseHeight);
+			if(RelativityGravityController.Active) velocity=RelativityGravityController.Planar(velocity); else velocity.y = 0;
+			velocity += (RelativityGravityController.Active?RelativityGravityController.Up:Vector3.up) * CalculateJumpForce(baseHeight);
 		}
 	}
 	

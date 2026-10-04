@@ -10,13 +10,8 @@ public static class MapCharacterCollision {
 			Contact contact = GetClosestContact(map, character, ref blockPos);
 			if(contact == null) continue;
 			
-			float footY = character.pos.y;
-			float deepY = contact.blockPoint.y - footY;
-			Vector3 normal = contact.normal;
-			
-			if(deepY <= 0.55f) {
-				contact.capsulePoint = GetFloorY(character, contact.blockPoint);
-			}
+            Vector3 normal = contact.normal;
+            if(!RelativityGravityController.Active){ float footY=character.pos.y; float deepY=contact.blockPoint.y-footY; if(deepY<=0.55f) contact.capsulePoint=GetFloorY(character,contact.blockPoint); }
 			
 			character.pos += contact.delta;
 			character.OnCollision(contact.capsulePoint, normal, blockPos);
@@ -24,13 +19,9 @@ public static class MapCharacterCollision {
 	}
 	
 	private static Contact GetClosestContact(Map map, CharacterCollider character, ref Vector3i blockPos) {
-		int x1 = Mathf.FloorToInt(character.pos.x-character.radius);
-		int y1 = Mathf.FloorToInt(character.pos.y);
-		int z1 = Mathf.FloorToInt(character.pos.z-character.radius);
-		
-		int x2 = Mathf.CeilToInt(character.pos.x+character.radius);
-		int y2 = Mathf.CeilToInt(character.pos.y+character.height);
-		int z2 = Mathf.CeilToInt(character.pos.z+character.radius);
+        Vector3 a=character.pos+character.bottom,b=character.pos+character.top; float r=character.radius;
+        int x1=Mathf.FloorToInt(Mathf.Min(a.x,b.x)-r), y1=Mathf.FloorToInt(Mathf.Min(a.y,b.y)-r), z1=Mathf.FloorToInt(Mathf.Min(a.z,b.z)-r);
+        int x2=Mathf.CeilToInt(Mathf.Max(a.x,b.x)+r), y2=Mathf.CeilToInt(Mathf.Max(a.y,b.y)+r), z2=Mathf.CeilToInt(Mathf.Max(a.z,b.z)+r);
 		
 		Contact contact = null;
 		for(int x=x1; x<=x2; x++) {

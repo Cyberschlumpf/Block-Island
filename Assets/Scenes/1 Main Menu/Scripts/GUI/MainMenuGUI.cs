@@ -14,14 +14,21 @@ public class MainMenuGUI:GUIScreen{
   if(VoxelBoxUI.MenuButton("▣","BLOCK ISLAND","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.BlockIsland);SceneManager.LoadScene("Game");}
   if(VoxelBoxUI.MenuButton("☁","SKY ISLANDS","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Islands);InfiniteWorldLaunchConfig.openSkyGenerator=true;SceneManager.LoadScene("Map Generator");}
   if(VoxelBoxUI.MenuButton("✺","LICHTGARTEN","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.LightGarden);SceneManager.LoadScene("Game");}
+  if(VoxelBoxUI.MenuButton("∞","SINGULARITÄT","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Relativity);SceneManager.LoadScene("Game");}
   if(VoxelBoxUI.MenuButton("⚙","EINSTELLUNGEN","")){tab=0;side=SidePanel.Settings;}
-  if(VoxelBoxUI.MenuButton("?","ANLEITUNGEN","")){guideTab=0;guideScroll=Vector2.zero;side=SidePanel.Guides;}
   if(VoxelBoxUI.MenuButton("▦","BLOCK-DESIGNER","")){side=SidePanel.BlockDesigner;}
   GUILayout.FlexibleSpace();
   if(GUILayout.Button("✕  SPIEL BEENDEN",VoxelBoxUI.Danger,GUILayout.Height(54)))Application.Quit();
   GUILayout.EndVertical();GUILayout.EndArea();
  }
- void DrawSettings(){VoxelBoxUI.Backdrop(.08f);Rect r=new Rect(520,44,1042,812);GUILayout.BeginArea(r,VoxelBoxUI.Panel);VoxelBoxUI.PanelTitle("⚙","EINSTELLUNGEN","THE VOXEL BOX  •  SYSTEM & SPIEL");tab=VoxelBoxSettingsGUI.DrawTabs(tab);GUILayout.Space(8);GUILayout.BeginVertical(VoxelBoxUI.Card);VoxelBoxSettingsGUI.Draw(tab,false);GUILayout.EndVertical();GUILayout.FlexibleSpace();CloseRow();GUILayout.EndArea();}
+ void DrawSettings(){VoxelBoxUI.Backdrop(.08f);Rect r=new Rect(500,34,1062,832);GUILayout.BeginArea(r,VoxelBoxUI.Panel);VoxelBoxUI.PanelTitle("⚙","EINSTELLUNGEN","THE VOXEL BOX  •  SYSTEM, SPIEL & ANLEITUNGEN");int oldTab=tab;tab=VoxelBoxSettingsGUI.DrawTabs(tab);if(tab!=oldTab&&tab==6){guideTab=0;guideScroll=Vector2.zero;}GUILayout.Space(8);if(tab==6)DrawGuidesInSettings();else{GUILayout.BeginVertical(VoxelBoxUI.Card);VoxelBoxSettingsGUI.Draw(tab,false);GUILayout.EndVertical();GUILayout.FlexibleSpace();}CloseRow();GUILayout.EndArea();}
+ void DrawGuidesInSettings(){
+  string[] tabs={"TANVIIR","GESCHICHTE","BLOCKAUSWAHL","WORKSHOP","COPY & PASTE","TNT","MINECART","SPEICHERN","WETTER","AUDIO","TIPPS"};
+  for(int row=0;row<3;row++){GUILayout.BeginHorizontal();int start=row*4;int end=Mathf.Min(start+4,tabs.Length);for(int i=start;i<end;i++){if(GUILayout.Button(tabs[i],guideTab==i?VoxelBoxUI.TabActive:VoxelBoxUI.Tab,GUILayout.Height(36))){guideTab=i;guideScroll=Vector2.zero;}}GUILayout.EndHorizontal();}
+  GUILayout.Space(6);guideScroll=GUILayout.BeginScrollView(guideScroll,false,true,GUILayout.ExpandHeight(true));GUILayout.BeginVertical(VoxelBoxUI.Card);
+  if(guideTab==0)DrawGuideTanviir();else if(guideTab==1)DrawGuideHistory();else if(guideTab==2)DrawGuideBlockSelection();else if(guideTab==3)DrawGuideWorkshop();else if(guideTab==4)DrawGuideCopyPaste();else if(guideTab==5)DrawGuideTNT();else if(guideTab==6)DrawGuideMinecart();else if(guideTab==7)DrawGuideSaveLoad();else if(guideTab==8)DrawGuideWeather();else if(guideTab==9)DrawGuideAudio();else DrawGuideTips();
+  GUILayout.EndVertical();GUILayout.EndScrollView();GUILayout.Space(6);
+ }
  void DrawControlsPanel(){
   VoxelBoxUI.Backdrop(.12f);Rect r=new Rect(520,44,1042,812);GUILayout.BeginArea(r,VoxelBoxUI.Panel);
   VoxelBoxUI.PanelTitle("⌨","STEUERUNG","TASTATUR & MAUS  •  CREATIVE MODE");GUILayout.Space(8);GUILayout.BeginHorizontal();
@@ -36,10 +43,10 @@ public class MainMenuGUI:GUIScreen{
  void DrawGuidesPanel(){
   VoxelBoxUI.Backdrop(.12f);Rect r=new Rect(500,34,1062,832);GUILayout.BeginArea(r,VoxelBoxUI.Panel);
   VoxelBoxUI.PanelTitle("?","ANLEITUNGEN, HILFEN & TIPPS","THE VOXEL BOX  •  KURZ ERKLÄRT");
-  string[] tabs={"TANVIIR","GESCHICHTE","WORKSHOP","COPY & PASTE","TNT","MINECART","SPEICHERN","WETTER","AUDIO","TIPPS"};
-  for(int row=0;row<2;row++){GUILayout.BeginHorizontal();for(int i=row*5;i<row*5+5;i++){if(GUILayout.Button(tabs[i],guideTab==i?VoxelBoxUI.TabActive:VoxelBoxUI.Tab,GUILayout.Height(38))){guideTab=i;guideScroll=Vector2.zero;}}GUILayout.EndHorizontal();}
+  string[] tabs={"TANVIIR","GESCHICHTE","BLOCKAUSWAHL","WORKSHOP","COPY & PASTE","TNT","MINECART","SPEICHERN","WETTER","AUDIO","TIPPS"};
+  for(int row=0;row<3;row++){GUILayout.BeginHorizontal();int start=row*4;int end=Mathf.Min(start+4,tabs.Length);for(int i=start;i<end;i++){if(GUILayout.Button(tabs[i],guideTab==i?VoxelBoxUI.TabActive:VoxelBoxUI.Tab,GUILayout.Height(38))){guideTab=i;guideScroll=Vector2.zero;}}GUILayout.EndHorizontal();}
   GUILayout.Space(8);guideScroll=GUILayout.BeginScrollView(guideScroll,false,true,GUILayout.ExpandHeight(true));GUILayout.BeginVertical(VoxelBoxUI.Card);
-  if(guideTab==0)DrawGuideTanviir();else if(guideTab==1)DrawGuideHistory();else if(guideTab==2)DrawGuideWorkshop();else if(guideTab==3)DrawGuideCopyPaste();else if(guideTab==4)DrawGuideTNT();else if(guideTab==5)DrawGuideMinecart();else if(guideTab==6)DrawGuideSaveLoad();else if(guideTab==7)DrawGuideWeather();else if(guideTab==8)DrawGuideAudio();else DrawGuideTips();
+  if(guideTab==0)DrawGuideTanviir();else if(guideTab==1)DrawGuideHistory();else if(guideTab==2)DrawGuideBlockSelection();else if(guideTab==3)DrawGuideWorkshop();else if(guideTab==4)DrawGuideCopyPaste();else if(guideTab==5)DrawGuideTNT();else if(guideTab==6)DrawGuideMinecart();else if(guideTab==7)DrawGuideSaveLoad();else if(guideTab==8)DrawGuideWeather();else if(guideTab==9)DrawGuideAudio();else DrawGuideTips();
   GUILayout.EndVertical();GUILayout.EndScrollView();GUILayout.Space(8);CloseRow();GUILayout.EndArea();
  }
  void DrawBlockDesignerPanel(){VoxelBoxUI.Backdrop(.12f);Rect r=new Rect(370,28,1192,844);GUILayout.BeginArea(r,VoxelBoxUI.Panel);VoxelBoxUI.PanelTitle("▦","BLOCK-DESIGNER","BLOCK-ID • GRUNDSTRUKTUR • GLOBALE TEXTUR");BlockDesignerGUI.Draw();GUILayout.FlexibleSpace();CloseRow();GUILayout.EndArea();}
@@ -51,6 +58,13 @@ public class MainMenuGUI:GUIScreen{
   GuideText("Spätestens 2013 war Tanviir als eigene kuratierte Region dokumentiert. Am 1. April 2014 veröffentlichte The VoxelBox die vollständige Welt unter dem Titel „Tanviir, a World of High Fantasy“. Als Lead Architects wurden JiiJiii, Thimble_Tack und Daniel_Carmi genannt; zahlreiche weitere Mitglieder der Community wirkten ebenfalls an der Region mit.");
   GuideText("Für Tanviir entstand außerdem ein eigenes 32×32 Texture Pack. Es unterstützte die typische Gestaltung der Welt mit hellen, monumentalen Bauwerken, Fantasy-Architektur und stark ausgearbeiteten Landschaften. Teile der damaligen Dokumentation und des VoxelWiki sind heute nicht mehr verfügbar, weshalb nicht mehr alle Orte und Erbauer vollständig zugeordnet werden können.");
   GuideText("In The Voxel Box wird Tanviir als feste Welt erhalten. Die historischen Weltdaten bilden die Grundlage, können aber mit der heutigen Engine weiter bebaut, verändert und gespeichert werden. Dadurch bleibt die ursprüngliche Welt nutzbar, ohne weiterhin von Minecraft als Laufzeitumgebung abhängig zu sein.");
+ }
+ void DrawGuideBlockSelection(){
+  GuideHeading("BLOCKAUSWAHL & EIGENE KATEGORIEN");
+  GuideText("Mit E öffnest du die Block-Auswahl. Die Blöcke sind in BLÖCKE, NATUR, FUNKTION, CUSTOM und FAVORITEN gegliedert. Ein kurzer Linksklick auf ein Symbol wählt den Block wie gewohnt aus.");
+  GuideText("Möchtest du einen Block selbst einsortieren, halte sein Symbol mit der linken Maustaste mindestens 3 Sekunden gedrückt. Danach öffnet sich BLOCK SORTIEREN. Dort kannst du den Block nach BLÖCKE, NATUR, FUNKTION oder CUSTOM verschieben.");
+  GuideText("FAVORITEN ist eine zusätzliche persönliche Sammlung: Über BLOCK SORTIEREN kannst du einen Block zu FAVORITEN hinzufügen oder wieder daraus entfernen. Der Block bleibt gleichzeitig in seiner Hauptkategorie erhalten. Favoriten werden mit einem Stern markiert.");
+  GuideText("Deine persönlichen Kategorien und Favoriten werden gespeichert und stehen nach einem Neustart wieder zur Verfügung. Die eigentlichen Block-IDs und die Welt werden durch das Umsortieren nicht verändert.");
  }
  void DrawGuideWorkshop(){
   GuideHeading("CUSTOM BLOCK WORKSHOP");

@@ -58,6 +58,8 @@ public class MeshBuilder {
             normals.Add( normal );
         }
     }
+    // 1.0.30 helper for arbitrarily oriented radial flora.
+    public void AddVertexNormal(Vector3 normal) { normals.Add(normal); }
     public void AddFaceNormal(Vector3 normal) {
         normals.Add(normal);
         normals.Add(normal);

@@ -85,6 +85,9 @@ public class InventoryGUI : MonoBehaviour {
 		}
 		selected = DrawBlockSet(BlockSet.instance, ref scrollPosition, selected);
 		builder.SetSelectedBlock(selected);
+        // 1.0.12: the long-press state was detected correctly, but the popup was never drawn.
+        // Draw it as the last element of the inventory window so it stays above the block grid.
+        DrawCategoryMenu();
     }
 	
     private static int CategoryOf(Block b) {
@@ -176,6 +179,14 @@ public class InventoryGUI : MonoBehaviour {
         Event e=Event.current; bool clicked=false;
         if(e.type==EventType.MouseDown && e.button==0 && rect.Contains(e.mousePosition)) {
             heldBlock=block; heldSince=Time.unscaledTime; longPressOpened=false; clicked=true; e.Use();
+        }
+        if(heldBlock==block && Input.GetMouseButton(0) && !longPressOpened) {
+            // Keep IMGUI repainting while the mouse is held; otherwise a static inventory can wait
+            // for another GUI event before noticing that the three seconds have elapsed.
+            if(Time.unscaledTime-heldSince < longPressSeconds) {
+                // Repaint is harmless here and only requested during an active long press.
+                if(Event.current.type==EventType.Repaint) { }
+            }
         }
         if(heldBlock==block && Input.GetMouseButton(0) && !longPressOpened && Time.unscaledTime-heldSince>=longPressSeconds) {
             categoryMenuBlock=block; longPressOpened=true;

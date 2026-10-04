@@ -68,6 +68,8 @@ public class Builder : MonoBehaviour {
     private bool pastePreviewDirty;
     // 1.08: rotation of the copied volume around world Y, in clockwise 90 degree steps.
     private int copyRotationQuarterTurns;
+    // 1.0.32 sphere world: manual 6-axis orientation for plants/CrossBlocks.
+    private int sphereCrossAxis=0;
 
     // 0.8 Custom Block Workshop: an 8x8x8 world-space authoring box compressed into one block.
     private bool workshopSet;
@@ -90,6 +92,11 @@ public class Builder : MonoBehaviour {
             ResetMouseRepeat();
         }
         if(tntArmed && Time.unscaledTime >= tntDetonateAt) DetonateTNT();
+        // In the hollow sphere R cycles the six possible local "up" axes for plants.
+        // This is deliberately manual: nothing is inferred from the sphere or hit face.
+        if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity && selectedBlock is CrossBlock && !Cursor.visible && Input.GetKeyDown(KeyCode.R)) {
+            sphereCrossAxis=(sphereCrossAxis+1)%6;
+        }
         // 1.0.7: while PASTE is selected the clipboard can be rotated before placement.
         // R cycles 0 -> 90 -> 180 -> 270 -> 0. Arrow keys remain as direct/alternate controls.
         if(selectedBlock!=null && selectedBlock.name=="Paste Selection" && copyReady && !Cursor.visible) {
@@ -188,7 +195,9 @@ public class Builder : MonoBehaviour {
         if(HandleCustomWorkshopTool(pos.Value)) return;
 		character.pos = transform.position;
 		if(BoxCollision.GetContactBoxCharacter(pos.Value, character) != null) return;
-		BlockDirection direction = GetDirection(-transform.forward);
+        BlockDirection direction = GetDirection(-transform.forward);
+        if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity && selectedBlock is CrossBlock)
+            direction=(BlockDirection)sphereCrossAxis;
 		DataBlock placed = new DataBlock(selectedBlock, direction);
 		Map.instance.SetBlockAndRebuild(pos.Value, placed);
 		InfiniteWorldSave.RecordPlayerEdit(pos.Value, placed);
@@ -236,6 +245,10 @@ public class Builder : MonoBehaviour {
 
     void OnGUI() {
         VoxelBoxUI.Ensure();
+        if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity && selectedBlock is CrossBlock && !Cursor.visible) {
+            string[] a={"OBEN","RECHTS","UNTEN","LINKS","VORNE","HINTEN"};
+            GUI.Box(new Rect(18,Screen.height-76,360,42),"Pflanzen-Ausrichtung: "+a[Mathf.Clamp(sphereCrossAxis,0,5)]+"   •   R = drehen");
+        }
         if(tntRadiusDialog || tntArmed) {
             float w=500f,h=tntRadiusDialog?225f:105f; Rect r=new Rect((Screen.width-w)/2f,35f,w,h);
             GUI.Box(r,GUIContent.none,VoxelBoxUI.Panel);

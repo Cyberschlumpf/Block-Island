@@ -3,8 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 
 public static class CubeBuilder {
-	
-	
+
+    // 1.0.22: Standard voxel cubes must meet exactly at their cell borders.
+    // The legacy BoxBuilder vertices use -0.001..1.001 for non-cube detail geometry;
+    // using those for adjacent full cubes makes coplanar top/side faces overlap and
+    // produces the bright/dark seams seen on grass and walls. Keep that legacy path
+    // untouched and use exact 0..1 geometry only for CubeBlock rendering + preview.
+    private static readonly Vector3[][] cubeVertices = new Vector3[][] {
+        new Vector3[] { new Vector3(0,0,1), new Vector3(0,1,1), new Vector3(1,1,1), new Vector3(1,0,1) }.Inverse(),
+        new Vector3[] { new Vector3(0,0,0), new Vector3(0,1,0), new Vector3(1,1,0), new Vector3(1,0,0) },
+        new Vector3[] { new Vector3(1,0,0), new Vector3(1,1,0), new Vector3(1,1,1), new Vector3(1,0,1) },
+        new Vector3[] { new Vector3(0,0,0), new Vector3(0,1,0), new Vector3(0,1,1), new Vector3(0,0,1) }.Inverse(),
+        new Vector3[] { new Vector3(0,1,1), new Vector3(0,1,0), new Vector3(1,1,0), new Vector3(1,1,1) }.Inverse(),
+        new Vector3[] { new Vector3(0,0,1), new Vector3(0,0,0), new Vector3(1,0,0), new Vector3(1,0,1) },
+    };
+
 	public static void Build(MeshBuilder builder, DataBlock block, LocalPosition pos, int index, Chunk chunk) {
 		CubeBlock cube = (CubeBlock) block.block;
 		BlockDirection dir = block.direction;
@@ -110,7 +123,7 @@ public static class CubeBuilder {
 
     public static void BuildFace(MeshBuilder builder, int iSide, Face face, LocalPosition pos) {
         builder.AddFaceIndices( face.materialID );
-        builder.AddVertices( BoxBuilder.vertices[iSide], pos );
+        builder.AddVertices( cubeVertices[iSide], pos );
         builder.AddFaceNormal( BoxBuilder.directions[iSide] );
         builder.AddTexCoords( face.rect );
 
@@ -119,7 +132,7 @@ public static class CubeBuilder {
 
     public static void BuildFace(MeshBuilder builder, int iSide, Rect texCoord, int materialID, LocalPosition pos) {
         builder.AddFaceIndices( materialID );
-        builder.AddVertices( BoxBuilder.vertices[iSide], pos );
+        builder.AddVertices( cubeVertices[iSide], pos );
         builder.AddFaceNormal( BoxBuilder.directions[iSide] );
         builder.AddTexCoords( texCoord );
 
@@ -128,7 +141,7 @@ public static class CubeBuilder {
 
     public static void BuildFace(MeshBuilder builder, int iSide, Face face, LocalPosition pos, BlockDirection dir) {
         builder.AddFaceIndices( face.materialID );
-        builder.AddVertices( BoxBuilder.vertices[iSide], pos, dir );
+        builder.AddVertices( cubeVertices[iSide], pos, dir );
         builder.AddFaceNormal( BoxBuilder.directions[iSide], dir );
         builder.AddTexCoords( face.rect );
 

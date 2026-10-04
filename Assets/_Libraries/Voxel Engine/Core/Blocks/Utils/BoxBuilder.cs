@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public static class BoxBuilder {
 
+    // Legacy voxel bounds restored in 1.0.21. Atlas selection now uses the engine's
+    // native BlockSet material + Face.rect path instead of altering global geometry.
     public const float _0 = -0.001f, _1 = 1.001f;
 
 	public static readonly Vector3i[] directions = new Vector3i[] {

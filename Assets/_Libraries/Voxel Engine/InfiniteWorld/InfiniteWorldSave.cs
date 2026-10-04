@@ -9,10 +9,11 @@ using System.Collections.Generic;
 public static class InfiniteWorldSave {
     const int Magic=0x42495736; // BIW6: native world type in the normal Block Island save
     const int LegacyMagic=0x42495735; // BIW5
-    public enum WorldType : byte { Islands=0, Tanviir=1, BlockIsland=2, LightGarden=3 }
+    public enum WorldType : byte { Islands=0, Tanviir=1, BlockIsland=2, LightGarden=3, Relativity=4 }
     public const string TanviirSaveName="Tanviir";
     public const string BlockIslandSaveName="Block Island";
     public const string LightGardenSaveName="Lichtgarten";
+    public const string RelativitySaveName="Sphere 64";
     public static WorldType CurrentWorldType=WorldType.Islands;
     public static string CurrentWorldName="";
     public static bool LoadRequested=false;
@@ -66,6 +67,7 @@ public static class InfiniteWorldSave {
         if(type==WorldType.Tanviir) CurrentWorldName=TanviirSaveName;
         else if(type==WorldType.BlockIsland) CurrentWorldName=BlockIslandSaveName;
         else if(type==WorldType.LightGarden) CurrentWorldName=LightGardenSaveName;
+        else if(type==WorldType.Relativity) CurrentWorldName=RelativitySaveName;
         else CurrentWorldName=SanitizeName("World "+DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss"));
         ApplyWorldType(type);
         if(type!=WorldType.Islands && File.Exists(PathFor(CurrentWorldName))) LoadRequested=true;

@@ -36,10 +36,14 @@ public class GameInitializer : MonoBehaviour {
             // making the loaded world look empty until a block edit forced a local rebuild.
             GameObject infinitePlayer = GameObject.FindWithTag("Player");
             if (infinitePlayer != null) {
+                if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity && !InfiniteWorldSave.HasLoadedPlayerTransform) { infinitePlayer.transform.position=new Vector3(0,0,0); infinitePlayer.transform.rotation=Quaternion.identity; }
                 if(InfiniteWorldSave.HasLoadedPlayerTransform) {
                     infinitePlayer.transform.position = InfiniteWorldSave.LoadedPlayerPosition;
                     infinitePlayer.transform.rotation = InfiniteWorldSave.LoadedPlayerRotation;
                     InfiniteWorldSave.HasLoadedPlayerTransform=false;
+                } else if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) {
+                    infinitePlayer.transform.position = new Vector3(0,0,0);
+                    infinitePlayer.transform.rotation = Quaternion.identity;
                 } else {
                     int sx = 0, sz = 0;
                     int sy = infinite.generator.SurfaceY(sx, sz) + 3;

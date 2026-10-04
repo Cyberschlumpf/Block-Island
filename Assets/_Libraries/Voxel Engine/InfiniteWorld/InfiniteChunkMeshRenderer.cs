@@ -50,6 +50,11 @@ public sealed class InfiniteChunkMeshRenderer : MonoBehaviour {
     }
 
     // 0.6: batch invalidation for large creative edits (TNT). Avoids rebuilding once per voxel.
+    // 1.0.16: rebuild only chunks that are already visible after a live Block Designer texture change.
+    public void MarkAllVisibleDirty() {
+        foreach(var k in objects.Keys) dirty.Add(k);
+    }
+
     public void MarkDirtyChunks(IEnumerable<InfiniteChunkKey> keys) {
         if(keys==null) return;
         foreach(var k in keys) {
@@ -124,7 +129,9 @@ public sealed class InfiniteChunkMeshRenderer : MonoBehaviour {
             } else if(cross!=null) {
                 // Grass, flowers and other old flora are CrossBlocks. CrossBuilder does not
                 // actually need a legacy Chunk, so it can be reused safely in the streamed world.
-                CrossBuilder.Build(mb,b,lp,null);
+                if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity)
+                    CrossBuilder.BuildManualAxis(mb,b,lp);
+                else CrossBuilder.Build(mb,b,lp,null);
             } else if(biSpecial!=null) {
                 BuildBlockIslandSpecial(mb,biSpecial,lp,ox+x,oy+y,oz+z,dir);
             } else if(fenceBlock!=null) {

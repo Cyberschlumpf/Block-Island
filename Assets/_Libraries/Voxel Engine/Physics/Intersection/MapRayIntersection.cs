@@ -6,6 +6,9 @@ public static class MapRayIntersection {
 	
 	
 	public static bool Raycast(Map map, Ray ray, float distance, out Vector3i pos, out Vector3i prevPos) {
+        // Singularitaet may visually roll the world while the camera stays upright.
+        // Convert the camera ray back into the voxel world's logical coordinates.
+        ray = SingularityViewAxisRoll.ToLogicalRay(ray);
 		Vector3 start = ray.origin;
 		Vector3 dir = ray.direction;
 		pos = prevPos = Vector3i.Floor( start );
@@ -48,6 +51,8 @@ public static class MapRayIntersection {
 	
 	
 	public static bool Raycast(Map map, Ray ray, ref float distance) {
+        // Same visual-world -> logical-voxel conversion for precise block intersection.
+        ray = SingularityViewAxisRoll.ToLogicalRay(ray);
 		Vector3 start = ray.origin;
 		Vector3 dir = ray.direction;
 		Vector3i pos = Vector3i.Floor( start );
