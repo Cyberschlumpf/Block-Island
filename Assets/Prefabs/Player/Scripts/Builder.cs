@@ -8,10 +8,12 @@ public class Builder : MonoBehaviour {
 	private CharacterCollider character;
 	private Transform viewCamera;
 	private Block selectedBlock;
+	private BlockBuildSound blockBuildSound;
 	
 	void Start() {
 		character = GetComponent<CharacterCollider>();
 		viewCamera = transform.GetComponentInChildren<Camera>().transform;
+		blockBuildSound = GetComponent<BlockBuildSound>();
 		// 0.9.9.5c: first-person player geometry may remain visible, but must not cast the
 		// large capsule/body shadow seen under the crosshair. This affects only renderers
 		// belonging to this player hierarchy; world/custom-block shadows remain enabled.
@@ -206,6 +208,7 @@ public class Builder : MonoBehaviour {
             direction=(BlockDirection)sphereCrossAxis;
 		DataBlock placed = new DataBlock(selectedBlock, direction);
 		Map.instance.SetBlockAndRebuild(pos.Value, placed);
+		if(blockBuildSound != null) blockBuildSound.PlayBuildSound();
 		InfiniteWorldSave.RecordPlayerEdit(pos.Value, placed);
         PlayerProfileManager.RecordPlaced(selectedBlock);
         if(selectedBlock.name == "Creative TNT") {
@@ -232,7 +235,13 @@ public class Builder : MonoBehaviour {
 	private void RemoveBlock() {
 		if(Cursor.visible) return;
 		Vector3i? pos = GetCursor(true);
-		if(pos.HasValue) { DataBlock air=new DataBlock(); Map.instance.SetBlockAndRebuild(pos.Value, air); InfiniteWorldSave.RecordPlayerEdit(pos.Value, air); PlayerProfileManager.RecordRemoved(); }
+		if(pos.HasValue) {
+			DataBlock air = new DataBlock();
+			Map.instance.SetBlockAndRebuild(pos.Value, air);
+			if(blockBuildSound != null) blockBuildSound.PlayRemoveSound();
+			InfiniteWorldSave.RecordPlayerEdit(pos.Value, air);
+			PlayerProfileManager.RecordRemoved();
+		}
 	}
 
     private Vector3i? GetVoidBuildCursor() {
