@@ -84,8 +84,8 @@ public static class VoxelBoxUI {
         // A real IMGUI button owns the click. The old hand-written MouseUp hit test
         // could lose clicks after responsive GUI.matrix scaling.
         GUIStyle s=new GUIStyle(Button){fontSize=18,wordWrap=true,alignment=TextAnchor.MiddleLeft,padding=new RectOffset(22,12,7,6)};
-        if(string.IsNullOrEmpty(sub)) return GUILayout.Button(icon+"   "+text,s,GUILayout.Height(52),GUILayout.ExpandWidth(true));
-        return GUILayout.Button(icon+"   "+text+"\n      "+sub,s,GUILayout.Height(66),GUILayout.ExpandWidth(true));
+        if(string.IsNullOrEmpty(sub)) return GUILayout.Button(icon+"   "+text,s,GUILayout.Height(46),GUILayout.ExpandWidth(true));
+        return GUILayout.Button(icon+"   "+text+"\n      "+sub,s,GUILayout.Height(58),GUILayout.ExpandWidth(true));
     }
     public static void Logo(){GUILayout.Label("THE",new GUIStyle(Title){fontSize=24});GUILayout.Label("VOXEL BOX",new GUIStyle(Title){fontSize=46});GUILayout.Label("TANVIIR  •  CREATIVE WORLD",Subtitle);}
     public static void SectionTitle(string text){GUILayout.Label(text,Section);GUILayout.Space(5);}

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 public static class InfiniteWorldSave {
     const int Magic=0x42495736; // BIW6: native world type in the normal Block Island save
     const int LegacyMagic=0x42495735; // BIW5
-    public enum WorldType : byte { Islands=0, Tanviir=1, BlockIsland=2, LightGarden=3, Relativity=4 }
+    public enum WorldType : byte { Islands=0, Tanviir=1, BlockIsland=2, LightGarden=3, Relativity=4, Minecraft=5 }
     public const string TanviirSaveName="Tanviir";
     public const string BlockIslandSaveName="Block Island";
     public const string LightGardenSaveName="Lichtgarten";
