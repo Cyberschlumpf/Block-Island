@@ -4,7 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Reflection;
 
-// The Voxel Box 0.9.9.7b - non-destructive global texture overrides by stable Block ID.
+// Block Island - non-destructive global texture overrides by stable Block ID.
 public static class BlockTextureDesigner {
  [Serializable] public class Entry { public int targetId; public int sourceId=-1; public string customFile=""; }
  [Serializable] class Store { public List<Entry> entries=new List<Entry>(); }
@@ -12,7 +12,7 @@ public static class BlockTextureDesigner {
  static Dictionary<int,Original> originals=new Dictionary<int,Original>();
  static Dictionary<string,Texture2D> customTextures=new Dictionary<string,Texture2D>();
  static Store store=new Store();
- public static string DirectoryPath { get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"The Voxel Box","BlockTextures"); } }
+ public static string DirectoryPath { get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"Block Island","BlockTextures"); } }
  public static string CustomTexturePath { get { return Path.Combine(DirectoryPath,"Textures"); } }
  public static string FilePath { get { return Path.Combine(DirectoryPath,"block_textures.json"); } }
  static Face CopyFace(Face f){ if(f==null)return null; Face n=new Face(); n.material=f.material;n.rect=f.rect;n.materialID=f.materialID;return n; }
@@ -24,7 +24,14 @@ public static class BlockTextureDesigner {
  }
  public static string Structure(Block b){if(b==null)return "–";if(b is StairBlock)return "Treppe";if(b is FenceBlock)return "Zaun";if(b is SphereBlock)return "Kugel";if(b is CactusBlock)return "Kaktus";if(b is GroundBlock)return "Bodenblock";if(b is CubeBlock)return "Würfel";if(b is CrossBlock)return "Pflanze / Kreuzfläche";if(b is FluidBlock)return "Flüssigkeit";if(b is MeshBlock)return "3D-Mesh";if(b is GameObjectBlock)return "GameObject / Prefab";return b.GetType().Name;}
  public static bool Compatible(Block a,Block b){if(a==null||b==null)return false;Face[] af=Face.GetFaceList(a),bf=Face.GetFaceList(b);return a.GetType()==b.GetType()&&af!=null&&bf!=null&&af.Length==bf.Length&&af.Length>0;}
- public static void EnsureFolders(){try{System.IO.Directory.CreateDirectory(CustomTexturePath);}catch(Exception e){Debug.LogWarning("Block Designer folder: "+e.Message);}}
+ public static void EnsureFolders(){try{
+  if(!Directory.Exists(DirectoryPath)){
+   string legacy=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"The Voxel Box","BlockTextures");
+   if(Directory.Exists(legacy)) CopyLegacyFolder(legacy,DirectoryPath);
+  }
+  Directory.CreateDirectory(CustomTexturePath);
+ }catch(Exception e){Debug.LogWarning("Block Designer folder: "+e.Message);}}
+ static void CopyLegacyFolder(string src,string dst){Directory.CreateDirectory(dst);foreach(string f in Directory.GetFiles(src)){string d=Path.Combine(dst,Path.GetFileName(f));if(!File.Exists(d))File.Copy(f,d,false);}foreach(string dir in Directory.GetDirectories(src))CopyLegacyFolder(dir,Path.Combine(dst,Path.GetFileName(dir)));}
  public static void OpenTextureFolder(){EnsureFolders();Application.OpenURL("file://"+CustomTexturePath.Replace("\\","/"));}
  public static string[] CustomFiles(){EnsureFolders();try{string[] f=System.IO.Directory.GetFiles(CustomTexturePath,"*.png");Array.Sort(f,StringComparer.OrdinalIgnoreCase);return f;}catch{return new string[0];}}
  public static Texture2D LoadCustomTexture(string path,bool reload=false){

@@ -1,7 +1,7 @@
 using UnityEngine;
 
-// Voxel Box: Time of Day is the single authority for sun, sky, ambient light and world time.
-// This class only bridges the existing Voxel Box UI/save system to TOD.
+// Block Island: Time of Day is the single authority for sun, sky, ambient light and world time.
+// This class only bridges the existing Block Island UI/save system to TOD.
 public sealed class InfiniteDayNightCycle : MonoBehaviour {
     public static InfiniteDayNightCycle Instance { get; private set; }
     public const float DayLengthMinutes = 60f;

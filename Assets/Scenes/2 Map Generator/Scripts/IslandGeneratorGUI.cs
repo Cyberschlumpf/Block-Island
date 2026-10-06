@@ -43,7 +43,7 @@ public class IslandGeneratorGUI : MonoBehaviour {
         VoxelBoxUI.BeginResponsive(); VoxelBoxUI.MenuBackground(); VoxelBoxUI.Backdrop(.20f);
         Rect outer=VoxelBoxUI.Safe(1120,820,35);
         GUILayout.BeginArea(outer,VoxelBoxUI.Panel);
-        GUILayout.Label("THE VOXEL BOX",VoxelBoxUI.Header);
+        GUILayout.Label("BLOCK ISLAND",VoxelBoxUI.Header);
         GUILayout.Label("INSELGENERATOR  •  NEUE CREATIVE WORLD",VoxelBoxUI.Small);
         GUILayout.Space(12);
         GUILayout.BeginHorizontal();

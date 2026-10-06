@@ -86,9 +86,8 @@ public sealed class InfiniteWorldBootstrap : MonoBehaviour {
    foreach(var f in go.GetComponents<InfiniteVoxelFish>()) Object.Destroy(f);
   } else {
    var wildlife=go.GetComponent<InfiniteBirdFlock>(); if(wildlife==null) wildlife=go.AddComponent<InfiniteBirdFlock>(); if(Camera.main!=null) wildlife.target=Camera.main.transform;
-   // 1.0.63: Disable the old World_* land animals (Lion, Elephant, Deer, Bear, etc.).
-   // Remove an already attached wildlife component as well, so old scenes do not respawn them.
-   foreach(var a in go.GetComponents<InfiniteWorldWildlife>()) Object.Destroy(a);
+   var animals=go.GetComponent<InfiniteWorldWildlife>(); if(animals==null) animals=go.AddComponent<InfiniteWorldWildlife>();
+   animals.world=world; animals.worldSeed=gen.seed; if(Camera.main!=null) animals.target=Camera.main.transform;
    var fish=go.GetComponent<InfiniteVoxelFish>(); if(fish==null) fish=go.AddComponent<InfiniteVoxelFish>(); fish.world=world; if(Camera.main!=null) fish.target=Camera.main.transform;
   }
   map.infiniteWorld=world;map.infiniteRenderer=mesh;

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections.Generic;
 
 // Renders streamed chunks directly from InfiniteVoxelWorld. It deliberately does not use
@@ -127,8 +127,8 @@ public sealed class InfiniteChunkMeshRenderer : MonoBehaviour {
                     if(CachedBlock(localBlocks,x,y-1,z,ox,oy,oz).IsAlpha()) CubeBuilder.BuildFace(mb,5,ground.bottom,lp,dir);
                 }
             } else if(cross!=null) {
-                // Grass, flowers and other old flora are CrossBlocks. CrossBuilder does not
-                // actually need a legacy Chunk, so it can be reused safely in the streamed world.
+                // NATURBLOCK FIX: CrossBlocks keep their original atlas/material IDs and Cutout/Alpha shader.
+                // CrossBuilder does not need a legacy Chunk, so it can be reused safely in the streamed world.
                 if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity)
                     CrossBuilder.BuildManualAxis(mb,b,lp);
                 else CrossBuilder.Build(mb,b,lp,null);
@@ -234,9 +234,10 @@ public sealed class InfiniteChunkMeshRenderer : MonoBehaviour {
         var mf=go.GetComponent<MeshFilter>();
         Mesh mesh=mb.ToMesh(mf.sharedMesh); mf.sharedMesh=mesh;
         var mr=go.GetComponent<MeshRenderer>();
-        mr.shadowCastingMode=(TanviirImportWorld.active && !tanviirChunkShadows)
-            ? UnityEngine.Rendering.ShadowCastingMode.Off
-            : UnityEngine.Rendering.ShadowCastingMode.On;
+        // 2.0.01: Runtime rebuilds must keep casting shadows. Previously Tanviir chunks
+        // were switched to ShadowCastingMode.Off every time a placed/removed block rebuilt
+        // the chunk. That made newly placed blocks lose their shadow until a scene restart.
+        mr.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.On;
         mr.receiveShadows=true;
         if(mesh!=null) mr.sharedMaterials=mb.GetMaterials(BlockSet.instance.GetMaterials());
         go.SetActive(mesh!=null || gameObjectBlocks.Count>0 || customBlocks.Count>0);

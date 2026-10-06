@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using System.IO;
 
-// The Voxel Box 0.5 - H captures a PNG to an easy-to-find Screenshots folder
+// Block Island 0.5 - H captures a PNG to an easy-to-find Screenshots folder
 // beside the standalone game. In the Unity Editor it uses the project root.
 public sealed class VoxelBoxScreenshot : MonoBehaviour {
     private string lastPath="";

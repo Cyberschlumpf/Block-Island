@@ -52,7 +52,7 @@ public class InventoryGUI : MonoBehaviour {
 	
 	void OnGUI() {
         if(!show && showHotbar && GameState.IsPlaying && builder!=null) DrawHotbar();
-        if(show) { VoxelBoxUI.BeginResponsive(); Rect window=VoxelBoxUI.Center(900,620); GUILayout.Window(0,window,DoInventoryWindow,"THE VOXEL BOX  •  BLOCK-AUSWAHL",VoxelBoxUI.Panel); VoxelBoxUI.EndResponsive(); } }
+        if(show) { VoxelBoxUI.BeginResponsive(); Rect window=VoxelBoxUI.Center(900,620); GUILayout.Window(0,window,DoInventoryWindow,"BLOCK ISLAND  •  BLOCK-AUSWAHL",VoxelBoxUI.Panel); VoxelBoxUI.EndResponsive(); } }
 	
 	
     private static List<Block> GetVisibleBlocks() {

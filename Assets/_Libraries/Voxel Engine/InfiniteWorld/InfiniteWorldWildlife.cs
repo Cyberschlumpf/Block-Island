@@ -15,7 +15,7 @@ public sealed class InfiniteWorldWildlife : MonoBehaviour {
 
     readonly Dictionary<long,List<GameObject>> active=new Dictionary<long,List<GameObject>>();
     float timer;
-    static readonly string[] species={"Deer","Fox","Rabbit","Cat","Giraffe","Lion","Elephant","Tiger","Cheetah","Horse","Bison","Bear","Dog"};
+    static readonly string[] species={"Rabbit"};
 
     void Start(){ if(world==null) world=GetComponent<InfiniteVoxelWorld>(); if(target==null && Camera.main!=null) target=Camera.main.transform; }
     static long Key(int x,int z){ return ((long)x<<32) ^ (uint)z; }

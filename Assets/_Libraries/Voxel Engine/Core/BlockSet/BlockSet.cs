@@ -47,7 +47,7 @@ public class BlockSet : MonoBehaviour {
         EnsureTanviirArchitecturePalette();
         EnsureTanviirArchitecturalShapes();
         EnsureTanviirFullPalette();
-        // Voxel Box 0.9.9.7h: 16 numbered construction cubes only. Legacy GO 01-16 slots were removed to stay below the 255 block ceiling.
+        // Block Island 0.9.9.7h: 16 numbered construction cubes only. Legacy GO 01-16 slots were removed to stay below the 255 block ceiling.
         EnsureVoxelBoxCreativeSlots();
         EnsureVoxelBoxTNT(); // 0.6
         EnsureVoxelBoxCopyPaste(); // 0.7: appended last, never shifts older IDs.
@@ -350,24 +350,24 @@ public class BlockSet : MonoBehaviour {
         AddTanviirShape("Tanviir Stone Buttress",TanviirArchitecturalBlock.Shape.Buttress,mat,TanviirUV(10));
         AddTanviirShape("Tanviir Timber Cross Beam",TanviirArchitecturalBlock.Shape.BeamCross,mat,TanviirUV(7));
         AddTanviirShape("Tanviir Marble Pillar Cap",TanviirArchitecturalBlock.Shape.PillarCap,mat,TanviirUV(0));
-        // The Voxel Box 0.1 creative expansion. Append-only keeps every established save ID stable.
-        AddTanviirShape("Voxel Box Stone Slab",TanviirArchitecturalBlock.Shape.Slab,mat,TanviirUV(9));
-        AddTanviirShape("Voxel Box Timber Wall Panel",TanviirArchitecturalBlock.Shape.WallPanel,mat,TanviirUV(7));
-        AddTanviirShape("Voxel Box Timber Bench",TanviirArchitecturalBlock.Shape.Bench,mat,TanviirUV(7));
-        AddTanviirShape("Voxel Box Stone Planter",TanviirArchitecturalBlock.Shape.Planter,mat,TanviirUV(0));
+        // Block Island 0.1 creative expansion. Append-only keeps every established save ID stable.
+        AddTanviirShape("Block Island Stone Slab",TanviirArchitecturalBlock.Shape.Slab,mat,TanviirUV(9));
+        AddTanviirShape("Block Island Timber Wall Panel",TanviirArchitecturalBlock.Shape.WallPanel,mat,TanviirUV(7));
+        AddTanviirShape("Block Island Timber Bench",TanviirArchitecturalBlock.Shape.Bench,mat,TanviirUV(7));
+        AddTanviirShape("Block Island Stone Planter",TanviirArchitecturalBlock.Shape.Planter,mat,TanviirUV(0));
         Material glowMat=mat;
         Shader glowShader=Shader.Find("VoxelEngine/VoxelBoxGlow");
-        if(glowShader!=null) { glowMat=new Material(glowShader); glowMat.name="Voxel Box Warm Glow Material"; glowMat.mainTexture=atlas; glowMat.hideFlags=HideFlags.DontSave; if(glowMat.HasProperty("_GlowColor")) glowMat.SetColor("_GlowColor",new Color(1f,.68f,.22f,1f)); }
-        AddTanviirShape("Voxel Box Lantern Frame",TanviirArchitecturalBlock.Shape.LanternFrame,glowMat,TanviirUV(12));
-        // The Voxel Box 0.2: append-only creative furniture and landscape architecture.
-        AddTanviirShape("Voxel Box Timber Table",TanviirArchitecturalBlock.Shape.Table,mat,TanviirUV(7));
-        AddTanviirShape("Voxel Box Timber Chair",TanviirArchitecturalBlock.Shape.Chair,mat,TanviirUV(7));
-        AddTanviirShape("Voxel Box Stone Flower Box",TanviirArchitecturalBlock.Shape.FlowerBox,mat,TanviirUV(9));
-        AddTanviirShape("Voxel Box Marble Fountain Basin",TanviirArchitecturalBlock.Shape.FountainBasin,mat,TanviirUV(0));
-        AddTanviirShape("Voxel Box Rune Lamp Post",TanviirArchitecturalBlock.Shape.LampPost,glowMat,TanviirUV(12));
-        AddTanviirShape("Voxel Box Timber Pergola Post",TanviirArchitecturalBlock.Shape.PergolaPost,mat,TanviirUV(7));
-        AddTanviirShape("Voxel Box Stone Bridge Rail",TanviirArchitecturalBlock.Shape.BridgeRail,mat,TanviirUV(10));
-        Debug.Log("THE VOXEL BOX 0.3: creative palette + warm glow lantern materials ready; old IDs preserved.");
+        if(glowShader!=null) { glowMat=new Material(glowShader); glowMat.name="Block Island Warm Glow Material"; glowMat.mainTexture=atlas; glowMat.hideFlags=HideFlags.DontSave; if(glowMat.HasProperty("_GlowColor")) glowMat.SetColor("_GlowColor",new Color(1f,.68f,.22f,1f)); }
+        AddTanviirShape("Block Island Lantern Frame",TanviirArchitecturalBlock.Shape.LanternFrame,glowMat,TanviirUV(12));
+        // Block Island 0.2: append-only creative furniture and landscape architecture.
+        AddTanviirShape("Block Island Timber Table",TanviirArchitecturalBlock.Shape.Table,mat,TanviirUV(7));
+        AddTanviirShape("Block Island Timber Chair",TanviirArchitecturalBlock.Shape.Chair,mat,TanviirUV(7));
+        AddTanviirShape("Block Island Stone Flower Box",TanviirArchitecturalBlock.Shape.FlowerBox,mat,TanviirUV(9));
+        AddTanviirShape("Block Island Marble Fountain Basin",TanviirArchitecturalBlock.Shape.FountainBasin,mat,TanviirUV(0));
+        AddTanviirShape("Block Island Rune Lamp Post",TanviirArchitecturalBlock.Shape.LampPost,glowMat,TanviirUV(12));
+        AddTanviirShape("Block Island Timber Pergola Post",TanviirArchitecturalBlock.Shape.PergolaPost,mat,TanviirUV(7));
+        AddTanviirShape("Block Island Stone Bridge Rail",TanviirArchitecturalBlock.Shape.BridgeRail,mat,TanviirUV(10));
+        Debug.Log("BLOCK ISLAND 0.3: creative palette + warm glow lantern materials ready; old IDs preserved.");
     }
     private void AddTanviirShape(string n,TanviirArchitecturalBlock.Shape shape,Material mat,Rect uv) {
         if(FindBlock(n)!=null)return;
@@ -445,7 +445,7 @@ public class BlockSet : MonoBehaviour {
     }
 
 
-    // The Voxel Box 0.9.9.7h - numbered construction cubes only.
+    // Block Island 0.9.9.7h - numbered construction cubes only.
     // IMPORTANT: the old Creative GameObject 01-16 block entries are deliberately NOT created.
     // Their 16 block IDs are reclaimed for Custom Voxel 17-32 so the total block count does not grow by 16.
     private void EnsureVoxelBoxCreativeSlots() {
@@ -458,7 +458,7 @@ public class BlockSet : MonoBehaviour {
         Texture2D atlas=Resources.Load<Texture2D>("BlockSet/Atlases/VoxelBoxCreativeSlots/Creative Cube Slots 01-16");
         Shader shader=Shader.Find("VoxelEngine/Diffuse"); if(shader==null) shader=Shader.Find("Standard");
         if(atlas!=null && shader!=null) {
-            Material mat=new Material(shader); mat.name="Voxel Box Creative Slots 01-16"; mat.mainTexture=atlas; mat.hideFlags=HideFlags.DontSave;
+            Material mat=new Material(shader); mat.name="Block Island Creative Slots 01-16"; mat.mainTexture=atlas; mat.hideFlags=HideFlags.DontSave;
             for(int i=0;i<16;i++) {
                 string n="Creative Cube "+(i+1).ToString("00");
                 if(FindBlock(n)!=null) continue;
@@ -468,24 +468,24 @@ public class BlockSet : MonoBehaviour {
                 Face f=LegacyFace(mat,uv); b.front=f;b.back=f;b.left=f;b.right=f;b.top=f;b.bottom=f;
                 blocks.Add(b);
             }
-        } else Debug.LogWarning("Voxel Box: numbered Creative Cube atlas missing.");
-        Debug.Log("THE VOXEL BOX 0.9.9.7h: GO 01-16 removed; their capacity is reclaimed by Custom Voxel 17-32.");
+        } else Debug.LogWarning("Block Island: numbered Creative Cube atlas missing.");
+        Debug.Log("BLOCK ISLAND 0.9.9.7h: GO 01-16 removed; their capacity is reclaimed by Custom Voxel 17-32.");
     }
 
-    // The Voxel Box 0.6 - Creative TNT. Appended last so every established ID stays stable.
+    // Block Island 0.6 - Creative TNT. Appended last so every established ID stays stable.
     private void EnsureVoxelBoxTNT() {
         if(FindBlock("Creative TNT")!=null) return;
         Texture2D tex=Resources.Load<Texture2D>("BlockSet/Atlases/VoxelBoxCreativeSlots/Voxel Box TNT");
         Shader shader=Shader.Find("VoxelEngine/Diffuse"); if(shader==null) shader=Shader.Find("Standard");
-        if(tex==null || shader==null) { Debug.LogWarning("Voxel Box 0.6: TNT texture/shader missing."); return; }
-        Material mat=new Material(shader); mat.name="Voxel Box Creative TNT"; mat.mainTexture=tex; mat.hideFlags=HideFlags.DontSave;
+        if(tex==null || shader==null) { Debug.LogWarning("Block Island 0.6: TNT texture/shader missing."); return; }
+        Material mat=new Material(shader); mat.name="Block Island Creative TNT"; mat.mainTexture=tex; mat.hideFlags=HideFlags.DontSave;
         CubeBlock b=ScriptableObject.CreateInstance<CubeBlock>(); b.name="Creative TNT"; b.hideFlags=HideFlags.DontSave;
         Face face=LegacyFace(mat,new Rect(0,0,1,1)); b.front=face;b.back=face;b.left=face;b.right=face;b.top=face;b.bottom=face; b.icon=tex;
         blocks.Add(b);
-        Debug.Log("THE VOXEL BOX 0.6: Creative TNT appended to BlockSet.");
+        Debug.Log("BLOCK ISLAND 0.6: Creative TNT appended to BlockSet.");
     }
 
-    // The Voxel Box 0.7 - Copy/Paste selection tools. Appended after all established IDs.
+    // Block Island 0.7 - Copy/Paste selection tools. Appended after all established IDs.
     private void EnsureVoxelBoxCopyPaste() {
         string[] names={"Copy Start","Copy End","Paste Selection"};
         string[] texNames={"Voxel Box Copy Start","Voxel Box Copy End","Voxel Box Paste"};
@@ -494,16 +494,16 @@ public class BlockSet : MonoBehaviour {
         for(int i=0;i<names.Length;i++) {
             if(FindBlock(names[i])!=null) continue;
             Texture2D tex=Resources.Load<Texture2D>("BlockSet/Atlases/VoxelBoxCreativeSlots/"+texNames[i]);
-            if(tex==null) { Debug.LogWarning("Voxel Box 0.7: missing tool texture "+texNames[i]); continue; }
-            Material mat=new Material(shader); mat.name="Voxel Box "+names[i]; mat.mainTexture=tex; mat.hideFlags=HideFlags.DontSave;
+            if(tex==null) { Debug.LogWarning("Block Island 0.7: missing tool texture "+texNames[i]); continue; }
+            Material mat=new Material(shader); mat.name="Block Island "+names[i]; mat.mainTexture=tex; mat.hideFlags=HideFlags.DontSave;
             CubeBlock b=ScriptableObject.CreateInstance<CubeBlock>(); b.name=names[i]; b.hideFlags=HideFlags.DontSave;
             Face face=LegacyFace(mat,new Rect(0,0,1,1)); b.front=face;b.back=face;b.left=face;b.right=face;b.top=face;b.bottom=face;b.icon=tex;
             blocks.Add(b);
         }
-        Debug.Log("THE VOXEL BOX 0.7: Copy Start + Copy End + Paste Selection appended.");
+        Debug.Log("BLOCK ISLAND 0.7: Copy Start + Copy End + Paste Selection appended.");
     }
 
-    // The Voxel Box 0.8 - FortressCraft-inspired 8x8x8 custom voxel workshop.
+    // Block Island 0.8 - FortressCraft-inspired 8x8x8 custom voxel workshop.
     private void EnsureVoxelBoxCustomWorkshop() {
         Shader shader=Shader.Find("VoxelEngine/Diffuse"); if(shader==null) shader=Shader.Find("Standard");
         string[] tools={"Custom Workshop 8x8","Bake Custom Block"};
@@ -513,7 +513,7 @@ public class BlockSet : MonoBehaviour {
             Material m=new Material(shader);m.name=tools[i];m.mainTexture=t;m.hideFlags=HideFlags.DontSave; CubeBlock b=ScriptableObject.CreateInstance<CubeBlock>();b.name=tools[i];b.hideFlags=HideFlags.DontSave;Face f=LegacyFace(m,new Rect(0,0,1,1));b.front=f;b.back=f;b.left=f;b.right=f;b.top=f;b.bottom=f;b.icon=t;blocks.Add(b);
         }
         for(int i=0;i<32;i++) { string n="Custom Voxel "+(i+1).ToString("00"); if(FindBlock(n)!=null) continue; CustomVoxelBlock b=ScriptableObject.CreateInstance<CustomVoxelBlock>(); b.name=n;b.slot=i;b.hideFlags=HideFlags.DontSave;b.icon=Resources.Load<Texture2D>("BlockSet/Atlases/VoxelBoxCreativeSlots/Custom Voxel "+(i+1).ToString("00"));blocks.Add(b); }
-        Debug.Log("THE VOXEL BOX 0.9.9.7h: 32 Custom Voxel slots active; GO 01-16 removed from BlockSet.");
+        Debug.Log("BLOCK ISLAND 0.9.9.7h: 32 Custom Voxel slots active; GO 01-16 removed from BlockSet.");
     }
 
 }

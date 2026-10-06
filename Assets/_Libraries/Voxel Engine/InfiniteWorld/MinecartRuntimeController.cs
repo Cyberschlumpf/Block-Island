@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// Voxel Box 0.8.2: runtime minecart follows connected rails in X/Z and one-block slopes.
+// Block Island 0.8.2: runtime minecart follows connected rails in X/Z and one-block slopes.
 // This deliberately does not depend on the rail's stored placement rotation for navigation:
 // the visible legacy rail model and placement direction can be perpendicular, while the
 // neighbouring rail cells are the authoritative route. Curves therefore turn naturally.
@@ -15,7 +15,7 @@ public sealed class MinecartRuntimeController : MonoBehaviour {
     float segmentT;
     bool moving;
 
-    // Voxel Box 0.8.1: M toggles riding when the player is close to this cart.
+    // Block Island 0.8.1: M toggles riding when the player is close to this cart.
     const float RideDistance = 2.75f;
     const float RiderHeight = 1.05f;
     static MinecartRuntimeController activeRiderCart;

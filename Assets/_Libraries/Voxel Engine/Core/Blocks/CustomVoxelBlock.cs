@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using System.IO;
 
-// The Voxel Box 0.9.9.5 - 8x8x8 player-authored voxel sculpture + FortressCraft-inspired visual motion.
+// Block Island - 8x8x8 player-authored voxel sculpture + FortressCraft-inspired visual motion.
 public class CustomVoxelBlock : Block {
     public const int GRID=8, COUNT=GRID*GRID*GRID;
     public enum Motion { None, RotateCW, RotateCCW, Twizzle, Wind, Dangle, Jiggle, Dervish, Piston, Bounce, Squish, GrowShrink, Orbit, Planetary, RandomiseFacing, Big, Small, Hover, SpinX, SpinZ, Figure8, Rock, Pulse }
@@ -22,10 +22,10 @@ public class CustomVoxelBlock : Block {
     public void CycleParticle(int delta){int n=Enum.GetValues(typeof(ParticleFx)).Length; particleFx=(ParticleFx)(((int)particleFx+delta+n)%n);SaveDesign();}
     public void SaveSettings(){SaveDesign();}
 
-    static string Folder { get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"The Voxel Box","CustomBlocks"); } }
+    static string Folder { get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"Block Island","CustomBlocks"); } }
     string FilePath { get { return Path.Combine(Folder,"CustomVoxel_"+(slot+1).ToString("00")+".json"); } }
     void SaveDesign(){ try { Directory.CreateDirectory(Folder); DesignFile f=new DesignFile(); f.slot=slot;f.animation=(int)animation;f.animationSpeed=animationSpeed; f.particleFx=(int)particleFx; f.particleStrength=particleStrength; for(int i=0;i<COUNT;i++){f.blockID[i]=design[i].blockID;f.direction[i]=(int)design[i].direction;} File.WriteAllText(FilePath,JsonUtility.ToJson(f,true)); } catch(Exception e){Debug.LogWarning("Custom block save failed: "+e.Message);} }
-    void LoadDesign(){ try { if(!File.Exists(FilePath)) return; DesignFile f=JsonUtility.FromJson<DesignFile>(File.ReadAllText(FilePath)); if(f==null||f.blockID==null) return; animation=(Motion)Mathf.Clamp(f.animation,0,Enum.GetValues(typeof(Motion)).Length-1);animationSpeed=f.animationSpeed<=0?1f:f.animationSpeed; particleFx=(ParticleFx)Mathf.Clamp(f.particleFx,0,Enum.GetValues(typeof(ParticleFx)).Length-1); particleStrength=f.particleStrength<=0?1f:f.particleStrength; for(int i=0;i<COUNT&&i<f.blockID.Length;i++){design[i].blockID=f.blockID[i]; if(f.direction!=null&&i<f.direction.Length) design[i].direction=(BlockDirection)f.direction[i];} } catch(Exception e){Debug.LogWarning("Custom block load failed: "+e.Message);} }
+    void LoadDesign(){ try { if(!File.Exists(FilePath)) { string legacy=Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"The Voxel Box","CustomBlocks",Path.GetFileName(FilePath)); if(File.Exists(legacy)){Directory.CreateDirectory(Folder);File.Copy(legacy,FilePath,false);} } if(!File.Exists(FilePath)) return; DesignFile f=JsonUtility.FromJson<DesignFile>(File.ReadAllText(FilePath)); if(f==null||f.blockID==null) return; animation=(Motion)Mathf.Clamp(f.animation,0,Enum.GetValues(typeof(Motion)).Length-1);animationSpeed=f.animationSpeed<=0?1f:f.animationSpeed; particleFx=(ParticleFx)Mathf.Clamp(f.particleFx,0,Enum.GetValues(typeof(ParticleFx)).Length-1); particleStrength=f.particleStrength<=0?1f:f.particleStrength; for(int i=0;i<COUNT&&i<f.blockID.Length;i++){design[i].blockID=f.blockID[i]; if(f.direction!=null&&i<f.direction.Length) design[i].direction=(BlockDirection)f.direction[i];} } catch(Exception e){Debug.LogWarning("Custom block load failed: "+e.Message);} }
 
     int I(int x,int y,int z){return x+y*GRID+z*GRID*GRID;} bool Filled(int x,int y,int z){return x>=0&&y>=0&&z>=0&&x<GRID&&y<GRID&&z<GRID&&!design[I(x,y,z)].IsEmpty();}
     Face FaceFor(DataBlock d,CubeSide side){ CubeBlock c=d.block as CubeBlock; if(c!=null){ CubeSide s=CubeBlock.TransformSide(side,d.direction); if(s==CubeSide.Front)return c.front;if(s==CubeSide.Back)return c.back;if(s==CubeSide.Right)return c.right;if(s==CubeSide.Left)return c.left;if(s==CubeSide.Top)return c.top;return c.bottom;} return d.block!=null?d.block.GetPreviewFace():null; }

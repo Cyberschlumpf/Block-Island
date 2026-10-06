@@ -59,7 +59,7 @@ public class TanviirArchitecturalBlock : Block {
                 BoxAt(b,p,new Vector3(.5f,.18f,.5f),new Vector3(.50f,.36f,.50f));
                 BoxAt(b,p,new Vector3(.5f,.50f,.5f),new Vector3(.68f,.28f,.68f));
                 BoxAt(b,p,new Vector3(.5f,.78f,.5f),new Vector3(.86f,.28f,.86f)); break;
-            // The Voxel Box creative shapes, inspired by the useful construction ideas in Cube Life.
+            // Block Island creative shapes, inspired by the useful construction ideas in Cube Life.
             // They are native Block Island/Tanviir blocks and use no Cube Life gameplay code/assets.
             case Shape.Slab:
                 BoxAt(b,p,new Vector3(.5f,.25f,.5f),new Vector3(1f,.50f,1f)); break;
@@ -80,7 +80,7 @@ public class TanviirArchitecturalBlock : Block {
                 BoxAt(b,p,new Vector3(.5f,.12f,.5f),new Vector3(.52f,.16f,.52f));
                 BoxAt(b,p,new Vector3(.5f,.52f,.5f),new Vector3(.34f,.64f,.34f));
                 BoxAt(b,p,new Vector3(.5f,.88f,.5f),new Vector3(.52f,.16f,.52f)); break;
-            // The Voxel Box 0.2 - additional peaceful creative-world furniture/architecture.
+            // Block Island 0.2 - additional peaceful creative-world furniture/architecture.
             case Shape.Table:
                 BoxAt(b,p,new Vector3(.5f,.68f,.5f),new Vector3(.92f,.14f,.92f));
                 BoxAt(b,p,new Vector3(.18f,.34f,.18f),new Vector3(.14f,.68f,.14f));

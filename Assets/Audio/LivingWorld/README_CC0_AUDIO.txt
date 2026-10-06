@@ -1,4 +1,4 @@
-THE VOXEL BOX - Living World Audio
+BLOCK ISLAND - Living World Audio
 
 Version 0.4 works without external audio files: footsteps, wind, rain and bird calls are generated procedurally at runtime.
 

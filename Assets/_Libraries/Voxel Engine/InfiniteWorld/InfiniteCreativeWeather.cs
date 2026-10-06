@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// The Voxel Box 0.3: decorative creative-world weather. No survival/gameplay effects.
+// Block Island 0.3: decorative creative-world weather. No survival/gameplay effects.
 public sealed class InfiniteCreativeWeather : MonoBehaviour {
     public static InfiniteCreativeWeather Instance { get; private set; }
     public bool rainEnabled;
@@ -27,7 +27,7 @@ public sealed class InfiniteCreativeWeather : MonoBehaviour {
         if(rain!=null && target!=null) rain.transform.position=target.position+new Vector3(0f,14f,0f);
     }
     void CreateRain(){
-        GameObject go=new GameObject("Voxel Box Creative Rain"); go.transform.SetParent(transform,false);
+        GameObject go=new GameObject("Block Island Creative Rain"); go.transform.SetParent(transform,false);
         rain=go.AddComponent<ParticleSystem>();
         var main=rain.main; main.loop=true; main.playOnAwake=false; main.startLifetime=1.35f; main.startSpeed=22f; main.startSize=.045f; main.maxParticles=900; main.simulationSpace=ParticleSystemSimulationSpace.World;
         var emission=rain.emission; emission.rateOverTime=520f;
@@ -35,7 +35,7 @@ public sealed class InfiniteCreativeWeather : MonoBehaviour {
         var vel=rain.velocityOverLifetime; vel.enabled=true; vel.space=ParticleSystemSimulationSpace.World; vel.y=-7f;
         var r=go.GetComponent<ParticleSystemRenderer>(); r.renderMode=ParticleSystemRenderMode.Stretch; r.lengthScale=2.2f; r.velocityScale=.08f;
         Shader sh=Shader.Find("Particles/Standard Unlit"); if(sh==null) sh=Shader.Find("Sprites/Default");
-        if(sh!=null){ Material m=new Material(sh); m.name="Voxel Box Rain Material"; if(m.HasProperty("_Color")) m.SetColor("_Color",new Color(.72f,.82f,.95f,.42f)); r.material=m; }
+        if(sh!=null){ Material m=new Material(sh); m.name="Block Island Rain Material"; if(m.HasProperty("_Color")) m.SetColor("_Color",new Color(.72f,.82f,.95f,.42f)); r.material=m; }
     }
     public void SetRain(bool on){ rainEnabled=on; Apply(); SavePrefs(); }
     public void SetMist(bool on){ mistEnabled=on; Apply(); SavePrefs(); }

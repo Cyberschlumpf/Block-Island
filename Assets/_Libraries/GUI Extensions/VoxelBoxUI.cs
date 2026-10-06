@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// The Voxel Box 0.9.3 - full responsive wood / voxel UI skin.
+// Block Island 0.9.3 - full responsive wood / voxel UI skin.
 public static class VoxelBoxUI {
     public const float RefW=1600f, RefH=900f;
     static GUIStyle title,subtitle,panel,button,danger,label,small,header,selected,hotbar,tab,tabActive,card,section;

@@ -9,7 +9,7 @@ public class VoxelTextureBrowser : EditorWindow
     int selectedFace=0; bool applyAllFaces=false;
     bool atlasDragging=false; Vector2 atlasDragStart, atlasDragNow;
 
-    [MenuItem("Tools/The Voxel Box/Texture Browser")]
+    [MenuItem("Tools/Block Island/Texture Browser")]
     public static void Open()=>GetWindow<VoxelTextureBrowser>("Voxel Texture Browser");
 
     void OnGUI(){

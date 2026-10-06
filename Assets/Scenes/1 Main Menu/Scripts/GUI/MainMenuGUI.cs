@@ -21,7 +21,7 @@ public class MainMenuGUI:GUIScreen{
   if(GUILayout.Button("✕  SPIEL BEENDEN",VoxelBoxUI.Danger,GUILayout.Height(54)))Application.Quit();
   GUILayout.EndVertical();GUILayout.EndArea();
  }
- void DrawSettings(){VoxelBoxUI.Backdrop(.08f);Rect r=new Rect(500,34,1062,832);GUILayout.BeginArea(r,VoxelBoxUI.Panel);VoxelBoxUI.PanelTitle("⚙","EINSTELLUNGEN","THE VOXEL BOX  •  SYSTEM, SPIEL & ANLEITUNGEN");int oldTab=tab;tab=VoxelBoxSettingsGUI.DrawTabs(tab);if(tab!=oldTab&&tab==6){guideTab=0;guideScroll=Vector2.zero;}GUILayout.Space(8);if(tab==6)DrawGuidesInSettings();else{GUILayout.BeginVertical(VoxelBoxUI.Card);VoxelBoxSettingsGUI.Draw(tab,false);GUILayout.EndVertical();GUILayout.FlexibleSpace();}CloseRow();GUILayout.EndArea();}
+ void DrawSettings(){VoxelBoxUI.Backdrop(.08f);Rect r=new Rect(500,34,1062,832);GUILayout.BeginArea(r,VoxelBoxUI.Panel);VoxelBoxUI.PanelTitle("⚙","EINSTELLUNGEN","BLOCK ISLAND  •  SYSTEM, SPIEL & ANLEITUNGEN");int oldTab=tab;tab=VoxelBoxSettingsGUI.DrawTabs(tab);if(tab!=oldTab&&tab==6){guideTab=0;guideScroll=Vector2.zero;}GUILayout.Space(8);if(tab==6)DrawGuidesInSettings();else{GUILayout.BeginVertical(VoxelBoxUI.Card);VoxelBoxSettingsGUI.Draw(tab,false);GUILayout.EndVertical();GUILayout.FlexibleSpace();}CloseRow();GUILayout.EndArea();}
  void DrawGuidesInSettings(){
   string[] tabs={"TANVIIR","GESCHICHTE","BLOCKAUSWAHL","WORKSHOP","COPY & PASTE","TNT","MINECART","SPEICHERN","WETTER","AUDIO","TIPPS"};
   for(int row=0;row<3;row++){GUILayout.BeginHorizontal();int start=row*4;int end=Mathf.Min(start+4,tabs.Length);for(int i=start;i<end;i++){if(GUILayout.Button(tabs[i],guideTab==i?VoxelBoxUI.TabActive:VoxelBoxUI.Tab,GUILayout.Height(36))){guideTab=i;guideScroll=Vector2.zero;}}GUILayout.EndHorizontal();}
@@ -42,7 +42,7 @@ public class MainMenuGUI:GUIScreen{
 
  void DrawGuidesPanel(){
   VoxelBoxUI.Backdrop(.12f);Rect r=new Rect(500,34,1062,832);GUILayout.BeginArea(r,VoxelBoxUI.Panel);
-  VoxelBoxUI.PanelTitle("?","ANLEITUNGEN, HILFEN & TIPPS","THE VOXEL BOX  •  KURZ ERKLÄRT");
+  VoxelBoxUI.PanelTitle("?","ANLEITUNGEN, HILFEN & TIPPS","BLOCK ISLAND  •  KURZ ERKLÄRT");
   string[] tabs={"TANVIIR","GESCHICHTE","BLOCKAUSWAHL","WORKSHOP","COPY & PASTE","TNT","MINECART","SPEICHERN","WETTER","AUDIO","TIPPS"};
   for(int row=0;row<3;row++){GUILayout.BeginHorizontal();int start=row*4;int end=Mathf.Min(start+4,tabs.Length);for(int i=start;i<end;i++){if(GUILayout.Button(tabs[i],guideTab==i?VoxelBoxUI.TabActive:VoxelBoxUI.Tab,GUILayout.Height(38))){guideTab=i;guideScroll=Vector2.zero;}}GUILayout.EndHorizontal();}
   GUILayout.Space(8);guideScroll=GUILayout.BeginScrollView(guideScroll,false,true,GUILayout.ExpandHeight(true));GUILayout.BeginVertical(VoxelBoxUI.Card);
@@ -57,7 +57,7 @@ public class MainMenuGUI:GUIScreen{
   GuideText("Tanviir ist eine historische Fantasywelt aus den frühen Jahren von Minecraft. Sie wurde von Mitgliedern der Bau-Community The VoxelBox als zusammenhängende High-Fantasy-Region entwickelt. Landschaft, Vegetation, Wasser und Architektur wurden dabei bewusst gemeinsam gestaltet. Zu den überlieferten Orten gehört unter anderem Anataria.");
   GuideText("Spätestens 2013 war Tanviir als eigene kuratierte Region dokumentiert. Am 1. April 2014 veröffentlichte The VoxelBox die vollständige Welt unter dem Titel „Tanviir, a World of High Fantasy“. Als Lead Architects wurden JiiJiii, Thimble_Tack und Daniel_Carmi genannt; zahlreiche weitere Mitglieder der Community wirkten ebenfalls an der Region mit.");
   GuideText("Für Tanviir entstand außerdem ein eigenes 32×32 Texture Pack. Es unterstützte die typische Gestaltung der Welt mit hellen, monumentalen Bauwerken, Fantasy-Architektur und stark ausgearbeiteten Landschaften. Teile der damaligen Dokumentation und des VoxelWiki sind heute nicht mehr verfügbar, weshalb nicht mehr alle Orte und Erbauer vollständig zugeordnet werden können.");
-  GuideText("In The Voxel Box wird Tanviir als feste Welt erhalten. Die historischen Weltdaten bilden die Grundlage, können aber mit der heutigen Engine weiter bebaut, verändert und gespeichert werden. Dadurch bleibt die ursprüngliche Welt nutzbar, ohne weiterhin von Minecraft als Laufzeitumgebung abhängig zu sein.");
+  GuideText("In Block Island wird Tanviir als feste Welt erhalten. Die historischen Weltdaten bilden die Grundlage, können aber mit der heutigen Engine weiter bebaut, verändert und gespeichert werden. Dadurch bleibt die ursprüngliche Welt nutzbar, ohne weiterhin von Minecraft als Laufzeitumgebung abhängig zu sein.");
  }
  void DrawGuideBlockSelection(){
   GuideHeading("BLOCKAUSWAHL & EIGENE KATEGORIEN");
@@ -86,10 +86,10 @@ public class MainMenuGUI:GUIScreen{
   GuideText("Creative TNT verursacht keinen Spielerschaden und ist keine Waffenmechanik. Es ist für Terraforming, das Entfernen großer Bauabschnitte und schnelle Umbauten gedacht. Vor großen Änderungen empfiehlt es sich, die Welt zu speichern.");
  }
  void DrawGuideHistory(){
-  GuideHeading("VON BLOCK ISLAND ZU THE VOXEL BOX");
+  GuideHeading("DIE GESCHICHTE VON BLOCK ISLAND");
   GuideText("Block Island entstand zwischen 2014 und 2019 als privates Voxel-Spielprojekt. Zu Beginn gab es weder besondere Programmierkenntnisse noch einen fertigen Entwicklungsplan. Viele Funktionen entstanden durch Ausprobieren, Umbauen und wiederholtes Testen. So entwickelten sich nach und nach eigene Welten, Gebäude und Spielmechaniken.");
   GuideText("2026 wurde das alte Projekt wieder aufgegriffen. Mit Unterstützung moderner KI-Werkzeuge konnten alte Daten analysiert, frühere Welten wiederhergestellt und technische Probleme der ursprünglichen Version schrittweise gelöst werden.");
-  GuideText("Aus der Wiederbelebung von Block Island entwickelte sich The Voxel Box. Die neue Fassung verbindet die restaurierte Welt von Block Island mit der weiterentwickelten Voxel-Engine, neuen Creative-Werkzeugen, dem Custom Block Workshop und weiteren festen Welten wie Tanviir. Block Island bleibt dabei als historische Welt erhalten und kann weiterhin verändert und gespeichert werden.");
+  GuideText("Aus der Wiederbelebung von Block Island entstand die heutige Fassung von Block Island. Sie verbindet die restaurierte ursprüngliche Welt mit der weiterentwickelten Voxel-Engine, neuen Creative-Werkzeugen, dem Custom Block Workshop und weiteren festen Welten wie Tanviir. Die historische Block-Island-Welt bleibt dabei erhalten und kann weiterhin verändert und gespeichert werden.");
  }
  void DrawGuideMinecart(){
   GuideHeading("MINECART");
@@ -99,7 +99,7 @@ public class MainMenuGUI:GUIScreen{
  void DrawGuideSaveLoad(){
   GuideHeading("SPEICHERN & LADEN");
   GuideText("Im Pause-Menü unter Welt kann der aktuelle Stand manuell gespeichert werden. Tanviir und Block Island besitzen zusätzlich eigene Speicherfunktionen. Während des Spiels wird außerdem regelmäßig automatisch gespeichert.");
-  GuideText("Die Savegames liegen im Ordner Dokumente/The Voxel Box/Saves. Über „Savegame-Ordner öffnen“ kann dieser Ordner direkt aus dem Spiel geöffnet werden. Im Hauptmenü lädt „Welt laden“ einen vorhandenen Spielstand.");
+  GuideText("Die Savegames liegen im Ordner Dokumente/Block Island/Saves. Über „Savegame-Ordner öffnen“ kann dieser Ordner direkt aus dem Spiel geöffnet werden. Im Hauptmenü lädt „Welt laden“ einen vorhandenen Spielstand.");
   GuideText("Bei Tanviir und Block Island bleibt die feste Ausgangswelt unverändert. Gespeichert werden die Änderungen, die während des Spielens vorgenommen wurden. Dadurch kann jederzeit weitergebaut werden, ohne die historische Basiswelt neu schreiben zu müssen.");
  }
  void DrawGuideWeather(){

@@ -1,5 +1,5 @@
 using UnityEngine;
-// The Voxel Box 0.9.9.5d: lightweight visual-only particle layer for Custom Voxel blocks.
+// Block Island 0.9.9.5d: lightweight visual-only particle layer for Custom Voxel blocks.
 public sealed class CustomVoxelParticleFX : MonoBehaviour {
     ParticleSystem ps; Material mat;
     public void Setup(CustomVoxelBlock b, int seed) {

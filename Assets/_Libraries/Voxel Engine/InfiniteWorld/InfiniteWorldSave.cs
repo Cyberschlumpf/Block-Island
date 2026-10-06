@@ -29,7 +29,7 @@ public static class InfiniteWorldSave {
     public static string SaveDirectory {
         get {
             string docs=Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string p=String.IsNullOrEmpty(docs) ? Path.Combine(Application.persistentDataPath,"Worlds") : Path.Combine(docs,"The Voxel Box","Saves");
+            string p=String.IsNullOrEmpty(docs) ? Path.Combine(Application.persistentDataPath,"Worlds") : Path.Combine(docs,"Block Island","Saves");
             Directory.CreateDirectory(p);
             if(!saveMigrationChecked) { saveMigrationChecked=true; MigrateLegacySaves(p); }
             return p;
@@ -38,11 +38,16 @@ public static class InfiniteWorldSave {
     static string SaveDir { get { return SaveDirectory; } }
     static void MigrateLegacySaves(string destination) {
         try {
-            string legacy=Path.Combine(Application.persistentDataPath,"Worlds");
-            if(!Directory.Exists(legacy) || String.Equals(Path.GetFullPath(legacy),Path.GetFullPath(destination),StringComparison.OrdinalIgnoreCase)) return;
-            foreach(string src in Directory.GetFiles(legacy,"*.infinite")) {
-                string dst=Path.Combine(destination,Path.GetFileName(src));
-                if(!File.Exists(dst)) File.Copy(src,dst,false);
+            string docs=Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string[] legacyDirs = String.IsNullOrEmpty(docs)
+                ? new string[]{Path.Combine(Application.persistentDataPath,"Worlds")}
+                : new string[]{Path.Combine(docs,"The Voxel Box","Saves"),Path.Combine(Application.persistentDataPath,"Worlds")};
+            foreach(string legacy in legacyDirs) {
+                if(!Directory.Exists(legacy) || String.Equals(Path.GetFullPath(legacy),Path.GetFullPath(destination),StringComparison.OrdinalIgnoreCase)) continue;
+                foreach(string src in Directory.GetFiles(legacy,"*.infinite")) {
+                    string dst=Path.Combine(destination,Path.GetFileName(src));
+                    if(!File.Exists(dst)) File.Copy(src,dst,false);
+                }
             }
         } catch(Exception e) { Debug.LogWarning("Legacy save migration skipped: "+e.Message); }
     }

@@ -349,7 +349,7 @@ public class Builder : MonoBehaviour {
             }
         }
         if(map.infiniteRenderer!=null) map.infiniteRenderer.MarkDirtyChunks(dirtyChunks);
-        Debug.Log("THE VOXEL BOX 0.6 TNT: radius="+r+", removed="+removed+", chunks="+dirtyChunks.Count);
+        Debug.Log("BLOCK ISLAND 0.6 TNT: radius="+r+", removed="+removed+", chunks="+dirtyChunks.Count);
     }
 
 
@@ -357,7 +357,7 @@ public class Builder : MonoBehaviour {
         if(selectedBlock==null) return false;
         if(selectedBlock.name=="Custom Workshop 8x8") {
             workshopOrigin=pos; workshopSet=true; workshopStatus="Baue innerhalb der Box. Danach Slot wählen und BACKEN.";
-            ShowWorkshopVisual(); Debug.Log("THE VOXEL BOX 0.8 Workshop origin "+Fmt(pos)); return true;
+            ShowWorkshopVisual(); Debug.Log("BLOCK ISLAND 0.8 Workshop origin "+Fmt(pos)); return true;
         }
         if(selectedBlock.name=="Bake Custom Block") { if(!workshopSet){workshopStatus="Zuerst Custom Workshop 8x8 setzen.";return true;} BakeCustomWorkshop(); return true; }
         return false;
@@ -393,7 +393,7 @@ public class Builder : MonoBehaviour {
         if(!workshopSet||Map.instance==null)return; DataBlock[] d=new DataBlock[CustomVoxelBlock.COUNT];int solid=0,i=0;
         for(int z=0;z<8;z++)for(int y=0;y<8;y++)for(int x=0;x<8;x++,i++){d[i]=Map.instance.GetBlock(new Vector3i(workshopOrigin.x+x,workshopOrigin.y+y,workshopOrigin.z+z)); if(!d[i].IsEmpty())solid++;}
         if(solid==0){workshopStatus="Box ist leer - nichts gebacken.";return;} CustomVoxelBlock target=BlockSet.instance.FindBlock<CustomVoxelBlock>("Custom Voxel "+(workshopSlot+1).ToString("00"));
-        if(target==null){workshopStatus="Custom Slot nicht gefunden.";return;} target.SetDesign(d); workshopStatus="Slot "+(workshopSlot+1).ToString("00")+" gebacken: "+solid+" Mini-Voxel. Block im BlockSet auswählen und setzen."; BlockSet3DPreview.Clear(); Debug.Log("THE VOXEL BOX 0.9.9.7g baked slot "+(workshopSlot+1)+" with "+solid+" mini voxels");
+        if(target==null){workshopStatus="Custom Slot nicht gefunden.";return;} target.SetDesign(d); workshopStatus="Slot "+(workshopSlot+1).ToString("00")+" gebacken: "+solid+" Mini-Voxel. Block im BlockSet auswählen und setzen."; BlockSet3DPreview.Clear(); Debug.Log("BLOCK ISLAND 0.9.9.7g baked slot "+(workshopSlot+1)+" with "+solid+" mini voxels");
         // Existing placed copies of this custom slot may be in loaded chunks: request a visible refresh around workshop/player via normal dirty path on next edits.
     }
 
@@ -404,7 +404,7 @@ public class Builder : MonoBehaviour {
             copyStart=pos; copyStartSet=true; copyEndSet=false; copyReady=false; copyBuffer=null; copyRotationQuarterTurns=0;
             pastePreviewDirty=true; HidePastePreview(); ShowSelectionVisual(copyStart,copyStart);
             copyStatus="START: "+Fmt(copyStart)+"  - jetzt COPY END an der gegenüberliegenden Ecke setzen.";
-            Debug.Log("THE VOXEL BOX 0.7 COPY START "+Fmt(copyStart));
+            Debug.Log("BLOCK ISLAND 0.7 COPY START "+Fmt(copyStart));
             return true;
         }
         if(n=="Copy End") {
@@ -436,12 +436,12 @@ public class Builder : MonoBehaviour {
         if(solidCount==0) {
             copyReady=false; copyBuffer=null;
             copyStatus="Auswahl enthält keine Blöcke - START/END bitte direkt auf vorhandene Blöcke setzen.";
-            Debug.LogWarning("THE VOXEL BOX 0.7.1 COPY rejected empty selection");
+            Debug.LogWarning("BLOCK ISLAND 0.7.1 COPY rejected empty selection");
             return;
         }
         copyReady=true; pastePreviewDirty=true; ShowSelectionVisual(copyStart,copyEnd);
         copyStatus="Kopiert: "+copySizeX+" x "+copySizeY+" x "+copySizeZ+" = "+copyBuffer.Length+" Voxel, davon "+solidCount+" Blöcke. PASTE wählen.";
-        Debug.Log("THE VOXEL BOX 0.7 COPY captured "+copyStatus);
+        Debug.Log("BLOCK ISLAND 0.7 COPY captured "+copyStatus);
     }
 
     void PasteSelection(Vector3i anchor) {
@@ -459,7 +459,7 @@ public class Builder : MonoBehaviour {
         if(map.infiniteRenderer!=null) map.infiniteRenderer.MarkDirtyChunks(dirty);
         int outX=(copyRotationQuarterTurns%2==0)?copySizeX:copySizeZ; int outZ=(copyRotationQuarterTurns%2==0)?copySizeZ:copySizeX;
         copyStatus="Eingefügt bei "+Fmt(anchor)+": "+outX+" x "+copySizeY+" x "+outZ+" ("+changed+" Voxel), Drehung "+(copyRotationQuarterTurns*90)+"°.";
-        Debug.Log("THE VOXEL BOX 0.7 PASTE: "+copyStatus+" chunks="+dirty.Count);
+        Debug.Log("BLOCK ISLAND 0.7 PASTE: "+copyStatus+" chunks="+dirty.Count);
     }
 
 
