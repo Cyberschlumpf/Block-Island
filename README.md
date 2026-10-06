@@ -17,6 +17,7 @@ The project is **AI-assisted** and focuses on large voxel worlds, creative build
 - Multiple worlds / world selection
 - Dynamic day & night
 - Weather and water
+- Minecraft Save Importer (Experimantal)
 - Vegetation and environmental objects
 - Graphics Quality Settings
 - Configurable controls
