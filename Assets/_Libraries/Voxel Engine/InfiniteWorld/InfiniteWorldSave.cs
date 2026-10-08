@@ -9,9 +9,12 @@ using System.Collections.Generic;
 public static class InfiniteWorldSave {
     const int Magic=0x42495736; // BIW6: native world type in the normal Block Island save
     const int LegacyMagic=0x42495735; // BIW5
-    public enum WorldType : byte { Islands=0, Tanviir=1, BlockIsland=2, LightGarden=3, Relativity=4, Minecraft=5 }
+    public enum WorldType : byte { Islands=0, Tanviir=1, BlockIsland=2, LightGarden=3, Relativity=4, Minecraft=5, ImperialCity=6, Wolkenstadt=7, Xehanosia=8 }
     public const string TanviirSaveName="Tanviir";
     public const string BlockIslandSaveName="Block Island";
+    public const string ImperialCitySaveName="Imperial City";
+    public const string WolkenstadtSaveName="Wolkenstadt";
+    public const string XehanosiaSaveName="Xehanosia";
     public const string LightGardenSaveName="Lichtgarten";
     public const string RelativitySaveName="Sphere 64";
     public static WorldType CurrentWorldType=WorldType.Islands;
@@ -70,6 +73,9 @@ public static class InfiniteWorldSave {
         // Procedural worlds receive a unique slot before the Game scene starts, so autosave
         // can persist block edits and the player transform without requiring a manual save first.
         if(type==WorldType.Tanviir) CurrentWorldName=TanviirSaveName;
+        else if(type==WorldType.ImperialCity) CurrentWorldName=ImperialCitySaveName;
+        else if(type==WorldType.Wolkenstadt) CurrentWorldName=WolkenstadtSaveName;
+        else if(type==WorldType.Xehanosia) CurrentWorldName=XehanosiaSaveName;
         else if(type==WorldType.BlockIsland) CurrentWorldName=BlockIslandSaveName;
         else if(type==WorldType.LightGarden) CurrentWorldName=LightGardenSaveName;
         else if(type==WorldType.Relativity) CurrentWorldName=RelativitySaveName;
@@ -80,6 +86,9 @@ public static class InfiniteWorldSave {
     }
     static void ApplyWorldType(WorldType type) {
         if(type==WorldType.Tanviir){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.Begin(); }
+        else if(type==WorldType.ImperialCity){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.BeginImperialCity(); }
+        else if(type==WorldType.Xehanosia){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.BeginXehanosia(); }
+        else if(type==WorldType.Wolkenstadt){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.BeginWolkenstadt(); }
         else if(type==WorldType.BlockIsland){ TanviirImportWorld.End(); BlockIslandWorldSource.BlockIslandNativeWorldActive=true; BlockIslandNativeWorld.Begin(); }
         else { TanviirImportWorld.End(); BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); }
     }
@@ -141,6 +150,9 @@ public static class InfiniteWorldSave {
     }
     public static bool SaveCurrent(InfiniteVoxelWorld w){return !String.IsNullOrEmpty(CurrentWorldName)&&Save(w,CurrentWorldName);}
     public static bool SaveTanviir(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.Tanviir; return Save(w,TanviirSaveName); }
+    public static bool SaveXehanosia(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.Xehanosia; return Save(w,XehanosiaSaveName); }
+    public static bool SaveWolkenstadt(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.Wolkenstadt; return Save(w,WolkenstadtSaveName); }
+    public static bool SaveImperialCity(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.ImperialCity; return Save(w,ImperialCitySaveName); }
     public static bool SaveBlockIsland(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.BlockIsland; return Save(w,BlockIslandSaveName); }
     public static bool SaveLightGarden(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.LightGarden; return Save(w,LightGardenSaveName); }
 

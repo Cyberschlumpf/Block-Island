@@ -1,27 +1,42 @@
 using UnityEngine; using UnityEngine.SceneManagement;
 public class MainMenuGUI:GUIScreen{
- enum SidePanel{None,Settings,Controls,Guides,BlockDesigner} SidePanel side=SidePanel.None; int tab=0, guideTab=0; Vector2 guideScroll=Vector2.zero;
+ enum SidePanel{None,Settings,Controls,Guides,BlockDesigner} SidePanel side=SidePanel.None; int tab=0, guideTab=0; Vector2 guideScroll=Vector2.zero; Vector2 mainScroll=Vector2.zero;
  void Awake(){RestoreMenuCursor();VoxelBoxSettings.Apply();} void OnEnable(){RestoreMenuCursor();side=SidePanel.None;} void RestoreMenuCursor(){Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;}
  void OnGUI(){VoxelBoxUI.BeginResponsive();VoxelBoxUI.MenuBackground();DrawMain();if(side==SidePanel.Settings)DrawSettings();else if(side==SidePanel.Controls)DrawControlsPanel();else if(side==SidePanel.Guides)DrawGuidesPanel();else if(side==SidePanel.BlockDesigner)DrawBlockDesignerPanel();VoxelBoxUI.EndResponsive();}
  void OpenMinecraftImport(){ var importer=GetComponent<MinecraftImportGUI>(); if(importer==null) importer=gameObject.AddComponent<MinecraftImportGUI>(); foreach(GUIScreen screen in GetComponents<GUIScreen>()) screen.enabled=(screen==importer); }
  void DrawMain(){
   // 0.9.6: real visible controls over the artwork. No invisible hit targets.
-  Rect r=new Rect(24,292,370,584);
+  // Leicht vergroessertes Hauptmenue links unterhalb des Logos; Beenden bleibt fest sichtbar.
+  // Breite +25, Hoehe +10, Position -10 gegenueber Version 2.1.16.
+  Rect r=new Rect(24,265,365,630);
   GUILayout.BeginArea(r);
   GUILayout.BeginVertical(VoxelBoxUI.Panel);
-  if(VoxelBoxUI.MenuButton("◆","NEUE WELT","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Islands);SceneManager.LoadScene("Map Generator");}
-  if(VoxelBoxUI.MenuButton("▶","WELT LADEN",""))SetScreen<LoadMapGUI>();
-  if(VoxelBoxUI.MenuButton("▧","MINECRAFT IMPORT",""))OpenMinecraftImport();
-  if(VoxelBoxUI.MenuButton("✦","TANVIIR","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Tanviir);SceneManager.LoadScene("Game");}
-  if(VoxelBoxUI.MenuButton("▣","BLOCK ISLAND","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.BlockIsland);SceneManager.LoadScene("Game");}
-  if(VoxelBoxUI.MenuButton("☁","SKY ISLANDS","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Islands);InfiniteWorldLaunchConfig.openSkyGenerator=true;SceneManager.LoadScene("Map Generator");}
-  if(VoxelBoxUI.MenuButton("✺","LICHTGARTEN","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.LightGarden);SceneManager.LoadScene("Game");}
-  if(VoxelBoxUI.MenuButton("∞","SINGULARITÄT","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Relativity);SceneManager.LoadScene("Game");}
-  if(VoxelBoxUI.MenuButton("⚙","EINSTELLUNGEN","")){tab=0;side=SidePanel.Settings;}
-  if(VoxelBoxUI.MenuButton("▦","BLOCK-DESIGNER","")){side=SidePanel.BlockDesigner;}
-  GUILayout.FlexibleSpace();
-  if(GUILayout.Button("✕  SPIEL BEENDEN",VoxelBoxUI.Danger,GUILayout.Height(46)))Application.Quit();
+  // Alle 13 Menuepunkte ohne Scrollbereich direkt im Holzrahmen anzeigen.
+  if(CompactMenuButton("◆","NEUE WELT","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Islands);SceneManager.LoadScene("Map Generator");}
+  if(CompactMenuButton("▶","WELT LADEN",""))SetScreen<LoadMapGUI>();
+  if(CompactMenuButton("▧","MINECRAFT IMPORT",""))OpenMinecraftImport();
+  if(CompactMenuButton("✦","TANVIIR","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Tanviir);SceneManager.LoadScene("Game");}
+  if(CompactMenuButton("✧","XEHANOSIA","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Xehanosia);SceneManager.LoadScene("Game");}
+  if(CompactMenuButton("☁","WOLKENSTADT","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Wolkenstadt);SceneManager.LoadScene("Game");}
+  if(CompactMenuButton("♜","IMPERIAL CITY","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.ImperialCity);SceneManager.LoadScene("Game");}
+  if(CompactMenuButton("▣","BLOCK ISLAND","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.BlockIsland);SceneManager.LoadScene("Game");}
+  if(CompactMenuButton("☁","SKY ISLANDS","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Islands);InfiniteWorldLaunchConfig.openSkyGenerator=true;SceneManager.LoadScene("Map Generator");}
+  if(CompactMenuButton("✺","LICHTGARTEN","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.LightGarden);SceneManager.LoadScene("Game");}
+  if(CompactMenuButton("∞","SINGULARITÄT","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Relativity);SceneManager.LoadScene("Game");}
+  if(CompactMenuButton("⚙","EINSTELLUNGEN","")){tab=0;side=SidePanel.Settings;}
+  if(CompactMenuButton("▦","BLOCK-DESIGNER","")){side=SidePanel.BlockDesigner;}
+  GUILayout.Space(6);
+  if(GUILayout.Button("✕  SPIEL BEENDEN",VoxelBoxUI.Danger,GUILayout.Height(38)))Application.Quit();
   GUILayout.EndVertical();GUILayout.EndArea();
+ }
+ // Kompakte Buttons ausschliesslich im Hauptmenue; andere Oberflaechen bleiben unveraendert.
+ bool CompactMenuButton(string icon,string title,string sub){
+  GUIStyle style=new GUIStyle(VoxelBoxUI.Button);
+  style.fontSize=17;
+  style.wordWrap=false;
+  style.alignment=TextAnchor.MiddleLeft;
+  style.padding=new RectOffset(16,8,3,3);
+  return GUILayout.Button(icon+"   "+title,style,GUILayout.Height(34),GUILayout.ExpandWidth(true));
  }
  void DrawSettings(){VoxelBoxUI.Backdrop(.08f);Rect r=new Rect(500,34,1062,832);GUILayout.BeginArea(r,VoxelBoxUI.Panel);VoxelBoxUI.PanelTitle("⚙","EINSTELLUNGEN","BLOCK ISLAND  •  SYSTEM, SPIEL & ANLEITUNGEN");int oldTab=tab;tab=VoxelBoxSettingsGUI.DrawTabs(tab);if(tab!=oldTab&&tab==6){guideTab=0;guideScroll=Vector2.zero;}GUILayout.Space(8);if(tab==6)DrawGuidesInSettings();else{GUILayout.BeginVertical(VoxelBoxUI.Card);VoxelBoxSettingsGUI.Draw(tab,false);GUILayout.EndVertical();GUILayout.FlexibleSpace();}CloseRow();GUILayout.EndArea();}
  void DrawGuidesInSettings(){

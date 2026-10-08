@@ -17,6 +17,9 @@ public static class TanviirImportWorld {
     static readonly Dictionary<int,Block> mappedBlocks=new Dictionary<int,Block>();
 
     public static void Begin(){ active=true; ClearCache(); mappedBlocks.Clear(); missingBlockNames.Clear(); TanviirNativeWorld.Begin(); }
+    public static void BeginXehanosia(){ active=true; ClearCache(); mappedBlocks.Clear(); missingBlockNames.Clear(); TanviirNativeWorld.BeginXehanosia(); }
+    public static void BeginWolkenstadt(){ active=true; ClearCache(); mappedBlocks.Clear(); missingBlockNames.Clear(); TanviirNativeWorld.BeginWolkenstadt(); }
+    public static void BeginImperialCity(){ active=true; ClearCache(); mappedBlocks.Clear(); missingBlockNames.Clear(); TanviirNativeWorld.BeginImperialCity(); }
     public static void End(){ active=false; ClearCache(); mappedBlocks.Clear(); TanviirNativeWorld.End(); }
     public static void ClearCache(){ tiles.Clear(); missing.Clear(); }
     static long Key(int tx,int tz){ return ((long)tx<<32) ^ (uint)tz; }

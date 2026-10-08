@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 // Stage 6.14.3 - native Block Island Tanviir world reader + hot voxel cache.
 // Runtime source is BIR1 only. Minecraft .mca/NBT files are not required or read.
 public static class TanviirNativeWorld {
-    const int OffsetX=193, OffsetZ=27, MaxCachedChunks=4096;
+    const int MaxCachedChunks=4096; static int OffsetX=193, OffsetZ=27;
     class C { public ushort[] id=new ushort[16*16*256]; public byte[] meta=new byte[16*16*256]; public int[] height=new int[256]; public ushort sectionMask; public int stamp; }
     static readonly Dictionary<long,C> cache=new Dictionary<long,C>();
     static readonly HashSet<long> missing=new HashSet<long>();
@@ -23,7 +23,10 @@ public static class TanviirNativeWorld {
     static int FD(int a,int b){int q=a/b,r=a%b;return r!=0&&((r<0)!=(b<0))?q-1:q;}
     static int Mod(int a,int b){int r=a%b;return r<0?r+b:r;}
     public static bool Available { get { return Directory.Exists(Root); } }
-    public static void Begin(){root=Path.Combine(Application.streamingAssetsPath,"TanviirNative/region");lock(cacheLock){cache.Clear();missing.Clear();pending.Clear();stamp=0;} hotX=hotZ=int.MinValue; hotC=null; Debug.Log("TANVIIR 6.14.3 NATIVE: BIR1 world online; no Minecraft MCA/NBT runtime dependency. root="+Root);}
+    public static void Begin(){OffsetX=193;OffsetZ=27;root=Path.Combine(Application.streamingAssetsPath,"TanviirNative/region");lock(cacheLock){cache.Clear();missing.Clear();pending.Clear();stamp=0;} hotX=hotZ=int.MinValue; hotC=null; Debug.Log("TANVIIR 6.14.3 NATIVE: BIR1 world online; no Minecraft MCA/NBT runtime dependency. root="+Root);}
+    public static void BeginXehanosia(){OffsetX=-2816;OffsetZ=3072;root=Path.Combine(Application.streamingAssetsPath,"XehanosiaNative/region");lock(cacheLock){cache.Clear();missing.Clear();pending.Clear();stamp=0;} hotX=hotZ=int.MinValue; hotC=null; Debug.Log("XEHANOSIA NATIVE: BIR1 world online. root="+root);}
+    public static void BeginWolkenstadt(){OffsetX=-128;OffsetZ=1312;root=Path.Combine(Application.streamingAssetsPath,"WolkenstadtNative/region");lock(cacheLock){cache.Clear();missing.Clear();pending.Clear();stamp=0;} hotX=hotZ=int.MinValue; hotC=null; Debug.Log("WOLKENSTADT NATIVE: BIR1 world online. root="+root);}
+    public static void BeginImperialCity(){OffsetX=403;OffsetZ=-636;root=Path.Combine(Application.streamingAssetsPath,"ImperialCityNative/region");lock(cacheLock){cache.Clear();missing.Clear();pending.Clear();stamp=0;} hotX=hotZ=int.MinValue; hotC=null; Debug.Log("IMPERIAL CITY NATIVE: BIR1 world online. root="+root);}
     public static void End(){lock(cacheLock){cache.Clear();missing.Clear();pending.Clear();}}
     public static bool IsWorldColumnReady(int wx,int wz){
         // Block Island chunks are 32x32 in X/Z, while BIR1 stores Minecraft-style 16x16 columns.
