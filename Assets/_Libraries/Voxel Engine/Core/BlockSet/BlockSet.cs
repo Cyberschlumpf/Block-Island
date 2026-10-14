@@ -53,6 +53,8 @@ public class BlockSet : MonoBehaviour {
         EnsureVoxelBoxCopyPaste(); // 0.7: appended last, never shifts older IDs.
         EnsureVoxelBoxCustomWorkshop(); // 0.9.9.7h: 32 custom mini-voxel slots; 17-32 replace removed GO 01-16 capacity.
         EnsureBlockIsland1Originals(); // 1.0 migration: original 1.0 blockset, appended last, never shifts older IDs.
+        EnsureLocomotive(); // appended after everything else, never shifts older IDs.
+        TanviirPackBlocks.Ensure(this); // Tanviir texture-pack blockset, appended last; retires the old Tanviir palette.
 
         // Block IDs are 32-bit in the modernized engine. List/array indexing makes int.MaxValue
         // the practical ceiling instead of the legacy 256-block byte limit.
@@ -63,6 +65,8 @@ public class BlockSet : MonoBehaviour {
         // 0.9.9.7: preserve factory faces, then apply optional global Block Designer overrides.
         BlockTextureDesigner.CaptureOriginals(this);
         BlockTextureDesigner.LoadAndApply(this);
+        // Block IDs and textures may differ from the previous BlockSet: drop cached inventory previews.
+        if(Application.isPlaying) BlockSet3DPreview.Clear();
 	}
 	
 	
@@ -515,6 +519,13 @@ public class BlockSet : MonoBehaviour {
         }
         for(int i=0;i<32;i++) { string n="Custom Voxel "+(i+1).ToString("00"); if(FindBlock(n)!=null) continue; CustomVoxelBlock b=ScriptableObject.CreateInstance<CustomVoxelBlock>(); b.name=n;b.slot=i;b.hideFlags=HideFlags.DontSave;b.icon=Resources.Load<Texture2D>("BlockSet/Atlases/VoxelBoxCreativeSlots/Custom Voxel "+(i+1).ToString("00"));blocks.Add(b); }
         Debug.Log("BLOCK ISLAND 0.9.9.7h: 32 Custom Voxel slots active; GO 01-16 removed from BlockSet.");
+    }
+
+    // Locomotive: rides on rails like the Minecart (MinecartRuntimeController), placed via the FUNKTION tab.
+    private void EnsureLocomotive() {
+        if(FindBlock("Locomotive") != null) return;
+        MinecartRailBlock b = ScriptableObject.CreateInstance<MinecartRailBlock>();
+        b.name = "Locomotive"; b.kind = MinecartRailBlock.RailKind.Locomotive; b.hideFlags = HideFlags.DontSave; blocks.Add(b);
     }
 
     // Block Island 1.0 migration - the original 1.0 block assets (Assets/Legacy 1.0), in 1.0 BlockSet order.

@@ -41,13 +41,10 @@ public class GameInitializer : MonoBehaviour {
                     infinitePlayer.transform.position = InfiniteWorldSave.LoadedPlayerPosition;
                     infinitePlayer.transform.rotation = InfiniteWorldSave.LoadedPlayerRotation;
                     InfiniteWorldSave.HasLoadedPlayerTransform=false;
-                } else if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) {
-                    infinitePlayer.transform.position = new Vector3(0,0,0);
-                    infinitePlayer.transform.rotation = Quaternion.identity;
                 } else {
-                    int sx = 0, sz = 0;
-                    int sy = infinite.generator.SurfaceY(sx, sz) + 3;
-                    infinitePlayer.transform.position = new Vector3(sx, sy, sz);
+                    // Same start point as the teleport key T (InfiniteWorldSpawn).
+                    infinitePlayer.transform.position = InfiniteWorldSpawn.StartPoint(infinite);
+                    if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) infinitePlayer.transform.rotation = Quaternion.identity;
                 }
                 infinitePlayer.SetActive(true);
             }

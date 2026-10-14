@@ -88,6 +88,43 @@ public static class VoxelBoxUI {
         return GUILayout.Button(icon+"   "+text+"\n      "+sub,s,GUILayout.Height(58),GUILayout.ExpandWidth(true));
     }
     public static void Logo(){GUILayout.Label("THE",new GUIStyle(Title){fontSize=24});GUILayout.Label("VOXEL BOX",new GUIStyle(Title){fontSize=46});GUILayout.Label("TANVIIR  •  CREATIVE WORLD",Subtitle);}
+    // Visible toggles and sliders for the settings menus (main menu and in-game pause menu share them).
+    static Texture2D checkOffTex, checkOnTex, sliderTrackTex, sliderFillTex, sliderThumbTex, sliderThumbHotTex;
+    static GUIStyle toggleStyle, sliderBarStyle, sliderThumbStyle;
+    static Texture2D Box(int s, Color fill, Color border, bool tick){
+        var t=new Texture2D(s,s,TextureFormat.RGBA32,false);
+        for(int y=0;y<s;y++)for(int x=0;x<s;x++){bool b=x<2||y<2||x>=s-2||y>=s-2;t.SetPixel(x,y,b?border:fill);}
+        if(tick){Color k=new Color(.10f,.06f,.02f);for(int i=0;i<s;i++){int x1=5+i/3,y1=s/2-1-i/3;int x2=s/2-2+i,y2=6+i;
+            for(int d=-1;d<=1;d++){if(i<s/3&&x1>=0&&x1<s&&y1+d>=0&&y1+d<s)t.SetPixel(x1,y1+d,k);if(x2<s-5&&y2+d<s-4&&y2+d>=0)t.SetPixel(x2,y2+d,k);}}}
+        t.Apply();t.filterMode=FilterMode.Point;t.wrapMode=TextureWrapMode.Clamp;t.hideFlags=HideFlags.HideAndDontSave;return t;
+    }
+    static void EnsureControls(){
+        if(toggleStyle!=null)return; Ensure();
+        Color gold=new Color(.95f,.72f,.25f),dark=new Color(.18f,.11f,.05f),light=new Color(.82f,.78f,.70f);
+        checkOffTex=Box(20,new Color(.10f,.11f,.12f),gold,false); checkOnTex=Box(20,gold,new Color(1f,.85f,.45f),true);
+        sliderTrackTex=Solid(light); sliderFillTex=Solid(gold);
+        sliderThumbTex=Box(26,gold,dark,false); sliderThumbHotTex=Box(26,new Color(1f,.85f,.4f),dark,false);
+        toggleStyle=new GUIStyle(label){imagePosition=ImagePosition.ImageLeft,wordWrap=false,padding=new RectOffset(4,4,5,5)};
+        sliderBarStyle=new GUIStyle(); sliderThumbStyle=new GUIStyle(){fixedWidth=22,fixedHeight=26};
+        sliderThumbStyle.normal.background=sliderThumbTex; sliderThumbStyle.hover.background=sliderThumbStyle.active.background=sliderThumbHotTex;
+    }
+    // Checkbox with a visible box (gold tick when on) and the label next to it.
+    public static bool Toggle(bool value,string text){
+        EnsureControls();
+        return GUILayout.Toggle(value,new GUIContent("   "+text,value?checkOnTex:checkOffTex),toggleStyle);
+    }
+    // Slider with a light track, gold fill and a large gold handle.
+    public static float Slider(float value,float min,float max){
+        EnsureControls();
+        Rect r=GUILayoutUtility.GetRect(100,30,GUILayout.ExpandWidth(true));
+        float t=max>min?Mathf.Clamp01((value-min)/(max-min)):0f;
+        if(Event.current.type==EventType.Repaint){
+            GUI.DrawTexture(new Rect(r.x,r.y+10,r.width,10),sliderTrackTex);
+            GUI.DrawTexture(new Rect(r.x,r.y+10,11+(r.width-22)*t,10),sliderFillTex);
+        }
+        return GUI.HorizontalSlider(r,value,min,max,sliderBarStyle,sliderThumbStyle);
+    }
+
     public static void SectionTitle(string text){GUILayout.Label(text,Section);GUILayout.Space(5);}
     public static void PanelTitle(string icon,string text,string sub=null){GUILayout.BeginHorizontal();GUILayout.Label(icon,Header,GUILayout.Width(34));GUILayout.Label(text,Header);GUILayout.EndHorizontal();if(!string.IsNullOrEmpty(sub))GUILayout.Label(sub,Small);GUILayout.Space(8);}
 }

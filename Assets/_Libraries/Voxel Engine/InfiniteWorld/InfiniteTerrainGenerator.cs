@@ -15,6 +15,14 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
     public bool hardCoordinatePlane = false;
     public int seed=1337;
     public int seaLevel=25;
+    // All original height bands (water 25, sand <26, dirt <41, rock <45) move with the sea level.
+    // Islands keep seaLevel 25 (Lift 0); the Block Island ocean lies at 49.
+    int Lift { get { return seaLevel-25; } }
+    // Block Island: the 1.0 world occupies x/z 0..1023. Generated islands stay outside and run
+    // flat into the sea within reserveFade blocks of its border; there is no forced spawn island.
+    public bool reserveBlockIsland=false;
+    public const int ReservedSize=1024;
+    public int reserveFade=40;
     public int dirtDepth=4;
     public int startIslandEdgeOceanBand=24;
     public bool generateTrees=true;
@@ -75,9 +83,9 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         leaf=bs.FindBlock("Green Leaf"); if(leaf==null)leaf=bs.FindBlock("Birch Leaf");
         flora[0]=bs.FindBlock("Grass 1"); flora[1]=bs.FindBlock("Grass 2");
         flora[2]=bs.FindBlock("Flower 1"); flora[3]=bs.FindBlock("Flower 2");
-        lgStone=bs.FindBlock("Tanviir Pale Stone"); if(lgStone==null)lgStone=rock;
-        lgDark=bs.FindBlock("Tanviir Dark Stone"); if(lgDark==null)lgDark=rock;
-        lgGold=bs.FindBlock("Tanviir Gold Trim"); if(lgGold==null)lgGold=lgStone;
+        lgStone=bs.FindBlock("Tanviir: Quartz Block"); if(lgStone==null)lgStone=rock;
+        lgDark=bs.FindBlock("Tanviir: Stone Bricks"); if(lgDark==null)lgDark=rock;
+        lgGold=bs.FindBlock("Tanviir: Gold Block"); if(lgGold==null)lgGold=lgStone;
         lgGlass=bs.FindBlock("Glass"); if(lgGlass==null)lgGlass=lgStone;
         lgRed=bs.FindBlock("Red Leaf"); lgYellow=bs.FindBlock("Yellow Leaf"); lgPink=bs.FindBlock("Pink Leaf");
     }
@@ -124,7 +132,7 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         float best=0f;
         for(int dz=-2;dz<=2;dz++)for(int dx=-2;dx<=2;dx++){
             int gx=cx+dx,gz=cz+dz;
-            bool spawnCell=(gx==0 && gz==0);
+            bool spawnCell=(gx==0 && gz==0) && !reserveBlockIsland;
             if(!spawnCell && H01(gx,gz,1)*100f>=islandChancePercent)continue;
             float centerX=spawnCell ? 0f : (gx+0.18f+H01(gx,gz,2)*0.64f)*islandCellSize;
             float centerZ=spawnCell ? 0f : (gz+0.18f+H01(gx,gz,3)*0.64f)*islandCellSize;
@@ -152,7 +160,12 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         // The old StartMask was a second terrain system centred at world origin and visually
         // recreated the old finite-map slab. Every land mass, including the spawn island, now
         // comes from the same signed world-coordinate archipelago function.
-        return OuterMask(x,z,out relief);
+        float m=OuterMask(x,z,out relief);
+        if(reserveBlockIsland && m>0f) {
+            int dx=Mathf.Max(0,Mathf.Max(-x,x-(ReservedSize-1))), dz=Mathf.Max(0,Mathf.Max(-z,z-(ReservedSize-1)));
+            m*=Mathf.SmoothStep(0f,1f,Mathf.Sqrt(dx*dx+dz*dz)/reserveFade);
+        }
+        return m;
     }
 
     int ComputeSurfaceY(int x,int z,float m,float relief){
@@ -193,7 +206,28 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         float mountainGate=Mathf.SmoothStep(0.52f,0.84f,broad) * Mathf.SmoothStep(0.42f,0.78f,m);
         float hill=(relief-0.5f)*12f*inland;
         float mountain=mountainGate*(8f + ridges*26f);
-        return Mathf.FloorToInt(baseY + hill + mountain);
+        int inlandY=Mathf.FloorToInt(baseY + hill + mountain) + Lift;
+        return ShapeCoast(m,inlandY);
+    }
+
+    // Wide sandy coasts instead of grass/dirt edges standing in the water. The island outline stays
+    // as generated; only the height band around the waterline is flattened into a broad beach:
+    // terrain from 2 below to 5 above the sea becomes flat sand at the waterline, higher land
+    // continues seamlessly behind it (shifted down by the flattened band).
+    public bool wideBeaches=true;
+    public int beachBelow=2, beachAbove=5;
+    public void ClearColumnCache(){ columnCache.Clear(); }
+    int ShapeCoast(float m,int inlandY) {
+        if(!wideBeaches) return inlandY;
+        int d=inlandY-seaLevel;
+        if(d<-beachBelow) return inlandY;
+        if(d<=0) return seaLevel;
+        if(d<=beachAbove) return seaLevel+1;
+        return inlandY-(beachAbove-1);
+    }
+
+    // Sand covers the beach band and everything at or below the waterline near the coast.
+    bool IsCoastSand(float land,int top) { return wideBeaches && land>0.001f && top<=seaLevel+1;
     }
 
 
@@ -350,7 +384,7 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         if(columnCache.Count>=MaxColumnCache) columnCache.Clear();
         c.land=LandMask(x,z,out c.relief);
         c.top=ComputeSurfaceY(x,z,c.land,c.relief);
-        c.beach=ComputeBeach(x,z,c.top,c.land);
+        c.beach=ComputeBeach(x,z,c.top,c.land) || IsCoastSand(c.land,c.top);
 
         // Stage 6.9.4: NEVER change geometry after beach classification.  Beach is a material
         // decision only.  ComputeSurfaceY already supplies the continuous coastal ramp.
@@ -360,7 +394,7 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         // If the exposed top voxel is Grass (the original Dirt height band y=26..40),
         // vegetation is allowed. Density/placement stays deterministic in the feature
         // generators, so grassy terrain is no longer arbitrarily disabled by climate masks.
-        c.vegetated=c.land>0.001f && c.top>=26 && c.top<41 && !c.beach;
+        c.vegetated=c.land>0.001f && c.top>=26+Lift && c.top<41+Lift && !c.beach;
         columnCache[key]=c; return c;
     }
 
@@ -370,7 +404,7 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         // Original IslandGenerator: sand is an absolute vertical band below .52*50.
         // A visible beach is therefore simply dry terrain at/just above waterline.
         if(land<=0.001f) return false;
-        const int originalSandTop=25; // y < 26 in the original loop
+        int originalSandTop=25+Lift; // y < 26 in the original loop
         return top>=seaLevel && top<=originalSandTop+1;
     }
 
@@ -417,7 +451,7 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         result=new DataBlock(flora[idx]);return true;
     }
 
-    public DataBlock Sample(int x,int y,int z){ if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Minecraft) return default(DataBlock); if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) return RelativityWorld.Sample(x,y,z); return BlockIslandWorldSource.Sample(this,x,y,z); }
+    public DataBlock Sample(int x,int y,int z){ /* Minecraft: structure imports have an empty base; native world imports read their BIR regions. */ if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Minecraft && !TanviirImportWorld.active) return default(DataBlock); if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) return RelativityWorld.Sample(x,y,z); return BlockIslandWorldSource.Sample(this,x,y,z); }
 
     // Procedural source implementation. Fixed worlds enter through BlockIslandWorldSource.
     public DataBlock SampleProcedural(int x,int y,int z){
@@ -475,15 +509,18 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         if(y<=top){
             // Keep the island volume shallow. It follows the local surface instead of filling
             // a fixed 512x512 prism down to a global Y coordinate.
-            int bottom=top-8;
+            // Islands reach down to the sea floor, so no dirt edge hangs above the water.
+            int bottom=Mathf.Min(top-8,seaLevel-8);
             if(y<bottom) return default(DataBlock);
+            // Beach columns are sand down to below the waterline.
+            if(column.beach && y>top-5 && sand!=null) return new DataBlock(sand);
 
             // Stage 6.9.5: ORIGINAL material thresholds, evaluated by absolute Y.
             // This is intentionally NOT a full-column "beach" material.  Sand exists only
             // in the original low vertical band; dirt and rock keep their original heights.
-            const int sandExclusive=26; // y < .52*50
-            const int dirtExclusive=41; // y < .83*50 (integer loop equivalent)
-            const int rockExclusive=45; // y < .90*50
+            int sandExclusive=26+Lift; // y < .52*50
+            int dirtExclusive=41+Lift; // y < .83*50 (integer loop equivalent)
+            int rockExclusive=45+Lift; // y < .90*50
 
             if(y < sandExclusive && sand!=null) return new DataBlock(sand);
             if(y < dirtExclusive && dirt!=null) {

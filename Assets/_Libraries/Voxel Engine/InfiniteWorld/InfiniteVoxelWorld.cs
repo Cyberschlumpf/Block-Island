@@ -29,7 +29,7 @@ public class InfiniteVoxelWorld : MonoBehaviour {
     public void FillChunk(InfiniteChunkKey key, DataBlock[] dst) {
         if(dst==null || dst.Length < Chunk.X_SIZE*Chunk.Y_SIZE*Chunk.Z_SIZE) return;
         int ox=key.x*Chunk.X_SIZE, oy=key.y*Chunk.Y_SIZE, oz=key.z*Chunk.Z_SIZE;
-        if(BlockIslandWorldSource.BlockIslandNativeWorldActive && BlockIslandNativeWorld.Available) {
+        if(BlockIslandWorldSource.BlockIslandNativeWorldActive && BlockIslandNativeWorld.Available && BlockIslandWorldSource.InsideBlockIsland(ox,oz)) {
             BlockIslandNativeWorld.FillChunk(dst,ox,oy,oz);
             Dictionary<int,DataBlock> bc;
             if(edits.TryGetValue(key,out bc)) foreach(var e in bc) if((uint)e.Key < (uint)dst.Length) dst[e.Key]=e.Value;

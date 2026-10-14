@@ -10,6 +10,8 @@ public abstract class Block : ScriptableObject {
 	public Texture2D icon;
 
 	internal int blockID;
+	// Retired blocks keep their ID (old saves still render) but are hidden from inventory and designer.
+	[System.NonSerialized] public bool retired;
 	
 	public virtual void Init(BlockSet blockSet, int blockID) {
 		this.blockID = blockID;

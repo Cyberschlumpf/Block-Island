@@ -21,6 +21,7 @@ public class BlockIsland1InventoryTest : MonoBehaviour {
     static void Boot() {
         string[] args = Environment.GetCommandLineArgs();
         if(Array.IndexOf(args, "-bi1inventorytest") < 0) return;
+        Application.runInBackground = true;   // keep testing when the window is not in front
         GameObject go = new GameObject("BlockIsland1InventoryTest");
         DontDestroyOnLoad(go);
         BlockIsland1InventoryTest t = go.AddComponent<BlockIsland1InventoryTest>();
@@ -39,6 +40,8 @@ public class BlockIsland1InventoryTest : MonoBehaviour {
 
     IEnumerator Run() {
         yield return new WaitForSecondsRealtime(2f);
+        bool features = Array.IndexOf(Environment.GetCommandLineArgs(), "-bi1features") >= 0;
+        if(features) yield return DesignerShot();
         report.Add("Main menu errors before start: " + errors.Count);
         InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.BlockIsland);
         InfiniteWorldSave.CurrentWorldName = TestWorldName;   // never load or overwrite the real Block Island save
@@ -91,6 +94,13 @@ public class BlockIsland1InventoryTest : MonoBehaviour {
 
         show.SetValue(inv, false); Cursor.visible = false; Cursor.lockState = CursorLockMode.Locked;
         yield return new WaitForSecondsRealtime(.5f);
+        if(features) {
+            yield return FeatureTest();
+            report.Add("Total errors/exceptions: " + errors.Count);
+            WriteReport();
+            Application.Quit();
+            yield break;
+        }
         if(Array.IndexOf(Environment.GetCommandLineArgs(), "-bi1ring") >= 0) {
             yield return RingTest();
             report.Add("Total errors/exceptions: " + errors.Count);
@@ -311,13 +321,21 @@ public class BlockIsland1InventoryTest : MonoBehaviour {
     }
 
     // Diagnosis for the turquoise ring around the player: same view, one effect switched off per shot.
+    static Vector3 RingPos {
+        get {
+            string[] a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, "-bi1ringpos");
+            if(i >= 0 && i + 3 < a.Length) return new Vector3(float.Parse(a[i + 1], System.Globalization.CultureInfo.InvariantCulture), float.Parse(a[i + 2], System.Globalization.CultureInfo.InvariantCulture), float.Parse(a[i + 3], System.Globalization.CultureInfo.InvariantCulture));
+            return new Vector3(145.5f, 54f, 160f);
+        }
+    }
+
     IEnumerator RingTest() {
         GameObject player = GameObject.FindWithTag("Player");
         Camera cam = player != null ? player.GetComponentInChildren<Camera>() : null;
         if(cam == null) { report.Add("Ring test: no player camera"); yield break; }
         foreach(MonoBehaviour mb in player.GetComponentsInChildren<MonoBehaviour>())
             if(mb != null && (mb is MouseLook || mb is CharacterMotor || mb is CharacterInputController)) mb.enabled = false;
-        player.transform.position = new Vector3(145.5f, 54f, 160f);       // open beach, looking along the sand
+        player.transform.position = RingPos;
         player.transform.rotation = Quaternion.LookRotation(Vector3.forward);
         cam.transform.localRotation = Quaternion.Euler(9f, 0f, 0f);
         yield return new WaitForSecondsRealtime(10f);
@@ -355,6 +373,93 @@ public class BlockIsland1InventoryTest : MonoBehaviour {
         foreach(Behaviour b in cam.GetComponents<Behaviour>()) if(b != null && !(b is Camera) && !(b is AudioListener) && !(b is FlareLayer)) b.enabled = false;
         RenderSettings.fog = false;
         yield return new WaitForSecondsRealtime(1f); yield return Shot("11_ring_F_ohne_alle_Effekte.png");
+    }
+
+    // Main menu: Block-Designer panel (list column layout).
+    IEnumerator DesignerShot() {
+        MainMenuGUI menu = FindAnyObjectByType<MainMenuGUI>();
+        if(menu == null) { report.Add("Designer: main menu not found"); yield break; }
+        FieldInfo side = typeof(MainMenuGUI).GetField("side", BindingFlags.NonPublic | BindingFlags.Instance);
+        side.SetValue(menu, Enum.Parse(side.FieldType, "BlockDesigner"));
+        yield return new WaitForSecondsRealtime(2f);
+        yield return Shot("20_block_designer.png");
+        side.SetValue(menu, Enum.Parse(side.FieldType, "None"));
+        yield return null;
+    }
+
+    // In game: start point (key T), minecart graphics, inventory FUNCTION tab, pause graphics settings.
+    IEnumerator FeatureTest() {
+        GameObject player = GameObject.FindWithTag("Player");
+        if(player == null || Map.instance == null || Map.instance.infiniteWorld == null) { report.Add("Feature test: no player/world"); yield break; }
+        Vector3 start = InfiniteWorldSpawn.StartPoint(Map.instance.infiniteWorld);
+        player.transform.position = start;                       // exactly what key T does
+        yield return new WaitForSecondsRealtime(9f);
+        report.Add("Start point (T): " + start + " -> player at " + player.transform.position);
+        yield return Shot("21_startpunkt.png");
+
+        // rails and cart on the ground next to the player, photographed by a separate camera
+        Block straight = BlockSet.instance.FindBlock("Rail Straight"), curve = BlockSet.instance.FindBlock("Rail Curve"), cart = BlockSet.instance.FindBlock("Minecart");
+        int bx = Mathf.FloorToInt(start.x) + 4, bz = Mathf.FloorToInt(start.z);
+        int gy = Map.instance.infiniteWorld.generator.SurfaceY(bx, bz) + 1;
+        var cells = new List<Vector3i>(); var before = new List<DataBlock>();
+        System.Action<int, int, Block, BlockDirection> put = (dx, dz, b, d) => {
+            Vector3i c = new Vector3i(bx + dx, gy, bz + dz); cells.Add(c); before.Add(Map.instance.GetBlock(c));
+            Map.instance.SetBlockAndRebuild(c, new DataBlock(b, d)); };
+        // a track as the player builds it: looking +z the Builder stores BACKWARD, looking -x it stores RIGHT
+        Block loco = BlockSet.instance.FindBlock("Locomotive");
+        for(int i = 0; i < 3; i++) put(0, i, straight, BlockDirection.BACKWARD);
+        put(0, 3, curve, BlockDirection.BACKWARD);
+        for(int i = 1; i <= 3; i++) put(-i, 3, straight, BlockDirection.RIGHT);
+        put(3, 0, cart, BlockDirection.BACKWARD);
+        put(3, 2, loco, BlockDirection.BACKWARD);
+        Camera cam = new GameObject("BI1 Feature Camera").AddComponent<Camera>();
+        cam.depth = 100; cam.fieldOfView = 50f;
+        cam.transform.position = new Vector3(bx + 4.5f, gy + 3.6f, bz - 2.5f);
+        cam.transform.LookAt(new Vector3(bx - .5f, gy + .2f, bz + 2.2f));
+        yield return new WaitForSecondsRealtime(2f);
+        yield return Shot("22_schienen_minecart.png");
+        cam.transform.position = new Vector3(bx + .5f, gy + 5.5f, bz + 1.6f);
+        cam.transform.LookAt(new Vector3(bx - .3f, gy, bz + 2.6f));
+        yield return new WaitForSecondsRealtime(1f);
+        yield return Shot("22b_schienen_von_oben.png");
+
+        cam.transform.position = new Vector3(bx + 5.2f, gy + 1.4f, bz + 1.2f);
+        cam.transform.LookAt(new Vector3(bx + 3.5f, gy + .5f, bz + 2.5f));
+        yield return new WaitForSecondsRealtime(1f);
+        yield return Shot("22d_lok_nah.png");
+
+        // locomotive placed on the track drives like the minecart
+        Vector3i lp = new Vector3i(bx, gy + 1, bz);
+        DataBlock ld = new DataBlock(loco, BlockDirection.BACKWARD);
+        Map.instance.SetBlockAndRebuild(lp, ld);
+        bool spawned = MinecartRuntimeController.TrySpawnFromPlacedBlock(Map.instance, lp, ld);
+        GameObject moving = GameObject.Find("Moving Locomotive");
+        Vector3 p0 = moving != null ? moving.transform.position : Vector3.zero;
+        yield return new WaitForSecondsRealtime(1.6f);
+        report.Add("Locomotive on rail: spawned " + spawned + ", moved " + (moving != null ? Vector3.Distance(p0, moving.transform.position).ToString("0.00") : "-") + " blocks in 1.6 s");
+        yield return Shot("22c_lok_faehrt.png");
+        if(moving != null) Destroy(moving);
+        Destroy(cam.gameObject);
+        for(int i = 0; i < cells.Count; i++) Map.instance.SetBlockAndRebuild(cells[i], before[i]);
+
+        // inventory, FUNKTION tab
+        InventoryGUI inv = FindAnyObjectByType<InventoryGUI>();
+        if(inv != null) {
+            BindingFlags bf = BindingFlags.NonPublic | BindingFlags.Instance;
+            typeof(InventoryGUI).GetField("show", bf).SetValue(inv, true);
+            typeof(InventoryGUI).GetField("category", bf).SetValue(inv, 2);
+            Cursor.visible = true; Cursor.lockState = CursorLockMode.None;
+            yield return new WaitForSecondsRealtime(1.5f);
+            yield return Shot("23_inventar_funktion.png");
+            typeof(InventoryGUI).GetField("show", bf).SetValue(inv, false);
+        }
+
+        // pause menu, GRAFIK tab
+        GameState.IsPause = true;
+        yield return new WaitForSecondsRealtime(1.5f);
+        yield return Shot("24_pause_grafik.png");
+        GameState.IsPause = false;
+        yield return new WaitForSecondsRealtime(.5f);
     }
 
     // Skinned bounds follow the animated pose only with updateWhenOffscreen.

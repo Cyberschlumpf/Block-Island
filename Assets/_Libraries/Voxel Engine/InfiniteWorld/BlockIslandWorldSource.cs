@@ -9,21 +9,34 @@ public static class BlockIslandWorldSource {
     public static bool FixedWorldActive { get { return TanviirImportWorld.active || BlockIslandNativeWorldActive; } }
     public static bool FixedWorldAvailable { get { return BlockIslandNativeWorldActive ? BlockIslandNativeWorld.Available : TanviirNativeWorld.Available; } }
 
+    // Block Island is infinite: the 1.0 world fills x/z 0..1023, everything outside comes from
+    // the island generator (InfiniteTerrainGenerator.reserveBlockIsland). 1024 is a multiple of the
+    // 32-voxel chunk size, so every chunk/column is completely inside or completely outside.
+    public static bool InsideBlockIsland(int x,int z) { return (uint)x<(uint)InfiniteTerrainGenerator.ReservedSize && (uint)z<(uint)InfiniteTerrainGenerator.ReservedSize; }
+    // Columns are 32 x 32 chunk columns (chunk coordinates).
+    public static bool IsProceduralColumn(int cx,int cz) { return BlockIslandNativeWorldActive && !InsideBlockIsland(cx*Chunk.X_SIZE,cz*Chunk.Z_SIZE); }
+
     public static DataBlock Sample(InfiniteTerrainGenerator generator,int x,int y,int z) {
-        if(BlockIslandNativeWorldActive) return BlockIslandNativeWorld.Sample(x,y,z);
+        if(BlockIslandNativeWorldActive) {
+            if(InsideBlockIsland(x,z)) return BlockIslandNativeWorld.Sample(x,y,z);
+            return generator!=null ? generator.SampleProcedural(x,y,z) : default(DataBlock);
+        }
         if(TanviirImportWorld.active) return TanviirImportWorld.Sample(x,y,z);
         return generator!=null ? generator.SampleProcedural(x,y,z) : default(DataBlock);
     }
 
     public static int SurfaceY(InfiniteTerrainGenerator generator,int x,int z) {
-        if(BlockIslandNativeWorldActive) return BlockIslandNativeWorld.SurfaceY(x,z);
+        if(BlockIslandNativeWorldActive) {
+            if(InsideBlockIsland(x,z)) return BlockIslandNativeWorld.SurfaceY(x,z);
+            return generator!=null ? generator.SurfaceYProcedural(x,z) : 0;
+        }
         if(TanviirImportWorld.active) return TanviirImportWorld.SurfaceY(x,z);
         return generator!=null ? generator.SurfaceYProcedural(x,z) : 0;
     }
 
     // Sparse/native helpers used by the proven 6.14.6 streamer. Keeping these here
     // lets the streamer retain its performant column discovery without owning BIR1 details.
-    public static bool IsColumnReady(int cx,int cz) { if(BlockIslandNativeWorldActive)return BlockIslandNativeWorld.IsWorldColumnReady(cx,cz); return !FixedWorldActive || !FixedWorldAvailable || TanviirNativeWorld.IsWorldColumnReady(cx,cz); }
-    public static void RequestColumn(int cx,int cz) { if(BlockIslandNativeWorldActive){BlockIslandNativeWorld.RequestWorldColumn(cx,cz);return;} if(FixedWorldActive && FixedWorldAvailable) TanviirNativeWorld.RequestWorldColumn(cx,cz); }
+    public static bool IsColumnReady(int cx,int cz) { if(IsProceduralColumn(cx,cz))return true; if(BlockIslandNativeWorldActive)return BlockIslandNativeWorld.IsWorldColumnReady(cx,cz); return !FixedWorldActive || !FixedWorldAvailable || TanviirNativeWorld.IsWorldColumnReady(cx,cz); }
+    public static void RequestColumn(int cx,int cz) { if(IsProceduralColumn(cx,cz))return; if(BlockIslandNativeWorldActive){BlockIslandNativeWorld.RequestWorldColumn(cx,cz);return;} if(FixedWorldActive && FixedWorldAvailable) TanviirNativeWorld.RequestWorldColumn(cx,cz); }
     public static bool HasBlocksInChunk(int cx,int cy,int cz) { if(BlockIslandNativeWorldActive)return BlockIslandNativeWorld.HasBlocksInWorldChunk(cx,cy,cz); return FixedWorldActive && FixedWorldAvailable && TanviirNativeWorld.HasBlocksInWorldChunk(cx,cy,cz); }
 }

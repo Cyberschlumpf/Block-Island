@@ -64,7 +64,7 @@ public class InventoryGUI : MonoBehaviour {
     // Figures, furniture and effects (GameObjectBlocks, e.g. from Block Island 1.0) are buildable too;
     // only empty prefab slots stay hidden.
     private static bool IsBuildable(Block b) {
-        if(b==null) return false;
+        if(b==null || b.retired) return false;
         GameObjectBlock g=b as GameObjectBlock;
         return g==null || g.gameObject!=null;
     }
@@ -135,11 +135,16 @@ public class InventoryGUI : MonoBehaviour {
         if(b==null) return -1;
         if(b is GameObjectBlock) return figuresCategory;
         string n=b.name ?? "";
-        if(b is CustomVoxelBlock || b is FenceBlock || b is StairBlock || b is SphereBlock || b is TanviirArchitecturalBlock || n=="Custom Workshop 8x8" || n=="Bake Custom Block") return 3;
+        if(b is CustomVoxelBlock || b is FenceBlock || b is StairBlock || b is SphereBlock || b is TanviirArchitecturalBlock || b is TanviirPackBlock || n=="Custom Workshop 8x8" || n=="Bake Custom Block") return 3;
         if(b is MinecartRailBlock || n=="Copy Start" || n=="Copy End" || n=="Paste Selection" || n=="Creative TNT" || n=="TNT") return 2;
         if(IsNatureBlock(n)) return 1;
+        // Tanviir texture pack: plants, terrain and fluids go to NATUR as well.
+        if(n.StartsWith(TanviirPackBlocks.Prefix) && (b is CrossBlock || b is FluidBlock || IsNatureBlock(n.Substring(TanviirPackBlocks.Prefix.Length)) || IsTanviirTerrain(n.Substring(TanviirPackBlocks.Prefix.Length)))) return 1;
         return 0;
     }
+
+    static readonly string[] TanviirTerrain={"Grass Block","Gravel","Clay","Ice","Mycelium","Farmland","Netherrack","Soul Sand","Bedrock","Cactus","Melon","Pumpkin","Brown Mushroom Block","Red Mushroom Block","Mushroom Stem","Snow Layer","Lily Pad"};
+    private static bool IsTanviirTerrain(string n){ return System.Array.IndexOf(TanviirTerrain,n)>=0; }
 
     private static bool IsNatureBlock(string name) {
         if(string.IsNullOrEmpty(name)) return false;

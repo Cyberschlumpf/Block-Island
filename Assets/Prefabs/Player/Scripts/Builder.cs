@@ -58,7 +58,8 @@ public class Builder : MonoBehaviour {
     // 0.7 Copy/Paste: tool selections are coordinates, not permanent marker voxels.
     private bool copyStartSet, copyEndSet, copyReady;
     private Vector3i copyStart, copyEnd;
-    private DataBlock[] copyBuffer;
+    private VoxelClipboard copyBuffer;   // run-length encoded, up to 512 x 512 x 512
+    private bool copyBusy;              // a capture or paste is running over several frames
     private int copySizeX, copySizeY, copySizeZ;
     private string copyStatus="Copy: START setzen";
 
@@ -218,7 +219,7 @@ public class Builder : MonoBehaviour {
 		// Stage 6.10.5: a Minecart placed directly above a rail becomes a moving runtime cart.
 		// If there is no rail below it, it remains a normal placed voxel so building behavior stays predictable.
 		MinecartRailBlock minecart = selectedBlock as MinecartRailBlock;
-		if(minecart != null && minecart.kind == MinecartRailBlock.RailKind.Minecart)
+		if(minecart != null && minecart.IsVehicle)   // minecart or locomotive
 			MinecartRuntimeController.TrySpawnFromPlacedBlock(Map.instance, pos.Value, placed);
 	}
 
@@ -394,13 +395,15 @@ public class Builder : MonoBehaviour {
         for(int z=0;z<8;z++)for(int y=0;y<8;y++)for(int x=0;x<8;x++,i++){d[i]=Map.instance.GetBlock(new Vector3i(workshopOrigin.x+x,workshopOrigin.y+y,workshopOrigin.z+z)); if(!d[i].IsEmpty())solid++;}
         if(solid==0){workshopStatus="Box ist leer - nichts gebacken.";return;} CustomVoxelBlock target=BlockSet.instance.FindBlock<CustomVoxelBlock>("Custom Voxel "+(workshopSlot+1).ToString("00"));
         if(target==null){workshopStatus="Custom Slot nicht gefunden.";return;} target.SetDesign(d); workshopStatus="Slot "+(workshopSlot+1).ToString("00")+" gebacken: "+solid+" Mini-Voxel. Block im BlockSet auswählen und setzen."; BlockSet3DPreview.Clear(); Debug.Log("BLOCK ISLAND 0.9.9.7g baked slot "+(workshopSlot+1)+" with "+solid+" mini voxels");
-        // Existing placed copies of this custom slot may be in loaded chunks: request a visible refresh around workshop/player via normal dirty path on next edits.
+        // Already placed copies of this slot show the new design immediately.
+        if(Map.instance.infiniteRenderer!=null) Map.instance.infiniteRenderer.MarkAllVisibleDirty();
     }
 
     bool HandleCopyPasteTool(Vector3i pos) {
         if(selectedBlock==null) return false;
         string n=selectedBlock.name;
         if(n=="Copy Start") {
+            if(copyBusy) { copyStatus="Bitte warten, Kopieren/Einfügen läuft noch …"; return true; }
             copyStart=pos; copyStartSet=true; copyEndSet=false; copyReady=false; copyBuffer=null; copyRotationQuarterTurns=0;
             pastePreviewDirty=true; HidePastePreview(); ShowSelectionVisual(copyStart,copyStart);
             copyStatus="START: "+Fmt(copyStart)+"  - jetzt COPY END an der gegenüberliegenden Ecke setzen.";
@@ -409,57 +412,82 @@ public class Builder : MonoBehaviour {
         }
         if(n=="Copy End") {
             if(!copyStartSet) { copyStatus="Erst COPY START setzen."; return true; }
-            copyEnd=pos; copyEndSet=true; CaptureSelection(); return true;
+            if(copyBusy) { copyStatus="Bitte warten, Kopieren/Einfügen läuft noch …"; return true; }
+            copyEnd=pos; copyEndSet=true; StartCoroutine(CaptureSelection()); return true;
         }
         if(n=="Paste Selection") {
             if(!copyReady || copyBuffer==null) { copyStatus="Noch nichts kopiert: COPY START und COPY END setzen."; return true; }
-            PasteSelection(pos); return true;
+            if(copyBusy) { copyStatus="Bitte warten, Kopieren/Einfügen läuft noch …"; return true; }
+            StartCoroutine(PasteSelection(pos)); return true;
         }
         return false;
     }
 
-    void CaptureSelection() {
+    // Voxels processed per frame while copying/pasting large selections (keeps the game responsive).
+    const int CopyVoxelsPerFrame = 1500000;
+
+    IEnumerator CaptureSelection() {
         int minX=Mathf.Min(copyStart.x,copyEnd.x), minY=Mathf.Min(copyStart.y,copyEnd.y), minZ=Mathf.Min(copyStart.z,copyEnd.z);
         int maxX=Mathf.Max(copyStart.x,copyEnd.x), maxY=Mathf.Max(copyStart.y,copyEnd.y), maxZ=Mathf.Max(copyStart.z,copyEnd.z);
         copySizeX=maxX-minX+1; copySizeY=maxY-minY+1; copySizeZ=maxZ-minZ+1;
-        if(copySizeX>32 || copySizeY>32 || copySizeZ>32) {
+        int max=VoxelClipboard.MaxSize;
+        if(copySizeX>max || copySizeY>max || copySizeZ>max) {
             copyReady=false; copyBuffer=null;
-            copyStatus="Auswahl zu groß: maximal 32 x 32 x 32 Blöcke (aktuell "+copySizeX+" x "+copySizeY+" x "+copySizeZ+").";
-            return;
+            copyStatus="Auswahl zu groß: maximal "+max+" x "+max+" x "+max+" Blöcke (aktuell "+copySizeX+" x "+copySizeY+" x "+copySizeZ+").";
+            yield break;
         }
-        copyBuffer=new DataBlock[copySizeX*copySizeY*copySizeZ]; int i=0, solidCount=0;
-        Map map=Map.instance;
-        for(int z=0;z<copySizeZ;z++) for(int y=0;y<copySizeY;y++) for(int x=0;x<copySizeX;x++,i++) {
-            copyBuffer[i]=map.GetBlock(new Vector3i(minX+x,minY+y,minZ+z));
-            if(!copyBuffer[i].IsEmpty()) solidCount++;
+        copyBusy=true; copyReady=false;
+        var clip=new VoxelClipboard(copySizeX,copySizeY,copySizeZ);
+        Map map=Map.instance; long done=0, total=clip.Volume; int sinceYield=0;
+        for(int z=0;z<copySizeZ;z++) for(int y=0;y<copySizeY;y++) {
+            for(int x=0;x<copySizeX;x++) clip.Append(map.GetBlock(minX+x,minY+y,minZ+z));
+            done+=copySizeX; sinceYield+=copySizeX;
+            if(clip.TooComplex) { copyBusy=false; copyBuffer=null; copyStatus="Auswahl zu detailreich für die Zwischenablage – bitte kleiner wählen."; yield break; }
+            if(sinceYield>=CopyVoxelsPerFrame) { sinceYield=0; copyStatus="Kopiere … "+(100*done/total)+" %"; yield return null; }
         }
-        if(solidCount==0) {
+        copyBusy=false;
+        if(clip.solidCount==0) {
             copyReady=false; copyBuffer=null;
             copyStatus="Auswahl enthält keine Blöcke - START/END bitte direkt auf vorhandene Blöcke setzen.";
             Debug.LogWarning("BLOCK ISLAND 0.7.1 COPY rejected empty selection");
-            return;
+            yield break;
         }
-        copyReady=true; pastePreviewDirty=true; ShowSelectionVisual(copyStart,copyEnd);
-        copyStatus="Kopiert: "+copySizeX+" x "+copySizeY+" x "+copySizeZ+" = "+copyBuffer.Length+" Voxel, davon "+solidCount+" Blöcke. PASTE wählen.";
-        Debug.Log("BLOCK ISLAND 0.7 COPY captured "+copyStatus);
+        copyBuffer=clip; copyReady=true; pastePreviewDirty=true; ShowSelectionVisual(copyStart,copyEnd);
+        copyStatus="Kopiert: "+copySizeX+" x "+copySizeY+" x "+copySizeZ+" = "+clip.Volume.ToString("N0")+" Voxel, davon "+clip.solidCount.ToString("N0")+" Blöcke. PASTE wählen.";
+        Debug.Log("BLOCK ISLAND COPY captured "+copyStatus+" runs="+clip.RunCount);
     }
 
-    void PasteSelection(Vector3i anchor) {
-        Map map=Map.instance; if(map==null || copyBuffer==null) return;
-        var dirty=new System.Collections.Generic.HashSet<InfiniteChunkKey>(); int i=0, changed=0;
-        for(int z=0;z<copySizeZ;z++) for(int y=0;y<copySizeY;y++) for(int x=0;x<copySizeX;x++,i++) {
-            int dx,dz; RotatedXZ(x,z,out dx,out dz);
-            Vector3i p=new Vector3i(anchor.x+dx,anchor.y+y,anchor.z+dz); DataBlock b=copyBuffer[i];
-            if(!b.IsEmpty()) b.direction=(BlockDirection)(((int)b.direction+copyRotationQuarterTurns)&3);
-            if(map.infiniteWorld!=null) {
-                map.infiniteWorld.SetBlock(p.x,p.y,p.z,b); InfiniteWorldSave.RecordPlayerEdit(p,b);
-                dirty.Add(InfiniteWorldMath.WorldToChunk(p.x,p.y,p.z)); changed++;
-            } else { map.SetBlock(p,b); changed++; }
+    IEnumerator PasteSelection(Vector3i anchor) {
+        Map map=Map.instance; if(map==null || copyBuffer==null) yield break;
+        copyBusy=true;
+        VoxelClipboard clip=copyBuffer; int rot=copyRotationQuarterTurns;
+        var dirty=new System.Collections.Generic.HashSet<InfiniteChunkKey>(); long changed=0, done=0, total=clip.Volume; int sinceYield=0;
+        int x=0,y=0,z=0;
+        for(int r=0;r<clip.RunCount;r++) {
+            int len; DataBlock b; clip.GetRun(r,out len,out b);
+            if(!b.IsEmpty()) b.direction=(BlockDirection)(((int)b.direction+rot)&3);
+            for(int k=0;k<len;k++) {
+                int dx,dz; RotatedXZ(x,z,out dx,out dz);
+                int px=anchor.x+dx, py=anchor.y+y, pz=anchor.z+dz;
+                DataBlock old=map.GetBlock(px,py,pz);
+                bool same=old.IsEmpty() ? b.IsEmpty() : (!b.IsEmpty() && old.blockID==b.blockID && old.direction==b.direction);
+                if(!same) {                       // only real changes are applied and saved
+                    if(map.infiniteWorld!=null) {
+                        map.infiniteWorld.SetBlock(px,py,pz,b); InfiniteWorldSave.RecordPlayerEdit(new Vector3i(px,py,pz),b);
+                        dirty.Add(InfiniteWorldMath.WorldToChunk(px,py,pz));
+                    } else map.SetBlock(new Vector3i(px,py,pz),b);
+                    changed++;
+                }
+                if(++x==clip.sizeX) { x=0; if(++y==clip.sizeY) { y=0; z++; } }
+            }
+            done+=len; sinceYield+=len;
+            if(sinceYield>=CopyVoxelsPerFrame) { sinceYield=0; copyStatus="Füge ein … "+(100*done/total)+" %"; yield return null; }
         }
         if(map.infiniteRenderer!=null) map.infiniteRenderer.MarkDirtyChunks(dirty);
-        int outX=(copyRotationQuarterTurns%2==0)?copySizeX:copySizeZ; int outZ=(copyRotationQuarterTurns%2==0)?copySizeZ:copySizeX;
-        copyStatus="Eingefügt bei "+Fmt(anchor)+": "+outX+" x "+copySizeY+" x "+outZ+" ("+changed+" Voxel), Drehung "+(copyRotationQuarterTurns*90)+"°.";
-        Debug.Log("BLOCK ISLAND 0.7 PASTE: "+copyStatus+" chunks="+dirty.Count);
+        copyBusy=false;
+        int outX=(rot%2==0)?clip.sizeX:clip.sizeZ; int outZ=(rot%2==0)?clip.sizeZ:clip.sizeX;
+        copyStatus="Eingefügt bei "+Fmt(anchor)+": "+outX+" x "+clip.sizeY+" x "+outZ+" ("+changed.ToString("N0")+" Voxel geändert), Drehung "+(rot*90)+"°.";
+        Debug.Log("BLOCK ISLAND PASTE: "+copyStatus+" chunks="+dirty.Count);
     }
 
 
@@ -498,19 +526,41 @@ public class Builder : MonoBehaviour {
         if(pastePreviewVisual!=null) { pastePreviewVisual.SetActive(true); pastePreviewVisual.transform.position=new Vector3(anchor.Value.x,anchor.Value.y,anchor.Value.z); lastPastePreviewAnchor=anchor; }
     }
 
+    // Ghost preview: one cube per block for normal selections; large selections show their outline box
+    // (hundreds of thousands of ghost cubes would stall the game).
+    const long MaxGhostBlocks = 60000;
+
     void BuildPastePreviewMesh() {
         HidePastePreview();
         if(copyBuffer==null) return;
+        if(pastePreviewVisual!=null) Destroy(pastePreviewVisual);
+        if(copyBuffer.solidCount>MaxGhostBlocks) {
+            bool swap=(copyRotationQuarterTurns&1)==1;
+            Vector3 size=new Vector3(swap?copyBuffer.sizeZ:copyBuffer.sizeX,copyBuffer.sizeY,swap?copyBuffer.sizeX:copyBuffer.sizeZ);
+            pastePreviewVisual=new GameObject("PASTE_GHOST_PREVIEW");
+            GameObject box=GameObject.CreatePrimitive(PrimitiveType.Cube); box.name="Paste Outline"; box.transform.SetParent(pastePreviewVisual.transform,false);
+            box.transform.localPosition=size*.5f; box.transform.localScale=size;
+            Collider col=box.GetComponent<Collider>(); if(col!=null) Destroy(col);
+            box.GetComponent<Renderer>().sharedMaterial=pasteGhostMaterial;
+            GameObject edges=new GameObject("Edges"); edges.transform.SetParent(pastePreviewVisual.transform,false); edges.transform.localPosition=size*.5f;
+            AddSelectionEdges(edges.transform,size);
+            pastePreviewDirty=false; return;
+        }
         pastePreviewVisual=new GameObject("PASTE_GHOST_PREVIEW");
         MeshFilter mf=pastePreviewVisual.AddComponent<MeshFilter>(); MeshRenderer mr=pastePreviewVisual.AddComponent<MeshRenderer>(); mr.sharedMaterial=pasteGhostMaterial;
         var v=new System.Collections.Generic.List<Vector3>(); var t=new System.Collections.Generic.List<int>();
         Vector3[] cv={new Vector3(0,0,0),new Vector3(1,0,0),new Vector3(1,1,0),new Vector3(0,1,0),new Vector3(0,0,1),new Vector3(1,0,1),new Vector3(1,1,1),new Vector3(0,1,1)};
         int[] ct={0,2,1,0,3,2,4,5,6,4,6,7,0,1,5,0,5,4,3,7,6,3,6,2,0,4,7,0,7,3,1,2,6,1,6,5};
-        int i=0;
-        for(int z=0;z<copySizeZ;z++) for(int y=0;y<copySizeY;y++) for(int x=0;x<copySizeX;x++,i++) {
-            if(copyBuffer[i].IsEmpty()) continue;
-            int dx,dz; RotatedXZ(x,z,out dx,out dz);
-            int o=v.Count; Vector3 p=new Vector3(dx,y,dz); for(int k=0;k<8;k++) v.Add(p+cv[k]); for(int k=0;k<ct.Length;k++) t.Add(o+ct[k]);
+        int x=0,y=0,z=0;
+        for(int r=0;r<copyBuffer.RunCount;r++) {
+            int len; DataBlock b; copyBuffer.GetRun(r,out len,out b);
+            for(int k=0;k<len;k++) {
+                if(!b.IsEmpty()) {
+                    int dx,dz; RotatedXZ(x,z,out dx,out dz);
+                    int o=v.Count; Vector3 p=new Vector3(dx,y,dz); for(int c=0;c<8;c++) v.Add(p+cv[c]); for(int c=0;c<ct.Length;c++) t.Add(o+ct[c]);
+                }
+                if(++x==copyBuffer.sizeX) { x=0; if(++y==copyBuffer.sizeY) { y=0; z++; } }
+            }
         }
         pastePreviewMesh=new Mesh(); pastePreviewMesh.name="VoxelBox Paste Ghost"; if(v.Count>65535) pastePreviewMesh.indexFormat=UnityEngine.Rendering.IndexFormat.UInt32;
         pastePreviewMesh.SetVertices(v); pastePreviewMesh.SetTriangles(t,0); pastePreviewMesh.RecalculateNormals(); pastePreviewMesh.RecalculateBounds(); mf.sharedMesh=pastePreviewMesh;

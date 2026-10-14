@@ -22,10 +22,23 @@ public class CharacterInputController : MonoBehaviour {
 		if(flying) { movementMotor.enabled = false; swimmingMotor.enabled = false; }
 	}
 	
+	const float SprintFactor = 2f;
+
+	// Sprint: W (forward) + Shift doubles walking and flying speed. Not in the Relativity level,
+	// where Shift moves down along the camera axis.
+	static bool Sprinting() {
+		if(RelativityGravityController.Active) return false;
+		return (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetAxis("Vertical") > 0.01f;
+	}
+
 	// Update is called once per frame
 	void Update () {
 		// Relativity is a walking/gravity level: never inherit Creative flight from scene initialization.
 		if(RelativityGravityController.Active && !flying) { flying=true; movementMotor.enabled=false; swimmingMotor.enabled=false; }
+		// T: back to the start point of the current world.
+		if(Input.GetKeyDown(KeyCode.T) && GameState.IsPlaying && !Cursor.visible && Map.instance != null && Map.instance.infiniteWorld != null) {
+			transform.position = InfiniteWorldSpawn.StartPoint(Map.instance.infiniteWorld);
+		}
 		if(Input.GetKeyDown(KeyCode.F) && GameState.IsPlaying && !Cursor.visible && !RelativityGravityController.Active) {
 			flying = !flying;
 			movementMotor.enabled = !flying;
@@ -58,7 +71,7 @@ public class CharacterInputController : MonoBehaviour {
 			}
 
 			flyDirection = Vector3.ClampMagnitude(flyDirection, 1f);
-			characterCollider.Move(flyDirection * flySpeed * Time.deltaTime);
+			characterCollider.Move(flyDirection * flySpeed * (Sprinting() ? SprintFactor : 1f) * Time.deltaTime);
 			return;
 		}
 
@@ -83,6 +96,7 @@ public class CharacterInputController : MonoBehaviour {
 		} else {
 			swimmingMotor.enabled = false;
 			movementMotor.enabled = true;
+			movementMotor.speedMultiplier = Sprinting() ? SprintFactor : 1f;
 			
 			movementMotor.inputMoveDirection = RelativityGravityController.Active ? RelativityGravityController.Planar(transform.TransformDirection(direction)).normalized : transform.TransformDirection(direction);
 			

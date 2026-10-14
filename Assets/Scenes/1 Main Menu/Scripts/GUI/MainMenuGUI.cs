@@ -11,18 +11,13 @@ public class MainMenuGUI:GUIScreen{
   Rect r=new Rect(24,265,365,630);
   GUILayout.BeginArea(r);
   GUILayout.BeginVertical(VoxelBoxUI.Panel);
-  // Alle 13 Menuepunkte ohne Scrollbereich direkt im Holzrahmen anzeigen.
+  // Alle Menuepunkte ohne Scrollbereich direkt im Holzrahmen anzeigen.
   if(CompactMenuButton("◆","NEUE WELT","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Islands);SceneManager.LoadScene("Map Generator");}
   if(CompactMenuButton("▶","WELT LADEN",""))SetScreen<LoadMapGUI>();
   if(CompactMenuButton("▧","MINECRAFT IMPORT",""))OpenMinecraftImport();
   if(CompactMenuButton("✦","TANVIIR","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Tanviir);SceneManager.LoadScene("Game");}
-  if(CompactMenuButton("✧","XEHANOSIA","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Xehanosia);SceneManager.LoadScene("Game");}
-  if(CompactMenuButton("☁","WOLKENSTADT","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Wolkenstadt);SceneManager.LoadScene("Game");}
-  if(CompactMenuButton("♜","IMPERIAL CITY","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.ImperialCity);SceneManager.LoadScene("Game");}
   if(CompactMenuButton("▣","BLOCK ISLAND","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.BlockIsland);SceneManager.LoadScene("Game");}
   if(CompactMenuButton("☁","SKY ISLANDS","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Islands);InfiniteWorldLaunchConfig.openSkyGenerator=true;SceneManager.LoadScene("Map Generator");}
-  if(CompactMenuButton("✺","LICHTGARTEN","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.LightGarden);SceneManager.LoadScene("Game");}
-  if(CompactMenuButton("∞","SINGULARITÄT","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Relativity);SceneManager.LoadScene("Game");}
   if(CompactMenuButton("⚙","EINSTELLUNGEN","")){tab=0;side=SidePanel.Settings;}
   if(CompactMenuButton("▦","BLOCK-DESIGNER","")){side=SidePanel.BlockDesigner;}
   GUILayout.Space(6);

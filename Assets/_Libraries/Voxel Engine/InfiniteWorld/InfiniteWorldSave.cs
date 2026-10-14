@@ -9,14 +9,12 @@ using System.Collections.Generic;
 public static class InfiniteWorldSave {
     const int Magic=0x42495736; // BIW6: native world type in the normal Block Island save
     const int LegacyMagic=0x42495735; // BIW5
+    // LightGarden (3), Relativity (4), ImperialCity (6), Wolkenstadt (7) and Xehanosia (8) were removed from the game.
+    // Their numbers stay reserved so old save headers still parse; such saves are hidden and never loaded.
     public enum WorldType : byte { Islands=0, Tanviir=1, BlockIsland=2, LightGarden=3, Relativity=4, Minecraft=5, ImperialCity=6, Wolkenstadt=7, Xehanosia=8 }
+    public static bool IsRemovedWorldType(WorldType t){ return t==WorldType.LightGarden||t==WorldType.Relativity||t==WorldType.ImperialCity||t==WorldType.Wolkenstadt||t==WorldType.Xehanosia; }
     public const string TanviirSaveName="Tanviir";
     public const string BlockIslandSaveName="Block Island";
-    public const string ImperialCitySaveName="Imperial City";
-    public const string WolkenstadtSaveName="Wolkenstadt";
-    public const string XehanosiaSaveName="Xehanosia";
-    public const string LightGardenSaveName="Lichtgarten";
-    public const string RelativitySaveName="Sphere 64";
     public static WorldType CurrentWorldType=WorldType.Islands;
     public static string CurrentWorldName="";
     public static bool LoadRequested=false;
@@ -39,6 +37,7 @@ public static class InfiniteWorldSave {
         }
     }
     static string SaveDir { get { return SaveDirectory; } }
+    public const string RemovedSavesFolder="_Entfernt (alte Welten)";
     static void MigrateLegacySaves(string destination) {
         try {
             string docs=Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -49,6 +48,8 @@ public static class InfiniteWorldSave {
                 if(!Directory.Exists(legacy) || String.Equals(Path.GetFullPath(legacy),Path.GetFullPath(destination),StringComparison.OrdinalIgnoreCase)) continue;
                 foreach(string src in Directory.GetFiles(legacy,"*.infinite")) {
                     string dst=Path.Combine(destination,Path.GetFileName(src));
+                    // Saves moved to the "_Entfernt" folder (removed/replaced worlds) must not come back.
+                    if(File.Exists(Path.Combine(destination,RemovedSavesFolder,Path.GetFileName(src)))) continue;
                     if(!File.Exists(dst)) File.Copy(src,dst,false);
                 }
             }
@@ -63,6 +64,8 @@ public static class InfiniteWorldSave {
         foreach(char c in Path.GetInvalidFileNameChars()) name=name.Replace(c,'_');
         name=name.Trim(); if(name.Length>48) name=name.Substring(0,48); return name.Length==0?"My World":name;
     }
+    // Native BIR regions of an imported Minecraft world live next to its save file.
+    public static string NativeRegionDirFor(string name) { return Path.Combine(PathFor(name)+".native","region"); }
     public static string PathFor(string name) { return Path.Combine(SaveDir,SanitizeName(name)+".infinite"); }
     public static string[] GetWorldNames() { string[] f=Directory.GetFiles(SaveDir,"*.infinite"); string[] n=new string[f.Length]; for(int i=0;i<f.Length;i++) n[i]=Path.GetFileNameWithoutExtension(f[i]); Array.Sort(n,StringComparer.OrdinalIgnoreCase); return n; }
     public static void BeginNewWorld() { BeginNewWorld(WorldType.Islands); }
@@ -73,12 +76,7 @@ public static class InfiniteWorldSave {
         // Procedural worlds receive a unique slot before the Game scene starts, so autosave
         // can persist block edits and the player transform without requiring a manual save first.
         if(type==WorldType.Tanviir) CurrentWorldName=TanviirSaveName;
-        else if(type==WorldType.ImperialCity) CurrentWorldName=ImperialCitySaveName;
-        else if(type==WorldType.Wolkenstadt) CurrentWorldName=WolkenstadtSaveName;
-        else if(type==WorldType.Xehanosia) CurrentWorldName=XehanosiaSaveName;
         else if(type==WorldType.BlockIsland) CurrentWorldName=BlockIslandSaveName;
-        else if(type==WorldType.LightGarden) CurrentWorldName=LightGardenSaveName;
-        else if(type==WorldType.Relativity) CurrentWorldName=RelativitySaveName;
         else CurrentWorldName=SanitizeName("World "+DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss"));
         ApplyWorldType(type);
         if(type!=WorldType.Islands && File.Exists(PathFor(CurrentWorldName))) LoadRequested=true;
@@ -86,10 +84,8 @@ public static class InfiniteWorldSave {
     }
     static void ApplyWorldType(WorldType type) {
         if(type==WorldType.Tanviir){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.Begin(); }
-        else if(type==WorldType.ImperialCity){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.BeginImperialCity(); }
-        else if(type==WorldType.Xehanosia){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.BeginXehanosia(); }
-        else if(type==WorldType.Wolkenstadt){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.BeginWolkenstadt(); }
         else if(type==WorldType.BlockIsland){ TanviirImportWorld.End(); BlockIslandWorldSource.BlockIslandNativeWorldActive=true; BlockIslandNativeWorld.Begin(); }
+        else if(type==WorldType.Minecraft && Directory.Exists(NativeRegionDirFor(CurrentWorldName))){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.BeginCustom(NativeRegionDirFor(CurrentWorldName)); }
         else { TanviirImportWorld.End(); BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); }
     }
     // 6.14.14.1: resolve the base-world identity BEFORE the Game scene is loaded.
@@ -100,6 +96,7 @@ public static class InfiniteWorldSave {
         LoadRequested=true; HasLoadedPlayerTransform=false; playerEdits.Clear();
         WorldType type;
         if(TryReadWorldType(CurrentWorldName,out type)) {
+            if(IsRemovedWorldType(type)) type=WorldType.Islands;
             CurrentWorldType=type;
             ApplyWorldType(type);
             Debug.Log("Preactivated save base world: "+CurrentWorldName+" -> "+type);
@@ -150,11 +147,7 @@ public static class InfiniteWorldSave {
     }
     public static bool SaveCurrent(InfiniteVoxelWorld w){return !String.IsNullOrEmpty(CurrentWorldName)&&Save(w,CurrentWorldName);}
     public static bool SaveTanviir(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.Tanviir; return Save(w,TanviirSaveName); }
-    public static bool SaveXehanosia(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.Xehanosia; return Save(w,XehanosiaSaveName); }
-    public static bool SaveWolkenstadt(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.Wolkenstadt; return Save(w,WolkenstadtSaveName); }
-    public static bool SaveImperialCity(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.ImperialCity; return Save(w,ImperialCitySaveName); }
     public static bool SaveBlockIsland(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.BlockIsland; return Save(w,BlockIslandSaveName); }
-    public static bool SaveLightGarden(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.LightGarden; return Save(w,LightGardenSaveName); }
 
     public static bool Load(InfiniteVoxelWorld w,string name) {
         string path=PathFor(name); if(w==null||!File.Exists(path)) return false;

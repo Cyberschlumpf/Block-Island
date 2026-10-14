@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 public sealed class InfiniteWorldBootstrap : MonoBehaviour {
+ // Water surface around the 1.0 world (top water voxel y 49) and the fixed seed of its surroundings.
+ const int BlockIslandSeaLevel=49, BlockIslandSeed=1337;
  [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)] static void AutoInstall() { InstallNow(); }
  public static InfiniteVoxelWorld InstallNow() {
   if(SceneManager.GetActiveScene().name!="Game") return null;
@@ -61,6 +63,11 @@ public sealed class InfiniteWorldBootstrap : MonoBehaviour {
    InfiniteWorldLaunchConfig.pending=false;
   }
   gen.lightGarden=(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.LightGarden);
+  // Block Island: generated islands around the 1.0 world, fixed seed, ocean at the 1.0 water height (49).
+  bool blockIsland=InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.BlockIsland;
+  gen.reserveBlockIsland=blockIsland;
+  if(blockIsland){ gen.seed=BlockIslandSeed; gen.seaLevel=BlockIslandSeaLevel; gen.skyIslands=false; gen.lightGarden=false; }
+  else gen.seaLevel=25;
   gen.worldCoordinateProof=false;
   gen.hardCoordinatePlane=false;
   gen.generateTrees=true;

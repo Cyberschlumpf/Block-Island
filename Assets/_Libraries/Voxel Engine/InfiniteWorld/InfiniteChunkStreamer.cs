@@ -65,8 +65,14 @@ public class InfiniteChunkStreamer : MonoBehaviour {
         // discovery across the whole radius every two seconds only burns CPU/cache locks.
         // Normal movement-driven QueueWanted() remains the sole discovery path.
         int columnBudget=BlockIslandWorldSource.FixedWorldActive ? AdaptiveColumnBudget() : int.MaxValue;
-        while(columnBudget-->0 && columnQueue.Count>0) {
+        // Work queued for an earlier position (after teleporting or fast flight) that is now outside
+        // the view radius is dropped instead of being processed first; otherwise the new surroundings
+        // stayed empty until every stale column (which re-queue themselves) had been worked through.
+        int keepRadius=(BlockIslandWorldSource.FixedWorldActive?EffectiveTanviirViewDistance():horizontalViewDistance)+1;
+        while(columnBudget>0 && columnQueue.Count>0) {
             Vector3i col=columnQueue.Dequeue(); queuedColumns.Remove(ColumnKey(col.x,col.z));
+            if(InfiniteWorldSave.CurrentWorldType!=InfiniteWorldSave.WorldType.Relativity && (Mathf.Abs(col.x-center.x)>keepRadius || Mathf.Abs(col.z-center.z)>keepRadius)) continue;
+            columnBudget--;
             QueueColumn(col.x,col.z,col.y);
         }
         int n=BlockIslandWorldSource.FixedWorldActive ? AdaptiveChunkBudget() : maxChunkTransitionsPerFrame;
@@ -77,8 +83,10 @@ public class InfiniteChunkStreamer : MonoBehaviour {
             int stride = fps<12f ? 8 : (fps<24f ? 4 : (fps<45f ? 2 : 1));
             if((Time.frameCount % stride)!=0) n=0;
         }
-        while(n-->0 && loadQueue.Count>0) {
+        while(n>0 && loadQueue.Count>0) {
             var k=loadQueue.Dequeue(); queued.Remove(k);
+            if(InfiniteWorldSave.CurrentWorldType!=InfiniteWorldSave.WorldType.Relativity && (Mathf.Abs(k.x-center.x)>keepRadius || Mathf.Abs(k.z-center.z)>keepRadius)) continue;
+            n--;
             if(active.Add(k)) SendMessage("OnInfiniteChunkNeeded", k, SendMessageOptions.DontRequireReceiver);
         }
         var remove=new List<InfiniteChunkKey>();
@@ -179,7 +187,9 @@ public class InfiniteChunkStreamer : MonoBehaviour {
         }
         // 6.13.14: never decode .mca/NBT synchronously from Update. Ask the background prefetcher
         // for this Minecraft column and revisit it on a later frame once decoding is complete.
-        if(BlockIslandWorldSource.FixedWorldActive && BlockIslandWorldSource.FixedWorldAvailable && !BlockIslandWorldSource.IsColumnReady(cx,cz)) {
+        // Block Island outside the 1.0 area is generated terrain: stream it like the island worlds.
+        bool proceduralColumn=BlockIslandWorldSource.IsProceduralColumn(cx,cz);
+        if(!proceduralColumn && BlockIslandWorldSource.FixedWorldActive && BlockIslandWorldSource.FixedWorldAvailable && !BlockIslandWorldSource.IsColumnReady(cx,cz)) {
             BlockIslandWorldSource.RequestColumn(cx,cz);
             QueueColumnRequest(cx,cz,playerChunkY);
             return;
@@ -187,7 +197,7 @@ public class InfiniteChunkStreamer : MonoBehaviour {
         // 6.13.12: Tanviir is architecture, not a height-field. A column can contain a bridge,
         // tower, room and street in different Y sections. Queue every NON-EMPTY Block Island 32-high chunk.
         // This fixes missing lower storeys / walls without blindly meshing all 16 vertical chunks.
-        if(BlockIslandWorldSource.FixedWorldActive && BlockIslandWorldSource.FixedWorldAvailable) {
+        if(!proceduralColumn && BlockIslandWorldSource.FixedWorldActive && BlockIslandWorldSource.FixedWorldAvailable) {
             for(int cy=0;cy<Mathf.CeilToInt(256f/Chunk.Y_SIZE);cy++) if(BlockIslandWorldSource.HasBlocksInChunk(cx,cy,cz))
                 Enqueue(new InfiniteChunkKey(cx,cy,cz));
 
@@ -199,7 +209,7 @@ public class InfiniteChunkStreamer : MonoBehaviour {
         }
         int wx=cx*Chunk.X_SIZE+Chunk.X_SIZE/2;
         int wz=cz*Chunk.Z_SIZE+Chunk.Z_SIZE/2;
-        int surfaceY=BlockIslandWorldSource.FixedWorldActive
+        int surfaceY=BlockIslandWorldSource.FixedWorldActive && !proceduralColumn
             ? TanviirImportWorld.SurfaceY(wx,wz)
             : ((terrain!=null && terrain.worldCoordinateProof && terrain.hardCoordinatePlane)
                 ? terrain.seaLevel+1

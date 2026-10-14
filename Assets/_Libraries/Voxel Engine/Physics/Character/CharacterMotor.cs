@@ -10,6 +10,7 @@ public class CharacterMotor : MonoBehaviour {
 	internal Vector3 inputMoveDirection = Vector3.zero;
 	internal bool inputJump = false;
 	internal bool holdingInputJump = false;
+	internal float speedMultiplier = 1f;   // sprint (W + Shift) doubles the walking speed
 	
 	void Awake() {
 		character = GetComponent<CharacterCollider>();
@@ -50,7 +51,7 @@ class CharacterMotorMoving {
 	private const float maxFallSpeed = 5;
 	
 	public void ApplyMoving(CharacterMotor motor, ref Vector3 velocity) {
-		Vector3 targetVelocity = motor.inputMoveDirection * moveSpeed;
+		Vector3 targetVelocity = motor.inputMoveDirection * moveSpeed * motor.speedMultiplier;
 		if(RelativityGravityController.Active) targetVelocity += RelativityGravityController.VerticalPart(velocity); else targetVelocity.y = velocity.y;
 
 		float maxAcceleration = GetMaxAcceleration(motor.IsGrounded()) * Time.deltaTime;

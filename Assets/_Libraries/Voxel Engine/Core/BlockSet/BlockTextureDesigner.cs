@@ -66,9 +66,10 @@ public static class BlockTextureDesigner {
   Face[] nf=new Face[current.Length];for(int i=0;i<current.Length;i++)nf[i]=CustomFace(set,current[i],tex);SetFaces(b,nf);
   if(save){Entry e=store.entries.Find(x=>x.targetId==target);if(e==null){e=new Entry{targetId=target};store.entries.Add(e);}e.sourceId=-1;e.customFile=Path.GetFileName(path);Save();}return true;
  }
- public static bool Apply(BlockSet set,int target,int source){return ApplyInternal(set,target,source,true);}
- public static bool ApplyCustom(BlockSet set,int target,string path){return ApplyCustomInternal(set,target,path,true);}
- public static bool Restore(BlockSet set,int target){Original o;if(!originals.TryGetValue(target,out o)||set==null||target<0||target>=set.Count)return false;SetFaces(set[target],o.faces);store.entries.RemoveAll(x=>x.targetId==target);Save();return true;}
+ // Every texture change invalidates the cached inventory/hotbar block previews.
+ public static bool Apply(BlockSet set,int target,int source){bool ok=ApplyInternal(set,target,source,true);if(ok)BlockSet3DPreview.Clear();return ok;}
+ public static bool ApplyCustom(BlockSet set,int target,string path){bool ok=ApplyCustomInternal(set,target,path,true);if(ok)BlockSet3DPreview.Clear();return ok;}
+ public static bool Restore(BlockSet set,int target){Original o;if(!originals.TryGetValue(target,out o)||set==null||target<0||target>=set.Count)return false;SetFaces(set[target],o.faces);store.entries.RemoveAll(x=>x.targetId==target);Save();BlockSet3DPreview.Clear();return true;}
  public static int OverrideSource(int target){Entry e=store.entries.Find(x=>x.targetId==target);return e==null?-1:e.sourceId;}
  public static string OverrideCustom(int target){Entry e=store.entries.Find(x=>x.targetId==target);return e==null?"":e.customFile;}
  static void Save(){try{EnsureFolders();File.WriteAllText(FilePath,JsonUtility.ToJson(store,true));}catch(Exception e){Debug.LogWarning("Block Designer save: "+e.Message);} }

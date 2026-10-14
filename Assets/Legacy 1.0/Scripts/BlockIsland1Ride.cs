@@ -71,15 +71,5 @@ public class BlockIsland1Ride : MonoBehaviour {
         paused.Clear();
         riding = null; isRiding = false;
     }
-
-    void OnGUI() {
-        if(!GameState.IsPlaying) return;
-        // No sign while riding: the ride view stays clean (G still gets off).
-        string hint = isRiding ? null : (Nearest() != null ? "G = Mitfahren" : null);
-        if(hint == null) return;
-        VoxelBoxUI.Ensure();
-        Rect r = new Rect(Screen.width * .5f - 120f, 24f, 240f, 46f);
-        GUI.Box(r, GUIContent.none, VoxelBoxUI.Panel);   // the panel style draws no text
-        GUI.Label(new Rect(r.x + 20f, r.y + 10f, r.width - 40f, 28f), hint, VoxelBoxUI.Label);
-    }
+    // No on-screen sign: G gets on and off without a hint.
 }

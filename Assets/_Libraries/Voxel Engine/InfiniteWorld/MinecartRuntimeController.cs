@@ -9,6 +9,7 @@ public sealed class MinecartRuntimeController : MonoBehaviour {
     public Vector3i railPos;
     public Vector3i travelDir;
     public float speed = 3.25f;
+    public string vehicleName = "Minecart";
 
     Vector3 from, to;
     Vector3i nextRailPos;
@@ -32,7 +33,7 @@ public sealed class MinecartRuntimeController : MonoBehaviour {
     public static bool TrySpawnFromPlacedBlock(Map map, Vector3i cartBlockPos, DataBlock cartData) {
         if(map==null || map.infiniteWorld==null || cartData.IsEmpty()) return false;
         MinecartRailBlock cartBlock=cartData.block as MinecartRailBlock;
-        if(cartBlock==null || cartBlock.kind!=MinecartRailBlock.RailKind.Minecart) return false;
+        if(cartBlock==null || !cartBlock.IsVehicle) return false;   // minecart or locomotive
 
         // Normally the rail is one voxel below the cart. Accept two voxels below as a
         // tolerance for the legacy cursor/low-profile rail placement path.
@@ -46,9 +47,10 @@ public sealed class MinecartRuntimeController : MonoBehaviour {
         }
 
         map.SetBlock(cartBlockPos,new DataBlock());
-        GameObject go=new GameObject("Moving Minecart");
+        GameObject go=new GameObject(cartBlock.kind==MinecartRailBlock.RailKind.Locomotive?"Moving Locomotive":"Moving Minecart");
         MinecartRuntimeController c=go.AddComponent<MinecartRuntimeController>();
         c.world=map.infiniteWorld;
+        c.vehicleName=cartBlock.kind==MinecartRailBlock.RailKind.Locomotive?"Lok":"Minecart";
         c.railPos=rp;
         c.travelDir=c.ChooseInitialDirection(cartData.direction);
         c.BuildVisual(cartBlock,cartData.direction);
@@ -144,13 +146,13 @@ public sealed class MinecartRuntimeController : MonoBehaviour {
     void OnGUI() {
         if(!GameState.IsPlaying || Cursor.visible) return;
         if(activeRiderCart==this) {
-            GUI.Label(new Rect(Screen.width*.5f-105f,Screen.height-82f,210f,28f),"M - Minecart verlassen");
+            GUI.Label(new Rect(Screen.width*.5f-105f,Screen.height-82f,210f,28f),"M - "+vehicleName+" verlassen");
             return;
         }
         if(activeRiderCart!=null) return;
         GameObject player=GameObject.FindGameObjectWithTag("Player");
         if(player!=null && (player.transform.position-transform.position).sqrMagnitude<=RideDistance*RideDistance)
-            GUI.Label(new Rect(Screen.width*.5f-105f,Screen.height-82f,210f,28f),"M - Minecart mitfahren");
+            GUI.Label(new Rect(Screen.width*.5f-105f,Screen.height-82f,210f,28f),"M - "+vehicleName+" mitfahren");
     }
 
     void SnapToRail() { transform.position=RailCenter(railPos); }
@@ -208,7 +210,7 @@ public sealed class MinecartRuntimeController : MonoBehaviour {
     bool HasRail(Vector3i p) { return IsRail(world.GetBlock(p.x,p.y,p.z)); }
     static bool IsRail(DataBlock b) {
         MinecartRailBlock rb=b.block as MinecartRailBlock;
-        return rb!=null && rb.kind!=MinecartRailBlock.RailKind.Minecart;
+        return rb!=null && !rb.IsVehicle;
     }
     static bool IsZero(Vector3i a) { return a.x==0 && a.y==0 && a.z==0; }
     static bool Equal(Vector3i a,Vector3i b) { return a.x==b.x && a.y==b.y && a.z==b.z; }
