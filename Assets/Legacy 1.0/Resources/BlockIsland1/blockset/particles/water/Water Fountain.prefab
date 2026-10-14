@@ -1,0 +1,130 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1709254077376921
+GameObject:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_Component:
+  - component: {fileID: 4730242686860875}
+  - component: {fileID: 15724804207875695}
+  - component: {fileID: 114884547391421755}
+  m_Layer: 0
+  m_Name: Water Fountain
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4730242686860875
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1709254077376921}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: -0, z: -0}
+--- !u!114 &15724804207875695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1709254077376921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4f08a00cf87412f933145201a472f85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  emit: 1
+  minSize: 0.3
+  maxSize: 0.5
+  minEnergy: 2.1
+  maxEnergy: 2.1
+  minEmission: 300
+  maxEmission: 500
+  worldVelocity: {x: 0, y: 0, z: 0}
+  localVelocity: {x: 0, y: 11.711347, z: 0}
+  rndVelocity: {x: 0, y: 0, z: 0}
+  tangentVelocity: {x: 0.17999999, y: 0.9042639, z: -0.069716245}
+  emitterVelocityScale: 0.05
+  angularVelocity: 0
+  rndAngularVelocity: 6.3692403
+  rndRotation: 1
+  useWorldSpace: 1
+  oneShot: 0
+  ellipsoid: {x: 0.01, y: 0.01, z: 0.01}
+  minEmitterRange: 0
+  animateColor: 1
+  colorAnimation:
+  - {r: 1, g: 1, b: 1, a: 1}
+  - {r: 1, g: 1, b: 1, a: 0.85098}
+  - {r: 1, g: 1, b: 1, a: 0.513725}
+  - {r: 1, g: 1, b: 1, a: 0.262745}
+  - {r: 1, g: 1, b: 1, a: 0}
+  sizeGrow: 0.71782166
+  force: {x: 0, y: -9.81, z: 0}
+  rndForce: {x: 0, y: 0.7, z: 0}
+  damping: 0.62329286
+  material: {fileID: 2100000, guid: 871aa5f4f038d3f41a0722a445431948, type: 2}
+  renderMode: 0
+  lengthScale: 2
+  velocityScale: 0
+  cameraVelocityScale: 0
+  maxParticleSize: 1
+  uvTilesX: 1
+  uvTilesY: 1
+  uvCycles: 1
+--- !u!114 &114884547391421755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1709254077376921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48630057e2425e56b09878dadc3b3f4e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  Properties:
+    Properties: []
+    Groups: []
+    Hidden:
+  Links:
+    Links:
+    - LIIF: 666909702
+      InstanceTarget: {fileID: 114884547391421755}
+    - LIIF: -1623119407
+      InstanceTarget: {fileID: 1709254077376921}
+    - LIIF: 1544117201
+      InstanceTarget: {fileID: 4730242686860875}
+    - LIIF: 1671294919
+      InstanceTarget: {fileID: 15724804207875695}
+    - LIIF: 2100145522
+      InstanceTarget: {fileID: 12618682377417806}
+    - LIIF: -1866706048
+      InstanceTarget: {fileID: 26703437598541787}
+  Modifications:
+    Modificated: []
+    NonPrefabObjects: []
+    NonPrefabComponents: []
+    RemovedObjects:
+    TransformParentChanges: []
+  ParentPrefabGUID:
+  PrefabGUID: caf20877f7cce4351a9b1cfef8dcd186
+--- !u!1001 &100100000
+Prefab:
+  serializedVersion: 2
+  m_ObjectHideFlags: 1
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1709254077376921}
+  m_IsPrefabAsset: 1

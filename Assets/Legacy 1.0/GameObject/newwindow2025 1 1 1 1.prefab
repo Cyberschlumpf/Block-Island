@@ -1,0 +1,1086 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1709254077376921
+GameObject:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_Component:
+  - component: {fileID: 4724804207875695}
+  - component: {fileID: 114618682377417806}
+  m_Layer: 0
+  m_Name: newwindow2025 1 1 1 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1730242686860875
+GameObject:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_Component:
+  - component: {fileID: 4703437598541787}
+  - component: {fileID: 33884547391421755}
+  - component: {fileID: 23099118695303065}
+  m_Layer: 0
+  m_Name: Cube
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4724804207875695
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1709254077376921}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 517.2, y: 52.8, z: 505.3}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4703437598541787}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114618682377417806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1709254077376921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48630057e2425e56b09878dadc3b3f4e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  Properties:
+    Properties: []
+    Groups: []
+    Hidden:
+  Links:
+    Links:
+    - LIIF: -944271678
+      InstanceTarget: {fileID: 114618682377417806}
+    - LIIF: -1806799972
+      InstanceTarget: {fileID: 1709254077376921}
+    - LIIF: -723207870
+      InstanceTarget: {fileID: 4724804207875695}
+    - LIIF: 1475508870
+      InstanceTarget: {fileID: 1730242686860875}
+    - LIIF: 912269153
+      InstanceTarget: {fileID: 4703437598541787}
+    - LIIF: -1096430904
+      InstanceTarget: {fileID: 33884547391421755}
+    - LIIF: -1359612893
+      InstanceTarget: {fileID: 23099118695303065}
+  Modifications:
+    Modificated:
+    - Object: {fileID: 1709254077376921}
+      ObjeckLink: -1806799972
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 4724804207875695}
+      ObjeckLink: -723207870
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 4724804207875695}
+      ObjeckLink: -723207870
+      PropertyPath: m_RootOrder
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -551835731
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -241408116
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1378097494
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 949920258
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 727880969
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 106779149
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1624143723
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1520740883
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 205952751
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -611336622
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 496765771
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1363044772
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -309341340
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1740776833
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1008836356
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1095472817
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 897177334
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1266613144
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1580793530
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1293902141
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1563796907
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 939584706
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1502300098
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1344786854
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1030027395
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1536269258
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1807175249
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 2140823479
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1973508022
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -359666245
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 793206167
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 2064859656
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1190954
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1204386963
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 214177193
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1989492110
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 652583858
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -603415697
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1769645983
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1946913335
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -439867998
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -849613992
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -429643511
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1379606586
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 235799346
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 562617549
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 718923127
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 196295916
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -717619408
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 645731352
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1002478630
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1144000124
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1314887267
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 819801744
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1246831117
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 55049766
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1455622647
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -534107973
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 419441449
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1180482755
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -270328803
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 975004448
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -124000314
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -801452787
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1311777608
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 449939078
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -897424089
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -32640392
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1996672007
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 962143546
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -473251526
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -410922610
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -943303673
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 22458730
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -632759864
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1082383668
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1628449291
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1512003325
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1278719050
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1380326126
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -604021689
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 495315177
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1136973159
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -451012448
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -982081645
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 47061357
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -2138838656
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 406246669
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -463755299
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -657614061
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -461675392
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1126143748
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1035233044
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1715259655
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -534869497
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1925386211
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 72196217
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -226640847
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -425550699
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 270439613
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1135787336
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1628046792
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1116642161
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -690263949
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1210908060
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 532517516
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -748332775
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1743015738
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 860351429
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -531535427
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 681098295
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1920085760
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1410842433
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1004219007
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -99008379
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1871510437
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 39870864
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1535734479
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1010872904
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1351798762
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 396596689
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 714942915
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 373818102
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 2091491280
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1356157304
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1756038787
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 5166774
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -64318199
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -256963411
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -2024998780
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 2105609203
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1595575992
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1344469383
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 271832853
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -2061555181
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -250176270
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 63256256
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1190829588
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -283112623
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -806433856
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -4972810
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1498264586
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -12120749
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1387994283
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 350103905
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 771332338
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1897687107
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -2106584463
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -182491842
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1558227678
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -137014409
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -578042157
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1018234238
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1451100574
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 64214276
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1804506922
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 139413344
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1209881782
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -2003615900
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1752426673
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1042639452
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1828279580
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1497752887
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 2057174356
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1590488454
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -57119852
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 968461933
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -443986843
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -758623948
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1611079914
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 37944726
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 561512462
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1805530464
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 705579747
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -2082133607
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1258182133
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1959530526
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -455197489
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1664921913
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1598338086
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -763406650
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1343643911
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1943589620
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1134219483
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1609213304
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1413682424
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -885681060
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1845415922
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 16191513
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1441568118
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 2023481018
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -912708275
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1124415383
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1227554319
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1979689666
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 45241728
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1080279821
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1613249972
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1335366571
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -147398596
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1644072342
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1784527201
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -762054921
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -820834467
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 510910837
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 158265305
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -47022290
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -159630532
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 330912689
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1180573784
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -921340969
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -2060813820
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 397207392
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1188584643
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1617050276
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -302363047
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 433024804
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1177684406
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 802894495
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 2047226613
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -772888479
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 2015320650
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1996944296
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 114215879266689626, guid: eb149e4c5bc67664c89648b00734673a, type: 2}
+      ObjeckLink: 1903866368
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 114215879266689626, guid: eb149e4c5bc67664c89648b00734673a, type: 2}
+      ObjeckLink: 1903866368
+      PropertyPath: bMat
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1384875999
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: -1373378263
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 114722951815217645, guid: eb149e4c5bc67664c89648b00734673a, type: 2}
+      ObjeckLink: 96333548
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 2130617946
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    - Object: {fileID: 0}
+      ObjeckLink: 1566559975
+      PropertyPath: m_CorrespondingSourceObject
+      Mode: 0
+    NonPrefabObjects: []
+    NonPrefabComponents: []
+    RemovedObjects:
+    TransformParentChanges: []
+  ParentPrefabGUID:
+  PrefabGUID: 2fabde94dcbfa0741bdb127e74acb74d
+--- !u!4 &4703437598541787
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1730242686860875}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.4, z: 0}
+  m_LocalScale: {x: 15, y: 0.5, z: 15}
+  m_Children: []
+  m_Father: {fileID: 4724804207875695}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &33884547391421755
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1730242686860875}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &23099118695303065
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1730242686860875}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 4294967295
+  m_Materials:
+  - {fileID: 2100000, guid: 74e1bacfe4733bf4fbb106ecff8cf082, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 0
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!1001 &100100000
+Prefab:
+  serializedVersion: 2
+  m_ObjectHideFlags: 1
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1709254077376921}
+  m_IsPrefabAsset: 1

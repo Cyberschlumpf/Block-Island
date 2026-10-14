@@ -9,13 +9,14 @@ public class InventoryGUI : MonoBehaviour {
 	private bool show = false;
 	private Vector2 scrollPosition = Vector3.zero;
     private int category = 0;
-    private static readonly string[] categoryNames = { "BLÖCKE", "NATUR", "FUNKTION", "CUSTOM", "FAVORITEN" };
+    private static readonly string[] categoryNames = { "BLÖCKE", "NATUR", "FUNKTION", "CUSTOM", "FIGUREN", "FAVORITEN" };
     private Block heldBlock;
     private float heldSince;
     private bool longPressOpened;
     private Block categoryMenuBlock;
     private Rect categoryMenuRect;
     private const float longPressSeconds = 3f;
+    private const int figuresCategory = 4, favoritesCategory = 5;
     private const string categoryPrefPrefix = "VoxelBox.BlockCategory.";
     private const string favoritePrefPrefix = "VoxelBox.BlockFavorite.";
 	private bool showHotbar = true;
@@ -57,8 +58,15 @@ public class InventoryGUI : MonoBehaviour {
 	
     private static List<Block> GetVisibleBlocks() {
         List<Block> visible=new List<Block>(); BlockSet set=BlockSet.instance; if(set==null)return visible;
-        for(int i=0;i<set.Count;i++){ Block b=set[i]; if(b==null||b is GameObjectBlock)continue; visible.Add(b); }
+        for(int i=0;i<set.Count;i++){ Block b=set[i]; if(!IsBuildable(b))continue; visible.Add(b); }
         return visible;
+    }
+    // Figures, furniture and effects (GameObjectBlocks, e.g. from Block Island 1.0) are buildable too;
+    // only empty prefab slots stay hidden.
+    private static bool IsBuildable(Block b) {
+        if(b==null) return false;
+        GameObjectBlock g=b as GameObjectBlock;
+        return g==null || g.gameObject!=null;
     }
     private void FocusSelectedBlock() {
         if(builder==null || BlockSet.instance==null) return;
@@ -68,14 +76,14 @@ public class InventoryGUI : MonoBehaviour {
         // Open the block's actual category (not Favorites, because every normal block has
         // exactly one stable category there and can therefore always be located).
         category=EffectiveCategoryOf(selected);
-        if(category<0 || category>3) category=0;
+        if(category<0 || category>figuresCategory) category=0;
 
         int visibleIndex=0;
         int selectedIndex=-1;
         BlockSet set=BlockSet.instance;
         for(int i=0;i<set.Count;i++) {
             Block b=set[i];
-            if(b==null || b is GameObjectBlock || EffectiveCategoryOf(b)!=category) continue;
+            if(!IsBuildable(b) || EffectiveCategoryOf(b)!=category) continue;
             if(b==selected) { selectedIndex=visibleIndex; break; }
             visibleIndex++;
         }
@@ -125,6 +133,7 @@ public class InventoryGUI : MonoBehaviour {
 	
     private static int CategoryOf(Block b) {
         if(b==null) return -1;
+        if(b is GameObjectBlock) return figuresCategory;
         string n=b.name ?? "";
         if(b is CustomVoxelBlock || b is FenceBlock || b is StairBlock || b is SphereBlock || b is TanviirArchitecturalBlock || n=="Custom Workshop 8x8" || n=="Bake Custom Block") return 3;
         if(b is MinecartRailBlock || n=="Copy Start" || n=="Copy End" || n=="Paste Selection" || n=="Creative TNT" || n=="TNT") return 2;
@@ -145,7 +154,8 @@ public class InventoryGUI : MonoBehaviour {
         if(c==1) return "Erde, Gras, Sand, Wasser, Bäume, Holz und Blätter";
         if(c==2) return "TNT, Minecart, Schienen, Copy / Paste und weitere Werkzeuge";
         if(c==3) return "Zäune, Stufen, Formen und selbst gebackene Custom Blocks";
-        if(c==4) return "Deine Favoriten  •  Block 3 Sekunden halten, um ihn hinzuzufügen oder zu entfernen";
+        if(c==figuresCategory) return "Figuren, Tiere, Möbel, Statuen und Effekte";
+        if(c==favoritesCategory) return "Deine Favoriten  •  Block 3 Sekunden halten, um ihn hinzuzufügen oder zu entfernen";
         return "Normale Bau- und Materialblöcke";
     }
 
@@ -182,8 +192,8 @@ public class InventoryGUI : MonoBehaviour {
 
         List<Block> visible=new List<Block>();
         for(int i=0;i<blockSet.Count;i++) {
-            Block b=blockSet[i]; if(b==null||b is GameObjectBlock) continue;
-            if(category==4 ? IsFavorite(b) : EffectiveCategoryOf(b)==category) visible.Add(b);
+            Block b=blockSet[i]; if(!IsBuildable(b)) continue;
+            if(category==favoritesCategory ? IsFavorite(b) : EffectiveCategoryOf(b)==category) visible.Add(b);
         }
         using(new ScrollView(ref scrollPosition)) {
             for(int i=0;i<visible.Count;) {
@@ -223,7 +233,7 @@ public class InventoryGUI : MonoBehaviour {
         }
         if(heldBlock==block && Input.GetMouseButton(0) && !longPressOpened && Time.unscaledTime-heldSince>=longPressSeconds) {
             categoryMenuBlock=block; longPressOpened=true;
-            float w=310f,h=286f; float px=Mathf.Clamp(rect.x+rect.width+8,8,900f-w-8); float py=Mathf.Clamp(rect.y,8,620f-h-8);
+            float w=310f,h=324f; float px=Mathf.Clamp(rect.x+rect.width+8,8,900f-w-8); float py=Mathf.Clamp(rect.y,8,620f-h-8);
             categoryMenuRect=new Rect(px,py,w,h);
         }
         if(e.type==EventType.MouseUp && e.button==0 && heldBlock==block) { heldBlock=null; }
@@ -238,7 +248,7 @@ public class InventoryGUI : MonoBehaviour {
         GUILayout.Label("BLOCK SORTIEREN",VoxelBoxUI.Header);
         GUILayout.Label(categoryMenuBlock.name,VoxelBoxUI.Small);
         GUILayout.Space(5);
-        for(int c=0;c<4;c++) if(GUILayout.Button("Verschieben nach  "+categoryNames[c],GUILayout.Height(34))) { SetPersonalCategory(categoryMenuBlock,c); categoryMenuBlock=null; heldBlock=null; GUILayout.EndArea(); return; }
+        for(int c=0;c<=figuresCategory;c++) if(GUILayout.Button("Verschieben nach  "+categoryNames[c],GUILayout.Height(34))) { SetPersonalCategory(categoryMenuBlock,c); categoryMenuBlock=null; heldBlock=null; GUILayout.EndArea(); return; }
         string fav=IsFavorite(categoryMenuBlock)?"★  Aus FAVORITEN entfernen":"☆  Zu FAVORITEN hinzufügen";
         if(GUILayout.Button(fav,GUILayout.Height(36))) { ToggleFavorite(categoryMenuBlock); categoryMenuBlock=null; heldBlock=null; GUILayout.EndArea(); return; }
         if(GUILayout.Button("Abbrechen",GUILayout.Height(28))) { categoryMenuBlock=null; heldBlock=null; GUILayout.EndArea(); return; }

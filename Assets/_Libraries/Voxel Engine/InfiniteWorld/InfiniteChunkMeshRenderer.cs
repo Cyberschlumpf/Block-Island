@@ -134,6 +134,12 @@ public sealed class InfiniteChunkMeshRenderer : MonoBehaviour {
                 else CrossBuilder.Build(mb,b,lp,null);
             } else if(biSpecial!=null) {
                 BuildBlockIslandSpecial(mb,biSpecial,lp,ox+x,oy+y,oz+z,dir);
+            } else if(block is GlassBlock || block is GlassBlock1 || block is IronMeshBlock) {
+                // Block Island 1.0 panes connect to their neighbours like in the 1.0 ChunkBuilder.
+                BuildBlockIsland1Pane(mb,block,lp,ox+x,oy+y,oz+z);
+            } else if(block is LadderBlock || block is LadderBlock1 || block is LadderBlock2 || block is LadderBlock3) {
+                // 1.0 "ladder" classes are slabs/pillars in the world; their Build() does not need a Chunk.
+                block.Build(mb,b,lp,0,null);
             } else if(fenceBlock!=null) {
                 // Stage 6.11.4: build fence arms from the ACTUAL infinite-world neighbours.
                 // The old preview mesh always contains X+Z rails and therefore looked like a cross.
@@ -205,6 +211,10 @@ public sealed class InfiniteChunkMeshRenderer : MonoBehaviour {
                 instance.transform.SetParent(specialsRoot.transform,false);
                 instance.transform.localPosition=new Vector3(placement.pos.x+.5f,placement.pos.y+.5f,placement.pos.z+.5f);
                 instance.transform.localRotation=rot;
+                // Block Island 1.0: figures/objects stand on the block floor; ride cameras never take over the view.
+                if(BlockIsland1Placement.IsLegacy(placement.block))
+                    BlockIsland1Placement.SnapToFloor(instance,placement.block,prefab,specialsRoot.transform.TransformPoint(new Vector3(0f,placement.pos.y,0f)).y);
+                BlockIsland1Placement.PrepareRideCameras(instance);
                 // Stage 6.11.5: the bundled Fire prefab uses Unity 4.x legacy particle components.
                 // Unity 6 still renders its Light but not those old flame particles, so add a modern visual.
                 if(placement.block.name=="Fire" || prefab.name=="Flame") InfiniteFireVisual.Ensure(instance);
@@ -288,6 +298,41 @@ public sealed class InfiniteChunkMeshRenderer : MonoBehaviour {
             if(!front) { a.max.z=.5f; b.max.z=.5f; }
             mb.AddBox(a,fence.face.rect,pos,materialID); mb.AddBox(b,fence.face.rect,pos,materialID);
         }
+    }
+
+    // Block Island 1.0 GlassBlock / GlassBlock1 / IronMeshBlock, same boxes and trimming as their 1.0 Build().
+    void BuildBlockIsland1Pane(MeshBuilder mb,Block block,LocalPosition pos,int wx,int wy,int wz) {
+        bool left=PaneConnects(block,world.GetBlock(wx-1,wy,wz).block);
+        bool right=PaneConnects(block,world.GetBlock(wx+1,wy,wz).block);
+        bool back=PaneConnects(block,world.GetBlock(wx,wy,wz-1).block);
+        bool front=PaneConnects(block,world.GetBlock(wx,wy,wz+1).block);
+        if(block is GlassBlock) {
+            Face f=((GlassBlock)block).face; if(f==null) return;
+            Box a=GlassBlock.xBox, c=GlassBlock.zBox;
+            if(!left) a.min.x=.5f; if(!right) a.max.x=.5f; if(!back) c.min.z=.5f; if(!front) c.max.z=.5f;
+            if(!left && !right && !back && !front) mb.AddBox(GlassBlock.box,f.rect,pos,f.materialID);
+            if(left || right) mb.AddBox(a,f.rect,pos,f.materialID);
+            if(back || front) mb.AddBox(c,f.rect,pos,f.materialID);
+        } else if(block is GlassBlock1) {
+            Face f=((GlassBlock1)block).face; if(f==null) return;
+            Box a=GlassBlock1.yBox, c=GlassBlock1.zBox;
+            if(!left) a.min.y=.5f; if(!right) a.max.y=.5f; if(!back) c.min.z=.5f; if(!front) c.max.z=.5f;
+            if(!left && !right && !back && !front) mb.AddBox(GlassBlock1.box,f.rect,pos,f.materialID);
+            if(left || right) mb.AddBox(a,f.rect,pos,f.materialID);
+            if(back || front) mb.AddBox(c,f.rect,pos,f.materialID);
+        } else {
+            Face f=((IronMeshBlock)block).face; if(f==null) return;
+            Box a=IronMeshBlock.xBox1, c=IronMeshBlock.zBox1;
+            if(!left) a.min.x=.5f; if(!right) a.max.x=.5f; if(!back) c.min.z=.5f; if(!front) c.max.z=.5f;
+            mb.AddBox(IronMeshBlock.box,f.rect,pos,f.materialID);
+            if(left || right) mb.AddBox(a,f.rect,pos,f.materialID);
+            if(back || front) mb.AddBox(c,f.rect,pos,f.materialID);
+        }
+    }
+
+    static bool PaneConnects(Block self, Block b) {
+        if(b is GroundBlock || b is CubeBlock) return true;
+        return b!=null && b.GetType()==self.GetType();
     }
 
     void BuildBlockIslandSpecial(MeshBuilder mb, BlockIslandLegacySpecialBlock b, LocalPosition pos, int wx,int wy,int wz, BlockDirection dir) {

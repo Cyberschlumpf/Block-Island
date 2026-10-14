@@ -1,0 +1,9 @@
+# Block Island 1.0 figure heights: slot<TAB>-1..+1 blocks<TAB>name
+191	-0.15	Martha
+194	-0.155	Jenny
+195	-0.185	Stephanie
+198	-1	light blue
+200	-0.12	Darius
+203	-0.124	Alfred
+206	-1	light red
+221	-0.464	Steinkreuz

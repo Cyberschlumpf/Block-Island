@@ -52,6 +52,7 @@ public class BlockSet : MonoBehaviour {
         EnsureVoxelBoxTNT(); // 0.6
         EnsureVoxelBoxCopyPaste(); // 0.7: appended last, never shifts older IDs.
         EnsureVoxelBoxCustomWorkshop(); // 0.9.9.7h: 32 custom mini-voxel slots; 17-32 replace removed GO 01-16 capacity.
+        EnsureBlockIsland1Originals(); // 1.0 migration: original 1.0 blockset, appended last, never shifts older IDs.
 
         // Block IDs are 32-bit in the modernized engine. List/array indexing makes int.MaxValue
         // the practical ceiling instead of the legacy 256-block byte limit.
@@ -514,6 +515,29 @@ public class BlockSet : MonoBehaviour {
         }
         for(int i=0;i<32;i++) { string n="Custom Voxel "+(i+1).ToString("00"); if(FindBlock(n)!=null) continue; CustomVoxelBlock b=ScriptableObject.CreateInstance<CustomVoxelBlock>(); b.name=n;b.slot=i;b.hideFlags=HideFlags.DontSave;b.icon=Resources.Load<Texture2D>("BlockSet/Atlases/VoxelBoxCreativeSlots/Custom Voxel "+(i+1).ToString("00"));blocks.Add(b); }
         Debug.Log("BLOCK ISLAND 0.9.9.7h: 32 Custom Voxel slots active; GO 01-16 removed from BlockSet.");
+    }
+
+    // Block Island 1.0 migration - the original 1.0 block assets (Assets/Legacy 1.0), in 1.0 BlockSet order.
+    // Slots 0-254 are the 1.0 BlockSet (= palette of the 1.0 saves / ids of BlockIslandNative), followed by
+    // the 1.0 assets that never fit below the old 255 byte limit. Names may repeat 2.0 names on purpose:
+    // FindBlock() keeps returning the 2.0 block, the 1.0 world resolves through this slot table instead.
+    public static Block[] blockIsland1Slots = new Block[0];
+
+    private void EnsureBlockIsland1Originals() {
+        TextAsset table=Resources.Load<TextAsset>("BlockIsland1/slots");
+        if(table==null) { Debug.LogWarning("Block Island 1.0 slot table missing; original 1.0 blocks skipped."); return; }
+        List<Block> slots=new List<Block>(); int missing=0;
+        foreach(string raw in table.text.Split('\n')) {
+            string line=raw.Trim(); if(line.Length==0) continue;
+            string[] cols=line.Split('\t'); int slot=int.Parse(cols[0]);
+            while(slots.Count<=slot) slots.Add(null);
+            Block b=Resources.Load<Block>(cols[1]);
+            if(b==null) { missing++; Debug.LogWarning("Block Island 1.0 block missing: "+cols[1]); continue; }
+            slots[slot]=b;
+            if(!blocks.Contains(b)) blocks.Add(b);
+        }
+        blockIsland1Slots=slots.ToArray();
+        Debug.Log("BLOCK ISLAND 1.0: "+(slots.Count-missing)+" original 1.0 blocks appended ("+missing+" missing).");
     }
 
 }

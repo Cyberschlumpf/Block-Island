@@ -228,7 +228,7 @@ public class Builder : MonoBehaviour {
         if(!pos.HasValue) return;
         DataBlock data = Map.instance.GetBlock(pos.Value);
         Block block = data.block;
-        if(block == null || block is GameObjectBlock) return;
+        if(block == null || (block is GameObjectBlock && ((GameObjectBlock)block).gameObject == null)) return;
         SetSelectedBlock(block);
     }
 

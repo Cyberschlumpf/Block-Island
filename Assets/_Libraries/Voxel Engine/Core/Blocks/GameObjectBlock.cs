@@ -11,6 +11,8 @@ public class GameObjectBlock : Block {
 	public override void OnBlockCreate(Vector3i pos, BlockDirection dir) {
         // Creative GameObject slots are allowed to be empty until a prefab is assigned in BlockSet.
         if(gameObject == null) return;
+        // Infinite World: InfiniteChunkMeshRenderer instantiates the prefab per chunk; a second copy here would double it.
+        if(Map.instance != null && Map.instance.infiniteWorld != null) return;
 		Quaternion rotation = Quaternion.LookRotation( ToVector(dir) );
 		GameObject go = (GameObject) GameObject.Instantiate( gameObject, pos + Vector3.one/2f, rotation );
 		go.transform.parent = Map.instance.transform;
