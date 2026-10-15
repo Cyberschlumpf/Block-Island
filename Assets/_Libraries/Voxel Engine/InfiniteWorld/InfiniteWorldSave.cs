@@ -132,7 +132,8 @@ public static class InfiniteWorldSave {
     }
 
     public static bool Save(InfiniteVoxelWorld w,string name) {
-        if(w==null) return false; name=SanitizeName(name); CurrentWorldName=name; MergeWorldEdits(w);
+        if(w==null) return false; name=SanitizeName(name); string previousName=CurrentWorldName; CurrentWorldName=name; MergeWorldEdits(w);
+        CopyStoredTerrain(previousName,name);
         string final=PathFor(name), temp=final+".tmp";
         try { using(var fs=File.Create(temp)) using(var bw=new BinaryWriter(fs)) {
             bw.Write(Magic); bw.Write(name); bw.Write((byte)CurrentWorldType); bw.Write(w.generator!=null?w.generator.seed:0);
@@ -144,6 +145,16 @@ public static class InfiniteWorldSave {
         if(File.Exists(final)) File.Delete(final); File.Move(temp,final);
         Debug.Log("World saved: "+name+" persistent edits="+playerEdits.Count+" -> "+final); return true;
         } catch(Exception e){Debug.LogError("World save failed: "+e);try{if(File.Exists(temp))File.Delete(temp);}catch{}return false;}
+    }
+    // Saving under a new name takes the stored Block Island surroundings along (BlockIslandTerrainStore).
+    static void CopyStoredTerrain(string from,string to) {
+        if(String.IsNullOrEmpty(from) || String.Equals(from,to,StringComparison.OrdinalIgnoreCase)) return;
+        try {
+            string src=BlockIslandTerrainStore.DirectoryFor(from), dst=BlockIslandTerrainStore.DirectoryFor(to);
+            if(!Directory.Exists(src)) return;
+            Directory.CreateDirectory(dst);
+            foreach(string f in Directory.GetFiles(src)) File.Copy(f,Path.Combine(dst,Path.GetFileName(f)),true);
+        } catch(Exception e) { Debug.LogWarning("Stored terrain not copied: "+e.Message); }
     }
     public static bool SaveCurrent(InfiniteVoxelWorld w){return !String.IsNullOrEmpty(CurrentWorldName)&&Save(w,CurrentWorldName);}
     public static bool SaveTanviir(InfiniteVoxelWorld w){ CurrentWorldType=WorldType.Tanviir; return Save(w,TanviirSaveName); }

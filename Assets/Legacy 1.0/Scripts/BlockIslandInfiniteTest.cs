@@ -67,13 +67,46 @@ public class BlockIslandInfiniteTest : MonoBehaviour {
             int aboveSea = 0, high = 0, sandy = 0, n = 0;
             for(int x = -1500; x <= 2500; x += 25) for(int z = -1500; z <= 2500; z += 25) {
                 if(BlockIslandWorldSource.InsideBlockIsland(x, z)) continue;
-                n++; int top = g.SurfaceY(x, z);
+                n++; int top = g.SurfaceYProcedural(x, z);
                 if(top >= g.seaLevel) aboveSea++; if(top > g.seaLevel + 3) high++;
-                DataBlock tb = w.GetBlock(x, top, z); if(top >= g.seaLevel - 1 && tb.block != null && tb.block.name.ToLowerInvariant().Contains("sand")) sandy++;
+                DataBlock tb = g.SampleProcedural(x, top, z); if(top >= g.seaLevel - 1 && tb.block != null && tb.block.name.ToLowerInvariant().Contains("sand")) sandy++;
             }
             report.Add((wide ? "NEW wide beaches" : "OLD coast       ") + ": land (top >= sea) " + (100f * aboveSea / n).ToString("0.0") + " %, higher than sea+3 " + (100f * high / n).ToString("0.0") + " %, sand surface " + (100f * sandy / n).ToString("0.0") + " %");
         }
         g.wideBeaches = true; g.ClearColumnCache();
+        // Persistence: generated surroundings are stored with the save; a later generator change must not move them.
+        var pts = new List<Vector3Int>(); var before = new List<int>();
+        for(int i = 0; i < 3000; i++) { int x = UnityEngine.Random.Range(-600, -100), z = UnityEngine.Random.Range(200, 900), y = UnityEngine.Random.Range(40, 80); pts.Add(new Vector3Int(x, y, z)); before.Add(w.GetBlock(x, y, z).blockID); }
+        int topsBefore = 0; foreach(var p3 in pts) topsBefore += g.SurfaceY(p3.x, p3.z);
+        report.Add("Terrain store after first visit: chunks written " + BlockIslandTerrainStore.ChunksWritten + ", read " + BlockIslandTerrainStore.ChunksRead + "  dir " + BlockIslandTerrainStore.DirectoryFor(InfiniteWorldSave.CurrentWorldName));
+        g.wideBeaches = false; g.ClearColumnCache(); BlockIslandTerrainStore.ForgetCache();
+        int changedByGenerator = 0, changedInWorld = 0, topsAfter = 0;
+        for(int i = 0; i < pts.Count; i++) {
+            var p3 = pts[i];
+            if(g.SampleProcedural(p3.x, p3.y, p3.z).blockID != before[i]) changedByGenerator++;
+            if(w.GetBlock(p3.x, p3.y, p3.z).blockID != before[i]) changedInWorld++;
+            topsAfter += g.SurfaceY(p3.x, p3.z);
+        }
+        report.Add("Generator changed (old coast): " + changedByGenerator + " of " + pts.Count + " voxels would differ; stored world after reload: " + changedInWorld + " differences, surface heights " + (topsAfter == topsBefore ? "identical" : "DIFFERENT") + ", chunks read from disk " + BlockIslandTerrainStore.ChunksRead);
+        g.wideBeaches = true; g.ClearColumnCache(); BlockIslandTerrainStore.ForgetCache();
+        // Performance probe: first-visit generation vs. reading stored chunks vs. per-voxel access.
+        {
+            var swp = System.Diagnostics.Stopwatch.StartNew();
+            var buf = new DataBlock[Chunk.X_SIZE * Chunk.Y_SIZE * Chunk.Z_SIZE];
+            int gen = 0;
+            for(int cx = 100; cx < 108; cx++) for(int cz = 100; cz < 108; cz++) for(int cy = 0; cy < 8; cy++) { BlockIslandTerrainStore.FillChunk(g, cx * 32, cy * 32, cz * 32, buf); gen++; }
+            double tGen = swp.Elapsed.TotalSeconds;
+            BlockIslandTerrainStore.ForgetCache(); swp = System.Diagnostics.Stopwatch.StartNew();
+            for(int cx = 100; cx < 108; cx++) for(int cz = 100; cz < 108; cz++) for(int cy = 0; cy < 8; cy++) BlockIslandTerrainStore.FillChunk(g, cx * 32, cy * 32, cz * 32, buf);
+            double tRead = swp.Elapsed.TotalSeconds;
+            swp = System.Diagnostics.Stopwatch.StartNew(); long solid = 0;
+            for(int z = 3200; z < 3456; z++) for(int y = 0; y < 64; y++) for(int x = 3200; x < 3456; x++) if(w.GetBlock(x, y, z).blockID != 0) solid++;
+            double tVoxel = swp.Elapsed.TotalSeconds;
+            swp = System.Diagnostics.Stopwatch.StartNew(); long n2 = 0;
+            for(int z = 3200; z < 3456; z++) for(int y = 0; y < 64; y++) for(int x = 3200; x < 3456; x++) if(g.SampleProcedural(x, y, z).blockID != 0) n2++;
+            double tProc = swp.Elapsed.TotalSeconds;
+            report.Add("PERF: generate+store " + gen + " chunks " + tGen.ToString("0.00") + " s (" + (tGen * 1000 / gen).ToString("0.0") + " ms/chunk); read back " + tRead.ToString("0.00") + " s; 4.2M voxel GetBlock " + tVoxel.ToString("0.00") + " s; 4.2M SampleProcedural " + tProc.ToString("0.00") + " s");
+        }
         // Generated land around the island.
         int land = 0, samples = 0, maxTop = 0;
         for(int x = -1500; x <= 2500; x += 25) for(int z = -1500; z <= 2500; z += 25) {
@@ -138,6 +171,7 @@ public class BlockIslandInfiniteTest : MonoBehaviour {
         File.WriteAllText(Path.Combine(outDir, "bericht.txt"), string.Join("\n", report) + "\n\n--- ERRORS ---\n" + string.Join("\n\n", errors));
         string keep = Path.Combine(outDir, "testsaves"); Directory.CreateDirectory(keep);
         foreach(string f in Directory.GetFiles(InfiniteWorldSave.SaveDirectory, "BI1 Test*")) { try { File.Move(f, Path.Combine(keep, Path.GetFileName(f))); } catch { } }
+        foreach(string d in Directory.GetDirectories(InfiniteWorldSave.SaveDirectory, "BI1 Test*")) { try { Directory.Move(d, Path.Combine(keep, Path.GetFileName(d))); } catch { } }
         Application.Quit();
     }
 

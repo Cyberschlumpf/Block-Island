@@ -7,7 +7,35 @@ public class PauseGUI:GUIScreen{
   var wth=InfiniteCreativeWeather.Instance;if(wth!=null&&VoxelBoxSettings.WeatherEffects){GUILayout.Space(10);GUILayout.Label("WETTER",VoxelBoxUI.Header);GUILayout.BeginHorizontal();if(GUILayout.Button(wth.rainEnabled?"REGEN: EIN":"REGEN: AUS",VoxelBoxUI.Button,GUILayout.Height(36)))wth.SetRain(!wth.rainEnabled);if(GUILayout.Button(wth.mistEnabled?"NEBEL: EIN":"NEBEL: AUS",VoxelBoxUI.Button,GUILayout.Height(36)))wth.SetMist(!wth.mistEnabled);if(GUILayout.Button("KLARES WETTER",VoxelBoxUI.Button,GUILayout.Height(36)))wth.ClearWeather();GUILayout.EndHorizontal();}
   GUILayout.Space(14);GUILayout.Label("SPEICHERN",VoxelBoxUI.Header);worldName=GUILayout.TextField(worldName,48,GUILayout.Height(32));if(GUILayout.Button("▣  WELT SPEICHERN",VoxelBoxUI.Button,GUILayout.Height(38))){var w=Map.instance!=null?Map.instance.infiniteWorld:null;if(w!=null){worldName=InfiniteWorldSave.SanitizeName(worldName);saveStatus=InfiniteWorldSave.Save(w,worldName)?"Gespeichert: "+worldName:"Speichern fehlgeschlagen";if(InfiniteDayNightCycle.Instance!=null)InfiniteDayNightCycle.Instance.SavePrefs();}}
   if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Minecraft&&GUILayout.Button("▣  IMPORTIERTE MINECRAFT-WELT SPEICHERN",VoxelBoxUI.Button,GUILayout.Height(42))){var w=Map.instance!=null?Map.instance.infiniteWorld:null;if(w!=null){worldName=InfiniteWorldSave.SanitizeName(worldName);saveStatus=InfiniteWorldSave.Save(w,worldName)?"Minecraft-Import gespeichert: "+worldName:"Speichern fehlgeschlagen";if(InfiniteDayNightCycle.Instance!=null)InfiniteDayNightCycle.Instance.SavePrefs();}}
-  if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Tanviir&&GUILayout.Button("▣  TANVIIR SPEICHERN",VoxelBoxUI.Button,GUILayout.Height(38))){var w=Map.instance!=null?Map.instance.infiniteWorld:null;if(w!=null)saveStatus=InfiniteWorldSave.SaveTanviir(w)?"Tanviir gespeichert":"Tanviir speichern fehlgeschlagen";} if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.BlockIsland&&GUILayout.Button("▣  BLOCK ISLAND SPEICHERN",VoxelBoxUI.Button,GUILayout.Height(38))){var w=Map.instance!=null?Map.instance.infiniteWorld:null;if(w!=null)saveStatus=InfiniteWorldSave.SaveBlockIsland(w)?"Block Island gespeichert":"Block Island speichern fehlgeschlagen";}if(!string.IsNullOrEmpty(saveStatus))GUILayout.Label(saveStatus,VoxelBoxUI.Label);GUILayout.Label("Savegames: "+InfiniteWorldSave.SaveDirectory,VoxelBoxUI.Small);if(GUILayout.Button("▤  SAVEGAME-ORDNER ÖFFNEN",VoxelBoxUI.Button,GUILayout.Height(36)))InfiniteWorldSave.OpenSaveDirectory();}
+  if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Tanviir&&GUILayout.Button("▣  TANVIIR SPEICHERN",VoxelBoxUI.Button,GUILayout.Height(38))){var w=Map.instance!=null?Map.instance.infiniteWorld:null;if(w!=null)saveStatus=InfiniteWorldSave.SaveTanviir(w)?"Tanviir gespeichert":"Tanviir speichern fehlgeschlagen";} if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.BlockIsland&&GUILayout.Button("▣  BLOCK ISLAND SPEICHERN",VoxelBoxUI.Button,GUILayout.Height(38))){var w=Map.instance!=null?Map.instance.infiniteWorld:null;if(w!=null)saveStatus=InfiniteWorldSave.SaveBlockIsland(w)?"Block Island gespeichert":"Block Island speichern fehlgeschlagen";}if(!string.IsNullOrEmpty(saveStatus))GUILayout.Label(saveStatus,VoxelBoxUI.Label);GUILayout.Label("Savegames: "+InfiniteWorldSave.SaveDirectory,VoxelBoxUI.Small);if(GUILayout.Button("▤  SAVEGAME-ORDNER ÖFFNEN",VoxelBoxUI.Button,GUILayout.Height(36)))InfiniteWorldSave.OpenSaveDirectory();DrawStructures();}
+ // Saved structures: store the Copy & Paste clipboard under a name, load it in any world, then PASTE SELECTION.
+ string structureName="Mein Bauwerk",structureStatus="";string[] structures;
+ void DrawStructures(){
+  GUILayout.Space(14);GUILayout.Label("BAUWERKE",VoxelBoxUI.Header);
+  GUILayout.Label("Mit COPY START / COPY END kopieren, hier speichern – und in jeder Welt laden und mit PASTE SELECTION einsetzen.",VoxelBoxUI.Small);
+  Builder b=FindAnyObjectByType<Builder>();
+  VoxelClipboard clip=b!=null?b.CurrentClipboard:null;
+  GUILayout.BeginHorizontal();
+  structureName=GUILayout.TextField(structureName,48,GUILayout.Height(32));
+  GUI.enabled=clip!=null&&!b.ClipboardBusy;
+  if(GUILayout.Button("▣  KOPIE SPEICHERN",VoxelBoxUI.Button,GUILayout.Width(240),GUILayout.Height(34))){string msg;VoxelStructureLibrary.Save(clip,structureName,out msg);structureStatus=msg;structures=null;}
+  GUI.enabled=true;GUILayout.EndHorizontal();
+  if(clip==null)GUILayout.Label("Zwischenablage leer – erst etwas kopieren.",VoxelBoxUI.Small);
+  else GUILayout.Label("Zwischenablage: "+clip.sizeX+" x "+clip.sizeY+" x "+clip.sizeZ+", "+clip.solidCount.ToString("N0")+" Blöcke",VoxelBoxUI.Small);
+  if(structures==null)structures=VoxelStructureLibrary.List();
+  if(structures.Length==0)GUILayout.Label("Noch keine Bauwerke gespeichert.",VoxelBoxUI.Label);
+  foreach(string n in structures){
+   GUILayout.BeginHorizontal(VoxelBoxUI.Card);GUILayout.Label(n,VoxelBoxUI.Label);GUILayout.FlexibleSpace();
+   GUI.enabled=b!=null&&!b.ClipboardBusy;
+   if(GUILayout.Button("▶  LADEN",VoxelBoxUI.Button,GUILayout.Width(160),GUILayout.Height(32))){string msg;VoxelClipboard c=VoxelStructureLibrary.Load(n,out msg);if(c!=null)b.SetClipboard(c,msg);structureStatus=msg;}
+   GUI.enabled=true;GUILayout.EndHorizontal();
+  }
+  if(!string.IsNullOrEmpty(structureStatus))GUILayout.Label(structureStatus,VoxelBoxUI.Label);
+  GUILayout.BeginHorizontal();
+  if(GUILayout.Button("↻  LISTE AKTUALISIEREN",VoxelBoxUI.Button,GUILayout.Height(34)))structures=null;
+  if(GUILayout.Button("▤  BAUWERKE-ORDNER ÖFFNEN",VoxelBoxUI.Button,GUILayout.Height(34)))VoxelStructureLibrary.OpenFolder();
+  GUILayout.EndHorizontal();
+ }
  void DrawAudio(){GUILayout.Label("AUDIO",VoxelBoxUI.Header);var m=InfiniteMusicPlayer.Instance;if(m==null){GUILayout.Label("Musikplayer wird initialisiert ...",VoxelBoxUI.Label);return;}GUILayout.BeginHorizontal();if(GUILayout.Button("MP3-ORDNER WÄHLEN",VoxelBoxUI.Button,GUILayout.Height(38)))m.ChooseFolder();GUILayout.Label(string.IsNullOrEmpty(m.folderPath)?"Kein Ordner":m.folderPath,VoxelBoxUI.Small);GUILayout.EndHorizontal();GUILayout.Label("Playlist: "+m.tracks.Count+" / "+InfiniteMusicPlayer.MaxTracks+"   •   "+m.CurrentTitle,VoxelBoxUI.Label);GUILayout.BeginHorizontal();if(GUILayout.Button("|<",VoxelBoxUI.Button))m.Previous();if(GUILayout.Button("PLAY",VoxelBoxUI.Button))m.Play();if(GUILayout.Button("PAUSE",VoxelBoxUI.Button))m.Pause();if(GUILayout.Button("STOP",VoxelBoxUI.Button))m.Stop();if(GUILayout.Button(">|",VoxelBoxUI.Button))m.Next();if(GUILayout.Button(m.shuffle?"SHUFFLE: EIN":"SHUFFLE: AUS",VoxelBoxUI.Button))m.ToggleShuffle();GUILayout.EndHorizontal();GUILayout.Label("Lautstärke  "+Mathf.RoundToInt(m.volume*100)+"%",VoxelBoxUI.Label);float v=VoxelBoxUI.Slider(m.volume,0,1);if(Mathf.Abs(v-m.volume)>.001f)m.SetVolume(v);}
  void Update(){if(GameState.IsPlaying)SetScreen<GameGUI>();}
 }

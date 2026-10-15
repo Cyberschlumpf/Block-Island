@@ -28,6 +28,13 @@ public sealed class VoxelClipboard {
         runLength.Add(1); runId.Add(id); runDir.Add(dir);
     }
 
+    // Used when loading a saved structure (VoxelStructureLibrary).
+    public void AddRun(int length, int id, byte dir) {
+        if(length <= 0) return;
+        if(id != 0) solidCount += length;
+        runLength.Add(length); runId.Add(id); runDir.Add(id == 0 ? (byte)0 : dir);
+    }
+
     public void GetRun(int i, out int length, out DataBlock block) {
         length = runLength[i];
         block = default(DataBlock);

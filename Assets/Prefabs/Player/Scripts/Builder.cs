@@ -399,6 +399,17 @@ public class Builder : MonoBehaviour {
         if(Map.instance.infiniteRenderer!=null) Map.instance.infiniteRenderer.MarkAllVisibleDirty();
     }
 
+    // Saved structures (pause menu): current clipboard, and loading a structure into it.
+    public VoxelClipboard CurrentClipboard { get { return copyReady ? copyBuffer : null; } }
+    public bool ClipboardBusy { get { return copyBusy; } }
+    public void SetClipboard(VoxelClipboard clip, string status) {
+        if(clip == null || copyBusy) return;
+        copyBuffer = clip; copyReady = true; copyRotationQuarterTurns = 0; pastePreviewDirty = true;
+        copyStartSet = copyEndSet = false;
+        if(copySelectionVisual != null) Destroy(copySelectionVisual);
+        copyStatus = status;
+    }
+
     bool HandleCopyPasteTool(Vector3i pos) {
         if(selectedBlock==null) return false;
         string n=selectedBlock.name;

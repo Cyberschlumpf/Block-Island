@@ -231,6 +231,24 @@ public class BlockIsland1FullTest : MonoBehaviour {
         }
         Add("small paste: " + F("copyStatus").GetValue(b) + "   voxel differences " + diff + "/" + total);
 
+        // saved structure ("Bauwerk"): save the clipboard, load it back, paste it elsewhere, compare
+        string msg; bool saved = VoxelStructureLibrary.Save(b.CurrentClipboard, "BI1 Test Bauwerk", out msg);
+        Add("structure save: " + saved + "  " + msg);
+        VoxelClipboard loaded = VoxelStructureLibrary.Load("BI1 Test Bauwerk", out msg);
+        Add("structure load: " + (loaded != null) + "  " + msg);
+        if(loaded != null) {
+            b.SetClipboard(loaded, msg);
+            var dst2 = new Vector3i(740, gy + 20, 694);
+            yield return Run(b, F, (IEnumerator)paste.Invoke(b, new object[] { dst2 }));
+            int diff2 = 0;
+            for(int x = 0; x <= a1.x - a0.x; x++) for(int y = 0; y <= a1.y - a0.y; y++) for(int z = 0; z <= a1.z - a0.z; z++) {
+                DataBlock s0 = world.GetBlock(a0.x + x, a0.y + y, a0.z + z), d0 = world.GetBlock(dst2.x + x, dst2.y + y, dst2.z + z);
+                if(s0.IsEmpty() != d0.IsEmpty() || (!s0.IsEmpty() && (s0.blockID != d0.blockID || s0.direction != d0.direction))) diff2++;
+            }
+            Add("structure paste: voxel differences " + diff2 + "/" + total);
+        }
+        try { string f = VoxelStructureLibrary.PathFor("BI1 Test Bauwerk"); if(File.Exists(f)) File.Move(f, Path.Combine(outDir, Path.GetFileName(f))); } catch(Exception e) { Add("structure cleanup: " + e.Message); }
+
         // limit
         yield return Capture(b, F, capture, new Vector3i(0, 0, 0), new Vector3i(512, 10, 10));
         Add("513 wide: " + F("copyStatus").GetValue(b));

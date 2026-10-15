@@ -19,7 +19,8 @@ public static class BlockIslandWorldSource {
     public static DataBlock Sample(InfiniteTerrainGenerator generator,int x,int y,int z) {
         if(BlockIslandNativeWorldActive) {
             if(InsideBlockIsland(x,z)) return BlockIslandNativeWorld.Sample(x,y,z);
-            return generator!=null ? generator.SampleProcedural(x,y,z) : default(DataBlock);
+            // Generated once, then kept permanently with the save (BlockIslandTerrainStore).
+            return BlockIslandTerrainStore.Sample(generator,x,y,z);
         }
         if(TanviirImportWorld.active) return TanviirImportWorld.Sample(x,y,z);
         return generator!=null ? generator.SampleProcedural(x,y,z) : default(DataBlock);
@@ -28,7 +29,7 @@ public static class BlockIslandWorldSource {
     public static int SurfaceY(InfiniteTerrainGenerator generator,int x,int z) {
         if(BlockIslandNativeWorldActive) {
             if(InsideBlockIsland(x,z)) return BlockIslandNativeWorld.SurfaceY(x,z);
-            return generator!=null ? generator.SurfaceYProcedural(x,z) : 0;
+            return BlockIslandTerrainStore.SurfaceY(generator,x,z);
         }
         if(TanviirImportWorld.active) return TanviirImportWorld.SurfaceY(x,z);
         return generator!=null ? generator.SurfaceYProcedural(x,z) : 0;

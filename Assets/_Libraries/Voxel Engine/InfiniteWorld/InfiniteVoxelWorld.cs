@@ -36,6 +36,14 @@ public class InfiniteVoxelWorld : MonoBehaviour {
             SuppressGeneratedFloraTouchingPlayerBuilds(key,dst);
             return;
         }
+        if(BlockIslandWorldSource.BlockIslandNativeWorldActive && !BlockIslandWorldSource.InsideBlockIsland(ox,oz)) {
+            // Block Island surroundings: stored terrain (generated on first visit) + player edits.
+            BlockIslandTerrainStore.FillChunk(generator,ox,oy,oz,dst);
+            Dictionary<int,DataBlock> bc;
+            if(edits.TryGetValue(key,out bc)) foreach(var e in bc) if((uint)e.Key < (uint)dst.Length) dst[e.Key]=e.Value;
+            SuppressGeneratedFloraTouchingPlayerBuilds(key,dst);
+            return;
+        }
         if(TanviirImportWorld.active && TanviirNativeWorld.Available) {
             TanviirImportWorld.FillChunk(dst,ox,oy,oz);
             Dictionary<int,DataBlock> c;
