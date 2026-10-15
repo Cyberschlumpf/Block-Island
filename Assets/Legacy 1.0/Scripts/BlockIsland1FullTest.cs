@@ -8,11 +8,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
 
-// Complete automated function test. Only active with:  -bi1fulltest -bi1out <folder> [-bi1mcworld <Minecraft world folder>]
+// Complete automated function test. Only active with:  -bi1fulltest -bi1out <folder>
 // Test worlds use their own save names ("BI1 Test …"); the player's saves are never loaded or written.
 public class BlockIsland1FullTest : MonoBehaviour {
-    string outDir, mcWorld;
-    const string GreenfieldName = "BI1 Test Greenfield";
+    string outDir;
     readonly List<string> report = new List<string>();
     readonly List<string> errors = new List<string>();
     int phaseErrors;
@@ -25,7 +24,6 @@ public class BlockIsland1FullTest : MonoBehaviour {
         var go = new GameObject("BlockIsland1FullTest"); DontDestroyOnLoad(go);
         var t = go.AddComponent<BlockIsland1FullTest>();
         int i = Array.IndexOf(a, "-bi1out"); t.outDir = i >= 0 ? a[i + 1] : Path.Combine(Application.persistentDataPath, "bi1fulltest");
-        i = Array.IndexOf(a, "-bi1mcworld"); t.mcWorld = i >= 0 ? a[i + 1] : null;
         Directory.CreateDirectory(t.outDir);
     }
 
@@ -73,23 +71,6 @@ public class BlockIsland1FullTest : MonoBehaviour {
         yield return new WaitForSecondsRealtime(2f);
         Add("Block Island 2.0 function test  " + DateTime.Now);
 
-        // ---------- 1. Minecraft import ----------
-        if(!string.IsNullOrEmpty(mcWorld)) {
-            Phase("1. Minecraft-Import: " + mcWorld);
-            var sw = Stopwatch.StartNew(); MinecraftWorldImporter.Result res = null; MinecraftWorldImporter.Progress last = null; float nextLog = 0;
-            StartCoroutine(MinecraftWorldImporter.ImportAsync(mcWorld, GreenfieldName, 0, true, p => {
-                last = p; if(Time.realtimeSinceStartup > nextLog) { nextLog = Time.realtimeSinceStartup + 15f; Debug.Log("BI1 FULLTEST import " + p.doneChunks + "/" + p.totalChunks); } }, r => res = r));
-            while(res == null) yield return null;
-            Add("result: ok=" + res.ok + "  " + res.message);
-            Add("time: " + sw.Elapsed.TotalSeconds.ToString("0") + " s   chunks " + (last != null ? last.doneChunks + "/" + last.totalChunks : "?") + "   blocks " + res.importedBlocks.ToString("N0"));
-            string info = InfiniteWorldSave.PathFor(GreenfieldName) + ".native/import.txt";
-            if(File.Exists(info)) Add("import.txt:\n" + File.ReadAllText(info));
-            long bytes = 0; string dir = InfiniteWorldSave.NativeRegionDirFor(GreenfieldName);
-            if(Directory.Exists(dir)) foreach(string f in Directory.GetFiles(dir)) bytes += new FileInfo(f).Length;
-            Add("native size: " + (bytes / 1048576.0).ToString("0") + " MB in " + (Directory.Exists(dir) ? Directory.GetFiles(dir).Length : 0) + " region files");
-            EndPhase();
-        }
-
         // ---------- 2.-5. in a test copy of the Block Island world ----------
         yield return LoadWorld(InfiniteWorldSave.WorldType.BlockIsland, "BI1 Test Funktionstest", 10f);
         InfiniteVoxelWorld world = Map.instance.infiniteWorld; GameObject player = GameObject.FindWithTag("Player");
@@ -104,29 +85,6 @@ public class BlockIsland1FullTest : MonoBehaviour {
         Add("start point " + sp + "  ground below: " + (world.GetBlock(Mathf.FloorToInt(sp.x), Mathf.FloorToInt(sp.y) - 3, Mathf.FloorToInt(sp.z)).IsEmpty() ? "air" : "solid"));
         yield return Shot("fulltest_teleport.png");
         EndPhase();
-
-        // ---------- 6. imported Greenfield world ----------
-        if(!string.IsNullOrEmpty(mcWorld) && File.Exists(InfiniteWorldSave.PathFor(GreenfieldName))) {
-            Phase("6. Greenfield laden");
-            InfiniteWorldSave.RequestLoad(GreenfieldName);
-            SceneManager.LoadScene("Game");
-            yield return WaitForWorld(14f);
-            player = GameObject.FindWithTag("Player");
-            Add("world type " + InfiniteWorldSave.CurrentWorldType + ", native active " + TanviirImportWorld.active + ", player " + (player != null ? player.transform.position.ToString() : "-"));
-            if(player != null) {
-                Vector3 p = player.transform.position; int solid = 0;
-                for(int x = -24; x <= 24; x += 2) for(int z = -24; z <= 24; z += 2) for(int y = -30; y <= 10; y++) if(!Map.instance.infiniteWorld.GetBlock(Mathf.FloorToInt(p.x) + x, Mathf.FloorToInt(p.y) + y, Mathf.FloorToInt(p.z) + z).IsEmpty()) solid++;
-                Add("solid voxels sampled around spawn: " + solid);
-                yield return Shot("fulltest_greenfield_1.png");
-                player.transform.rotation = Quaternion.Euler(0, 120, 0);
-                yield return new WaitForSecondsRealtime(3f);
-                yield return Shot("fulltest_greenfield_2.png");
-                player.transform.position = p + new Vector3(0, 40, 0); player.transform.rotation = Quaternion.Euler(0, 45, 0);
-                yield return new WaitForSecondsRealtime(6f);
-                yield return Shot("fulltest_greenfield_3.png");
-            }
-            EndPhase();
-        }
 
         // ---------- 7. all other worlds ----------
         var worlds = new[] { InfiniteWorldSave.WorldType.Tanviir, InfiniteWorldSave.WorldType.Islands };

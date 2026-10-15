@@ -12,7 +12,7 @@ public static class BlockTextureDesigner {
  static Dictionary<int,Original> originals=new Dictionary<int,Original>();
  static Dictionary<string,Texture2D> customTextures=new Dictionary<string,Texture2D>();
  static Store store=new Store();
- public static string DirectoryPath { get { return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),"Block Island","BlockTextures"); } }
+ public static string DirectoryPath { get { return BlockIslandPaths.Folder(BlockIslandPaths.BlockTextures); } }
  public static string CustomTexturePath { get { return Path.Combine(DirectoryPath,"Textures"); } }
  public static string FilePath { get { return Path.Combine(DirectoryPath,"block_textures.json"); } }
  static Face CopyFace(Face f){ if(f==null)return null; Face n=new Face(); n.material=f.material;n.rect=f.rect;n.materialID=f.materialID;return n; }

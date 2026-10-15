@@ -3,7 +3,6 @@ public class MainMenuGUI:GUIScreen{
  enum SidePanel{None,Settings,Controls,Guides,BlockDesigner} SidePanel side=SidePanel.None; int tab=0, guideTab=0; Vector2 guideScroll=Vector2.zero; Vector2 mainScroll=Vector2.zero;
  void Awake(){RestoreMenuCursor();VoxelBoxSettings.Apply();} void OnEnable(){RestoreMenuCursor();side=SidePanel.None;} void RestoreMenuCursor(){Time.timeScale=1;Cursor.lockState=CursorLockMode.None;Cursor.visible=true;}
  void OnGUI(){VoxelBoxUI.BeginResponsive();VoxelBoxUI.MenuBackground();DrawMain();if(side==SidePanel.Settings)DrawSettings();else if(side==SidePanel.Controls)DrawControlsPanel();else if(side==SidePanel.Guides)DrawGuidesPanel();else if(side==SidePanel.BlockDesigner)DrawBlockDesignerPanel();VoxelBoxUI.EndResponsive();}
- void OpenMinecraftImport(){ var importer=GetComponent<MinecraftImportGUI>(); if(importer==null) importer=gameObject.AddComponent<MinecraftImportGUI>(); foreach(GUIScreen screen in GetComponents<GUIScreen>()) screen.enabled=(screen==importer); }
  void DrawMain(){
   // 0.9.6: real visible controls over the artwork. No invisible hit targets.
   // Leicht vergroessertes Hauptmenue links unterhalb des Logos; Beenden bleibt fest sichtbar.
@@ -14,7 +13,6 @@ public class MainMenuGUI:GUIScreen{
   // Alle Menuepunkte ohne Scrollbereich direkt im Holzrahmen anzeigen.
   if(CompactMenuButton("◆","NEUE WELT","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Islands);SceneManager.LoadScene("Map Generator");}
   if(CompactMenuButton("▶","WELT LADEN",""))SetScreen<LoadMapGUI>();
-  if(CompactMenuButton("▧","MINECRAFT IMPORT",""))OpenMinecraftImport();
   if(CompactMenuButton("✦","TANVIIR","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Tanviir);SceneManager.LoadScene("Game");}
   if(CompactMenuButton("▣","BLOCK ISLAND","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.BlockIsland);SceneManager.LoadScene("Game");}
   if(CompactMenuButton("☁","SKY ISLANDS","")){InfiniteWorldSave.BeginNewWorld(InfiniteWorldSave.WorldType.Islands);InfiniteWorldLaunchConfig.openSkyGenerator=true;SceneManager.LoadScene("Map Generator");}

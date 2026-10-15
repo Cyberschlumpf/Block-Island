@@ -348,6 +348,7 @@ public class BlockIsland1InventoryTest : MonoBehaviour {
 
         TOD_Scattering scat = cam.GetComponent<TOD_Scattering>();
         if(scat != null) { scat.enabled = false; yield return new WaitForSecondsRealtime(1f); yield return Shot("11_ring_B_ohne_Atmosphaere.png"); scat.enabled = true; }
+
         var layers = cam.GetComponents<UnityEngine.Rendering.PostProcessing.PostProcessLayer>();
         foreach(var l in layers) l.enabled = false;
         yield return new WaitForSecondsRealtime(1f); yield return Shot("11_ring_C_ohne_PostProcessing.png");

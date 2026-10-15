@@ -9,10 +9,10 @@ using System.Collections.Generic;
 public static class InfiniteWorldSave {
     const int Magic=0x42495736; // BIW6: native world type in the normal Block Island save
     const int LegacyMagic=0x42495735; // BIW5
-    // LightGarden (3), Relativity (4), ImperialCity (6), Wolkenstadt (7) and Xehanosia (8) were removed from the game.
+    // LightGarden (3), Relativity (4), Minecraft imports (5), ImperialCity (6), Wolkenstadt (7) and Xehanosia (8) were removed from the game.
     // Their numbers stay reserved so old save headers still parse; such saves are hidden and never loaded.
     public enum WorldType : byte { Islands=0, Tanviir=1, BlockIsland=2, LightGarden=3, Relativity=4, Minecraft=5, ImperialCity=6, Wolkenstadt=7, Xehanosia=8 }
-    public static bool IsRemovedWorldType(WorldType t){ return t==WorldType.LightGarden||t==WorldType.Relativity||t==WorldType.ImperialCity||t==WorldType.Wolkenstadt||t==WorldType.Xehanosia; }
+    public static bool IsRemovedWorldType(WorldType t){ return t==WorldType.LightGarden||t==WorldType.Relativity||t==WorldType.Minecraft||t==WorldType.ImperialCity||t==WorldType.Wolkenstadt||t==WorldType.Xehanosia; }
     public const string TanviirSaveName="Tanviir";
     public const string BlockIslandSaveName="Block Island";
     public static WorldType CurrentWorldType=WorldType.Islands;
@@ -29,9 +29,7 @@ public static class InfiniteWorldSave {
     static bool saveMigrationChecked=false;
     public static string SaveDirectory {
         get {
-            string docs=Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string p=String.IsNullOrEmpty(docs) ? Path.Combine(Application.persistentDataPath,"Worlds") : Path.Combine(docs,"Block Island","Saves");
-            Directory.CreateDirectory(p);
+            string p=BlockIslandPaths.Folder(BlockIslandPaths.Saves);
             if(!saveMigrationChecked) { saveMigrationChecked=true; MigrateLegacySaves(p); }
             return p;
         }
@@ -64,8 +62,6 @@ public static class InfiniteWorldSave {
         foreach(char c in Path.GetInvalidFileNameChars()) name=name.Replace(c,'_');
         name=name.Trim(); if(name.Length>48) name=name.Substring(0,48); return name.Length==0?"My World":name;
     }
-    // Native BIR regions of an imported Minecraft world live next to its save file.
-    public static string NativeRegionDirFor(string name) { return Path.Combine(PathFor(name)+".native","region"); }
     public static string PathFor(string name) { return Path.Combine(SaveDir,SanitizeName(name)+".infinite"); }
     public static string[] GetWorldNames() { string[] f=Directory.GetFiles(SaveDir,"*.infinite"); string[] n=new string[f.Length]; for(int i=0;i<f.Length;i++) n[i]=Path.GetFileNameWithoutExtension(f[i]); Array.Sort(n,StringComparer.OrdinalIgnoreCase); return n; }
     public static void BeginNewWorld() { BeginNewWorld(WorldType.Islands); }
@@ -85,7 +81,6 @@ public static class InfiniteWorldSave {
     static void ApplyWorldType(WorldType type) {
         if(type==WorldType.Tanviir){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.Begin(); }
         else if(type==WorldType.BlockIsland){ TanviirImportWorld.End(); BlockIslandWorldSource.BlockIslandNativeWorldActive=true; BlockIslandNativeWorld.Begin(); }
-        else if(type==WorldType.Minecraft && Directory.Exists(NativeRegionDirFor(CurrentWorldName))){ BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); TanviirImportWorld.BeginCustom(NativeRegionDirFor(CurrentWorldName)); }
         else { TanviirImportWorld.End(); BlockIslandWorldSource.BlockIslandNativeWorldActive=false; BlockIslandNativeWorld.End(); }
     }
     // 6.14.14.1: resolve the base-world identity BEFORE the Game scene is loaded.

@@ -33,7 +33,9 @@ public sealed class InfiniteMusicPlayer : MonoBehaviour {
         folderPath=PlayerPrefs.GetString("VoxelMusic_Folder","");
         shuffle=PlayerPrefs.GetInt("VoxelMusic_Shuffle",0)!=0;
         volume=PlayerPrefs.GetFloat("VoxelMusic_Volume",.65f); source.volume=volume;
-        if(!string.IsNullOrEmpty(folderPath) && Directory.Exists(folderPath)) ScanFolder(folderPath,false);
+        // Default: Documents/Block Island/Musik, used when no folder was chosen or the chosen one is gone.
+        if(string.IsNullOrEmpty(folderPath) || !Directory.Exists(folderPath)) folderPath=BlockIslandPaths.Folder(BlockIslandPaths.Music);
+        ScanFolder(folderPath,false);
     }
     void OnDestroy(){ if(Instance==this) Instance=null; }
     void Update(){
@@ -81,7 +83,7 @@ public sealed class InfiniteMusicPlayer : MonoBehaviour {
     }
     string OpenNativeFolderDialog(){
 #if UNITY_STANDALONE_OSX || UNITY_EDITOR_OSX
-        return RunPicker("/usr/bin/osascript", "-e \"POSIX path of (choose folder with prompt \\\"MP3-Musikordner auswählen\\\")\"");
+        return RunPicker("/usr/bin/osascript", "-e \"POSIX path of (choose folder with prompt \\\"MP3-Musikordner auswählen\\\" default location POSIX file \\\""+BlockIslandPaths.Folder(BlockIslandPaths.Music)+"\\\")\"");
 #elif UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
         string ps="$f=New-Object System.Windows.Forms.FolderBrowserDialog;$f.Description='MP3-Musikordner auswählen';if($f.ShowDialog() -eq 'OK'){$f.SelectedPath}";
         return RunPicker("powershell.exe", "-NoProfile -STA -Command \"Add-Type -AssemblyName System.Windows.Forms;"+ps.Replace("\"","\\\"")+"\"");

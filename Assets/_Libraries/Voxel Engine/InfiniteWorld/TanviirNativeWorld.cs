@@ -24,8 +24,6 @@ public static class TanviirNativeWorld {
     static int Mod(int a,int b){int r=a%b;return r<0?r+b:r;}
     public static bool Available { get { return Directory.Exists(Root); } }
     public static void Begin(){OffsetX=193;OffsetZ=27;root=Path.Combine(Application.streamingAssetsPath,"TanviirNative/region");lock(cacheLock){cache.Clear();missing.Clear();pending.Clear();stamp=0;} hotX=hotZ=int.MinValue; hotC=null; Debug.Log("TANVIIR 6.14.3 NATIVE: BIR1 world online; no Minecraft MCA/NBT runtime dependency. root="+Root);}
-    // Imported Minecraft worlds (MinecraftNativeConverter): BIR regions in Minecraft coordinates.
-    public static void BeginCustom(string regionRoot){OffsetX=0;OffsetZ=0;root=regionRoot;lock(cacheLock){cache.Clear();missing.Clear();pending.Clear();stamp=0;} hotX=hotZ=int.MinValue; hotC=null; Debug.Log("MINECRAFT IMPORT NATIVE: BIR1 world online. root="+root);}
     public static void End(){lock(cacheLock){cache.Clear();missing.Clear();pending.Clear();}}
     public static bool IsWorldColumnReady(int wx,int wz){
         // Block Island chunks are 32x32 in X/Z, while BIR1 stores Minecraft-style 16x16 columns.

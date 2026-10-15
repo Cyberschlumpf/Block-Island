@@ -55,6 +55,7 @@ public class BlockSet : MonoBehaviour {
         EnsureBlockIsland1Originals(); // 1.0 migration: original 1.0 blockset, appended last, never shifts older IDs.
         EnsureLocomotive(); // appended after everything else, never shifts older IDs.
         TanviirPackBlocks.Ensure(this); // Tanviir texture-pack blockset, appended last; retires the old Tanviir palette.
+        PrefabBlockLibrary.EnsureBlocks(this); // prefab blocks at fixed indices from PrefabBlockLibrary.FirstIndex (4096).
 
         // Block IDs are 32-bit in the modernized engine. List/array indexing makes int.MaxValue
         // the practical ceiling instead of the legacy 256-block byte limit.
@@ -379,6 +380,15 @@ public class BlockSet : MonoBehaviour {
         TanviirArchitecturalBlock b=ScriptableObject.CreateInstance<TanviirArchitecturalBlock>();
         b.name=n; b.shape=shape; b.hideFlags=HideFlags.DontSave; b.face=LegacyFace(mat,uv); blocks.Add(b);
     }
+
+	// A block created while the game runs (prefab importer) at a fixed index; gaps are filled with hidden placeholders.
+	public void AddRuntimeBlock(Block block, int index) {
+		while(blocks.Count < index) { GameObjectBlock p = ScriptableObject.CreateInstance<GameObjectBlock>(); p.name = "Reserved " + blocks.Count; p.hideFlags = HideFlags.DontSave; p.retired = true; p.Init(this, blocks.Count); blocks.Add(p); }
+		if(index < blocks.Count) { Debug.LogError("BlockSet: index " + index + " already used"); return; }
+		blocks.Add(block);
+		block.Init(this, index);
+		blockArray = blocks.ToArray();
+	}
 
 	public void AddBlock(Block block) {
 		blocks.Add(block);

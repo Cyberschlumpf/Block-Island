@@ -16,7 +16,7 @@ public static class VoxelStructureLibrary {
 
     public static string Directory_ {
         get {
-            string d = Path.Combine(Path.GetDirectoryName(InfiniteWorldSave.SaveDirectory), "Bauwerke");
+            string d = BlockIslandPaths.Folder(BlockIslandPaths.Structures);
             Directory.CreateDirectory(d);
             return d;
         }

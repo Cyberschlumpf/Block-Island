@@ -11,6 +11,9 @@ public static class VoxelBoxSettings {
  public static bool VSync{get=>PlayerPrefs.GetInt("VB.VSync",1)==1;set{PlayerPrefs.SetInt("VB.VSync",value?1:0);Apply();}}
  public static bool WaterReflection{get=>PlayerPrefs.GetInt("VB.WaterReflection",1)==1;set{PlayerPrefs.SetInt("VB.WaterReflection",value?1:0);Apply();}}
  public static bool WaterEffects{get=>PlayerPrefs.GetInt("VB.WaterEffects",1)==1;set{PlayerPrefs.SetInt("VB.WaterEffects",value?1:0);Apply();}}
+ // Snowstorm: how many flakes may lie at once (40.000 - 1.000.000, at the player's own risk: needs a fast computer).
+ public const int BlizzardFlakesMin=40000,BlizzardFlakesMax=1000000;
+ public static int BlizzardFlakes{get=>Mathf.Clamp(PlayerPrefs.GetInt("VB.BlizzardFlakes",100000),BlizzardFlakesMin,BlizzardFlakesMax);set{PlayerPrefs.SetInt("VB.BlizzardFlakes",Mathf.Clamp(value,BlizzardFlakesMin,BlizzardFlakesMax));PlayerPrefs.Save();}}
  public static bool WeatherEffects{get=>PlayerPrefs.GetInt("VB.WeatherEffects",1)==1;set{PlayerPrefs.SetInt("VB.WeatherEffects",value?1:0);Apply();}}
  public static float Brightness{get=>PlayerPrefs.GetFloat("VB.Brightness",1f);set{PlayerPrefs.SetFloat("VB.Brightness",Mathf.Clamp(value,.65f,1.35f));Apply();}}
  public static int ViewDistance{get=>PlayerPrefs.GetInt("VB.ViewDistance",16);set{PlayerPrefs.SetInt("VB.ViewDistance",Mathf.Clamp(value,4,32));PlayerPrefs.Save();}}

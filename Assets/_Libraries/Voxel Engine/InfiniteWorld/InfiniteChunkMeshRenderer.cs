@@ -215,6 +215,8 @@ public sealed class InfiniteChunkMeshRenderer : MonoBehaviour {
                 if(BlockIsland1Placement.IsLegacy(placement.block))
                     BlockIsland1Placement.SnapToFloor(instance,placement.block,prefab,specialsRoot.transform.TransformPoint(new Vector3(0f,placement.pos.y,0f)).y);
                 BlockIsland1Placement.PrepareRideCameras(instance);
+                // Prefab blocks (key P importer): size, animation and floor height from their settings.
+                PrefabBlockLibrary.SetupInstance(instance,placement.block,specialsRoot.transform.TransformPoint(new Vector3(0f,placement.pos.y,0f)).y);
                 // Stage 6.11.5: the bundled Fire prefab uses Unity 4.x legacy particle components.
                 // Unity 6 still renders its Light but not those old flame particles, so add a modern visual.
                 if(placement.block.name=="Fire" || prefab.name=="Flame") InfiniteFireVisual.Ensure(instance);

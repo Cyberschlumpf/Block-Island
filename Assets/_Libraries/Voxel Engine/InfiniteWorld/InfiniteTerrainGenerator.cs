@@ -451,7 +451,7 @@ public class InfiniteTerrainGenerator : MonoBehaviour {
         result=new DataBlock(flora[idx]);return true;
     }
 
-    public DataBlock Sample(int x,int y,int z){ /* Minecraft: structure imports have an empty base; native world imports read their BIR regions. */ if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Minecraft && !TanviirImportWorld.active) return default(DataBlock); if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) return RelativityWorld.Sample(x,y,z); return BlockIslandWorldSource.Sample(this,x,y,z); }
+    public DataBlock Sample(int x,int y,int z){ if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity) return RelativityWorld.Sample(x,y,z); return BlockIslandWorldSource.Sample(this,x,y,z); }
 
     // Procedural source implementation. Fixed worlds enter through BlockIslandWorldSource.
     public DataBlock SampleProcedural(int x,int y,int z){
