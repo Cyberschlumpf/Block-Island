@@ -410,6 +410,14 @@ public class Builder : MonoBehaviour {
         copyStatus = status;
     }
 
+    // Bauwerk-Spawner: put a saved structure into the clipboard and paste it right away at 'anchor'.
+    public bool PasteStructureAt(VoxelClipboard clip, Vector3i anchor, string name) {
+        if(clip == null || copyBusy) return false;
+        SetClipboard(clip, "Bauwerk „" + name + "“");
+        StartCoroutine(PasteSelection(anchor));
+        return true;
+    }
+
     bool HandleCopyPasteTool(Vector3i pos) {
         if(selectedBlock==null) return false;
         string n=selectedBlock.name;

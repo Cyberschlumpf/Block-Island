@@ -33,6 +33,9 @@ public static class BlockIslandPaths {
     public static string Root {
         get {
             if(root != null) return root;
+            // Automated tests use their own data folder (environment variable), never the player's files.
+            string over = Environment.GetEnvironmentVariable("BI_DATA_DIR");
+            if(!string.IsNullOrEmpty(over)) { root = over; Directory.CreateDirectory(root); return root; }
             string docs = DocumentsFolder;
             root = string.IsNullOrEmpty(docs) ? Path.Combine(Application.persistentDataPath, "Block Island") : Path.Combine(docs, "Block Island");
             Directory.CreateDirectory(root);

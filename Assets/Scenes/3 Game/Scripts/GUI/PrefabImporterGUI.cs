@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-// Key P in game: prefab importer. Lists the prefabs exported from Unity (~/Block Island/Prefabs/*.biprefab),
+// Key P in game: prefab importer. Lists the prefabs exported from Unity (Documents/Block Island/Prefabs/*.biprefab),
 // shows a rotatable 3D preview on a block grid, and saves a prefab as a buildable block with name, size,
 // animation and height (PrefabBlockLibrary). Saved blocks can be changed again here; every placed copy follows.
 public class PrefabImporterGUI : MonoBehaviour {

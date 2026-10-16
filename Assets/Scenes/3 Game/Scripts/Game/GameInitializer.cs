@@ -36,6 +36,12 @@ public class GameInitializer : MonoBehaviour {
             // making the loaded world look empty until a block edit forced a local rebuild.
             GameObject infinitePlayer = GameObject.FindWithTag("Player");
             if (infinitePlayer != null) {
+                // Arriving through a portal: stand in front of the portal of this world instead of the saved place.
+                Vector3 portalPos; Quaternion portalRot;
+                if(PortalTransition.TakeArrival(out portalPos, out portalRot)) {
+                    InfiniteWorldSave.LoadedPlayerPosition = portalPos; InfiniteWorldSave.LoadedPlayerRotation = portalRot;
+                    InfiniteWorldSave.HasLoadedPlayerTransform = true;
+                }
                 if(InfiniteWorldSave.CurrentWorldType==InfiniteWorldSave.WorldType.Relativity && !InfiniteWorldSave.HasLoadedPlayerTransform) { infinitePlayer.transform.position=new Vector3(0,0,0); infinitePlayer.transform.rotation=Quaternion.identity; }
                 if(InfiniteWorldSave.HasLoadedPlayerTransform) {
                     infinitePlayer.transform.position = InfiniteWorldSave.LoadedPlayerPosition;
@@ -50,6 +56,7 @@ public class GameInitializer : MonoBehaviour {
             }
             // Give camera-follow scripts one frame to catch up only AFTER the player is already
             // at the correct saved position. Streaming therefore starts from the correct area.
+            PortalWorldWatcher.Ensure();
             yield return null;
             yield break;
         }

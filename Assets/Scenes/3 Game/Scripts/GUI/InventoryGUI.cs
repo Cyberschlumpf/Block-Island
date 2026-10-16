@@ -133,6 +133,7 @@ public class InventoryGUI : MonoBehaviour {
 	
     private static int CategoryOf(Block b) {
         if(b==null) return -1;
+        if(b is PortalBlock || b is InfoSignBlock || b is FunctionBlock) return 2;
         if(b is GameObjectBlock) return figuresCategory;
         string n=b.name ?? "";
         if(b is CustomVoxelBlock || b is FenceBlock || b is StairBlock || b is SphereBlock || b is TanviirArchitecturalBlock || b is TanviirPackBlock || n=="Custom Workshop 8x8" || n=="Bake Custom Block") return 3;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public sealed class InfiniteChunkMeshRenderer : MonoBehaviour {
     public InfiniteVoxelWorld world;
     readonly Dictionary<InfiniteChunkKey, GameObject> objects = new Dictionary<InfiniteChunkKey, GameObject>();
+    public bool HasChunk(InfiniteChunkKey k) { return objects.ContainsKey(k); }
     readonly HashSet<InfiniteChunkKey> dirty = new HashSet<InfiniteChunkKey>();
     int diagnosticBuilds=0;
     Transform renderRoot;

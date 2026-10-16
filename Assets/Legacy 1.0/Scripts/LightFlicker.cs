@@ -12,6 +12,9 @@ public class LightFlicker : MonoBehaviour
 
 	public float startFlickeringIn;
 
+	// brightness level of the lantern (LampControl), multiplies the flicker intensity
+	public float scale = 1f;
+
 	private void Start()
 	{
 		if (isFlickering)
@@ -39,7 +42,7 @@ public class LightFlicker : MonoBehaviour
 		else
 		{
 			float intensity = num * value + lowRange;
-			base.gameObject.GetComponent<Light>().intensity = intensity;
+			base.gameObject.GetComponent<Light>().intensity = intensity * scale;
 		}
 	}
 

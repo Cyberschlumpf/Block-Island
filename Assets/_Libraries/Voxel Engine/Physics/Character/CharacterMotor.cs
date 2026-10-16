@@ -17,13 +17,20 @@ public class CharacterMotor : MonoBehaviour {
 	}
 	
 	
+	// Function blocks: a spring pad launches the player upwards, a conveyor belt pushes while standing on it.
+	float launchSpeed; Vector3 push, lastPush; float pushUntil;
+	public void Launch(float upSpeed) { launchSpeed = Mathf.Max(launchSpeed, upSpeed); }
+	public void Push(Vector3 velocity) { push = velocity; pushUntil = Time.time + .12f; }
+
 	void FixedUpdate() {
-		Vector3 velocity = character.GetVelocity() / Time.deltaTime;
+		Vector3 velocity = character.GetVelocity() / Time.deltaTime - lastPush;
 		motorMoving.ApplyMoving(this, ref velocity);
 		motorMoving.ApplyGravity(this, ref velocity);
 		motorJumping.ApplyJumping(this, ref velocity);
-		
-		character.Move( velocity*Time.deltaTime );
+		if(launchSpeed > 0f) { velocity.y = launchSpeed; motorJumping.jumping = true; launchSpeed = 0f; }
+		Vector3 p = Time.time < pushUntil ? push : Vector3.zero;
+		character.Move( (velocity + p)*Time.deltaTime );
+		lastPush = p;
 	}
 	
 	public bool IsGrounded() {

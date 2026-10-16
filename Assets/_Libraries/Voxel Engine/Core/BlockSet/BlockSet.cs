@@ -55,6 +55,9 @@ public class BlockSet : MonoBehaviour {
         EnsureBlockIsland1Originals(); // 1.0 migration: original 1.0 blockset, appended last, never shifts older IDs.
         EnsureLocomotive(); // appended after everything else, never shifts older IDs.
         TanviirPackBlocks.Ensure(this); // Tanviir texture-pack blockset, appended last; retires the old Tanviir palette.
+        PortalBlocks.Ensure(this); // world portals at fixed indices 4000/4001.
+        InfoSignBlocks.Ensure(this); // Block Island info sign (real time and weather) at fixed indices 4002/4003.
+        FunctionBlocks.Ensure(this); // function blocks (bell, lamp, beacon, sign, teleporter, ...) at fixed indices from 4004.
         PrefabBlockLibrary.EnsureBlocks(this); // prefab blocks at fixed indices from PrefabBlockLibrary.FirstIndex (4096).
 
         // Block IDs are 32-bit in the modernized engine. List/array indexing makes int.MaxValue

@@ -73,9 +73,10 @@ public sealed class MinecartRuntimeController : MonoBehaviour {
         return best;
     }
 
+    float waitUntil; Vector3i lastStation=new Vector3i(int.MinValue,0,0);
     void Update() {
         HandleRideInput();
-        if(!moving || world==null) return;
+        if(!moving || world==null || Time.time<waitUntil) return;
         float distance=Mathf.Max(.001f,Vector3.Distance(from,to));
         segmentT += (speed/distance)*Time.deltaTime;
         float t=Mathf.Clamp01(segmentT);
@@ -85,6 +86,9 @@ public sealed class MinecartRuntimeController : MonoBehaviour {
         if(segmentT>=1f) {
             railPos=nextRailPos;
             SnapToRail();
+            // Minecart-Bahnhof next to the rail: stop for a few seconds (once per arrival)
+            if(FunctionBlocks.StationNear(world,railPos)) { if(!Equal(lastStation,railPos)) { lastStation=railPos; waitUntil=Time.time+FunctionBlocks.StationStopSeconds; } }
+            else lastStation=new Vector3i(int.MinValue,0,0);
             BeginNextSegment();
         }
     }
@@ -166,7 +170,12 @@ public sealed class MinecartRuntimeController : MonoBehaviour {
         // 0.8.2: A connection may be level, one voxel higher or one voxel lower.
         // Straight ahead remains the first choice, so crossings and nearby parallel rails
         // do not make the cart randomly turn.
-        if(!IsZero(travelDir) && TryRailInDirection(railPos,travelDir,out chosenPos)) chosen=travelDir;
+        // Weiche set to "abbiegen" next to this rail: take a 90 degree branch before going straight on
+        if(!IsZero(travelDir) && FunctionBlocks.SwitchTurnsNear(world,railPos)) {
+            Vector3i[] side={new Vector3i(travelDir.z,0,-travelDir.x),new Vector3i(-travelDir.z,0,travelDir.x)};
+            foreach(Vector3i d in side) { Vector3i candidate; if(TryRailInDirection(railPos,d,out candidate)) { chosen=d; chosenPos=candidate; break; } }
+        }
+        if(IsZero(chosen) && !IsZero(travelDir) && TryRailInDirection(railPos,travelDir,out chosenPos)) chosen=travelDir;
 
         // If straight is unavailable, accept a 90 degree connected branch.
         if(IsZero(chosen)) {
